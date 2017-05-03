@@ -1,3 +1,4 @@
+_           = require 'underscore'
 bcrypt      = require 'bcrypt'
 mongoose    = require 'mongoose'
 
@@ -19,7 +20,6 @@ exports.EmailUserSchema = EmailUserSchema = UserSchema.extend {
     type:       mongoose.SchemaTypes.Email
     require:    true
     unique:     true
-    sparse:     true
     trim:       true
 
   password:
@@ -46,3 +46,7 @@ EmailUserSchema.pre 'save', (next) ->
 
 EmailUserSchema.methods.comparePassword = (password) ->
   bcrypt.compare password, @password
+
+
+EmailUserSchema.methods.toJSON = () ->
+  _.omit @toObject(), 'password', 'email_unique'
