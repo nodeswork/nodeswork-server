@@ -1,7 +1,11 @@
-mongoose          = require 'mongoose'
 Koa               = require 'koa'
 KoaRouter         = require 'koa-router'
 bodyParser        = require 'koa-bodyparser'
+convert           = require 'koa-convert'
+csrf              = require 'koa-csrf'
+mongoose          = require 'mongoose'
+mongooseStore     = require 'koa-session-mongoose'
+session           = require 'koa-generic-session'
 
 {registerModels}  = require './api/models'
 
@@ -17,7 +21,15 @@ do () ->
   api        = require './api'
   app        = new Koa
 
+  app.keys = ['my keys']
+
   app
+    .use new csrf.default()  # ES6 style
+    .use convert session store: mongooseStore.create {
+      model:       'KoaSession'
+      collection:  'sessions'
+      expires:     60 * 60 * 24 * 7 # 1 week
+    }
     .use bodyParser()
     .use api.router.routes()
     .use api.router.allowedMethods()
