@@ -24,7 +24,7 @@ do () ->
   app.keys = ['my keys']
 
   app
-    .use new csrf.default()  # ES6 style
+    # .use new csrf.default()  # ES6 style
     .use convert session store: mongooseStore.create {
       model:       'KoaSession'
       collection:  'sessions'
