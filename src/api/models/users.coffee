@@ -25,6 +25,8 @@ exports.EmailUserSchema = EmailUserSchema = UserSchema.extend {
   password:
     type:       String
     required:   true
+    min:        [6,  'Password should be at least 6 charactors.']
+    max:        [80, 'Password should be at most 80 charactors.']
 }
 
 

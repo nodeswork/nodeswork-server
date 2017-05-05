@@ -1,7 +1,8 @@
-KoaRouter     = require 'koa-router'
+KoaRouter        = require 'koa-router'
 
-{userRouter}  = require './users'
-{User}        = require '../models'
+{accountRouter}  = require './accounts'
+{userRouter}     = require './users'
+{User}           = require '../models'
 
 exports.router = router = new KoaRouter prefix: '/api/v1'
 
@@ -16,4 +17,6 @@ router.get '/', (ctx, next) ->
   ctx.body = hello: 'world'
   await next()
 
-router.use userRouter.routes(), userRouter.allowedMethods()
+router
+  .use accountRouter.routes(), accountRouter.allowedMethods()
+  .use userRouter.routes(), userRouter.allowedMethods()

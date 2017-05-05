@@ -5,6 +5,7 @@ mongooseSchemaExtend    = require 'mongoose-schema-extend'
 mongooseTypeEmail       = require 'mongoose-type-email'
 
 
+accounts                = require './accounts'
 users                   = require './users'
 utils                   = require './utils'
 
@@ -18,8 +19,10 @@ exports.registerModels = (mongooseInstance = mongoose) ->
     exports[modelName] = mongooseInstance.model modelName, modelSchema
 
   registerModel modelName, modelSchema for [modelName, modelSchema] in [
-    ['User',       users.UserSchema]
-    ['EmailUser',  users.EmailUserSchema]
+    ['User',               users.UserSchema]
+    ['EmailUser',          users.EmailUserSchema]
+    ['Account',            accounts.AccountSchema]
+    ['FifaFutAccount',     accounts.FifaFutAccountSchema]
   ]
 
   return
