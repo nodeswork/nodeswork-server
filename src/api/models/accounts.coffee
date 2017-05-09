@@ -58,6 +58,10 @@ FIFA_FUT_LOGIN_CACHE = LRU {
   maxAge: 1000 * 60 * 60    # 60 minutes
 }
 
+FIFA_FUT_API_CLIENT = LRU {
+  max: 100                      # max size
+  maxAge: 1000 * 60 * 60 * 24   # 24 hours
+}
 
 FifaFutAccountSchema.statics.register = ({user, username, password, secret, platform}) ->
   @create {
@@ -95,7 +99,6 @@ FifaFutAccountSchema.methods.authorize = () ->
         @username, @password, @secret, @platform,
         (next) =>
           FIFA_FUT_LOGIN_CACHE.set @_id.toString(), [next, twoFactorPromise]
-          console.log 'setting cache', FIFA_FUT_LOGIN_CACHE.keys()
           await @saveApiClient apiClient
           reject errors.FUT_TWO_FACTOR_CODE_REQUIRED
         (err, response) =>
@@ -105,17 +108,31 @@ FifaFutAccountSchema.methods.authorize = () ->
             if FIFA_FUT_LOGIN_CACHE.has @_id.toString() then reject2 err
             else reject err
           else
+            FIFA_FUT_API_CLIENT.set @_id.toString(), apiClient
             if FIFA_FUT_LOGIN_CACHE.has @_id.toString() then resolve2 response
             else resolve response
           FIFA_FUT_LOGIN_CACHE.del @_id.toString()
       )
 
 FifaFutAccountSchema.methods.twoFactorAuthorize = ({code}) ->
-  console.log 'getting cache', FIFA_FUT_LOGIN_CACHE.keys(), @_id
-  console.log FIFA_FUT_LOGIN_CACHE.has @_id.toString()
   unless FIFA_FUT_LOGIN_CACHE.has @_id.toString()
     throw errors.FUT_TWO_FACTOR_FUNCTION_NOT_FOUND
 
   [next, twoFactorPromise] = FIFA_FUT_LOGIN_CACHE.get @_id.toString()
   next code
   twoFactorPromise
+
+
+forCb = (fn) -> new Promise (resolve, reject) -> fn (err, resp) ->
+  if err? then reject err else resolve resp
+
+
+FifaFutAccountSchema.methods.operate = (opts) ->
+  apiClient = FIFA_FUT_API_CLIENT.get @_id.toString()
+  unless apiClient? then throw new Error 'API Client is not initialized.'
+
+  switch opts.method
+    when 'getCredits', 'getPilesize', 'getTradepile', 'relist', 'getWatchlist'
+      await forCb (cb) -> apiClient[opts.method] cb
+    else
+      throw new TypeError "Unkown method."

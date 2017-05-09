@@ -60,3 +60,11 @@ accountRouter.post '/:accountId/two-factor-authorize', fetchAccount, (ctx) ->
       when errors.FUT_TWO_FACTOR_FUNCTION_NOT_FOUND
         ctx.body = message: errors.FUT_TWO_FACTOR_FUNCTION_NOT_FOUND
       else throw e
+
+
+accountRouter.post '/:accountId/operate', fetchAccount, (ctx) ->
+  try
+    ctx.body = await ctx.account.operate ctx.request.body
+  catch e
+    ctx.body = error: e.message
+    ctx.response.status = 400
