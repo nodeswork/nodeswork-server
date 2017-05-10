@@ -1,5 +1,4 @@
 Koa               = require 'koa'
-KoaRouter         = require 'koa-router'
 bodyParser        = require 'koa-bodyparser'
 convert           = require 'koa-convert'
 csrf              = require 'koa-csrf'

@@ -1,5 +1,6 @@
 KoaRouter        = require 'koa-router'
 
+{appletRouter}   = require './applet'
 {accountRouter}  = require './accounts'
 {userRouter}     = require './users'
 {User}           = require '../models'
@@ -18,5 +19,6 @@ router.get '/', (ctx, next) ->
   await next()
 
 router
+  .use appletRouter.routes(), appletRouter.allowedMethods()
   .use accountRouter.routes(), accountRouter.allowedMethods()
   .use userRouter.routes(), userRouter.allowedMethods()
