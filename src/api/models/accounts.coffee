@@ -113,8 +113,23 @@ FifaFutAccountSchema.methods.operate = (opts) ->
   unless @apiClient.authorized
     throw errors.FUT_API_CLIENT_IS_NOT_AUTHORIZED
 
+  # TODO: Validate opts for each method.
   switch opts.method
     when 'getCredits', 'getPilesize', 'getTradepile', 'relist', 'getWatchlist'
       await forCb (cb) => @apiClient[opts.method] cb
+    when 'search'
+      await forCb (cb) => @apiClient.search _.omit(opts, 'method'), cb
+    when 'placeBid'
+      await forCb (cb) => @apiClient.placeBid opts.tradeId, opts.coins, cb
+    when 'listItem'
+      await forCb (cb) => @apiClient.listItem(
+        opts.itemDataId, opts.startingBid, opts.buyNowPrice, opts.duration, cb
+      )
+    when 'getStatus'
+      await forCb (cb) => @apiClient.getStatus opts.tradeIds, cb
+    when 'addToWatchlist', 'removeFromTradepile', 'removeFromWatchlist'
+      await forCb (cb) => @apiClient[opts.method] opts.tradeId, cb
+    when 'sendToTradepile', 'sendToClub', 'quickSell'
+      await forCb (cb) => @apiClient[opts.method] opts.itemDataId, cb
     else
       throw new TypeError "Unkown method."
