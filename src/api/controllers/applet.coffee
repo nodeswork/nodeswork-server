@@ -1,5 +1,6 @@
 KoaRouter      = require 'koa-router'
 
+{fetchAccount} = require './middlewares'
 {Account}      = require '../models'
 {User}         = require '../models'
 
@@ -33,7 +34,5 @@ appletRouter.get '/user/:userId', verifyPermissionAndFetchUser, (ctx) ->
 appletRouter.get '/user/:userId/accounts', verifyPermissionAndFetchUser, (ctx) ->
   ctx.response.body = await Account.findByUser ctx.user
 
-appletRouter.post '/user/:userId/accounts/:accountId/operate', verifyPermissionAndFetchUser, (ctx) ->
-  account = await Account.findById ctx.params.accountId
-
-  ctx.response.body = await account.operate ctx.request.body
+appletRouter.post '/user/:userId/accounts/:accountId/operate', verifyPermissionAndFetchUser, fetchAccount, (ctx) ->
+  ctx.response.body = await ctx.account.operate ctx.request.body

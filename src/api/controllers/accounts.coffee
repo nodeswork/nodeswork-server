@@ -1,9 +1,7 @@
 _                                  = require 'underscore'
 KoaRouter                          = require 'koa-router'
-LRU                                = require 'lru-cache'
-futapi                             = require 'fut-api'
 
-{requireLogin}                     = require './middlewares'
+{requireLogin, fetchAccount}       = require './middlewares'
 {Account, FifaFutAccount}          = require '../models'
 errors                             = require '../errors'
 
@@ -28,40 +26,6 @@ accountRouter.post '/', (ctx) ->
     else
       ctx.response.status = 422
       ctx.body = message: 'Unkown or missing accountType.'
-
-
-FIFA_FUT_API_CLIENT = LRU {
-  max: 100                      # max size
-  maxAge: 1000 * 60 * 60 * 24   # 24 hours
-}
-
-fetchAccount = (ctx, next) ->
-  try
-    ctx.account = await Account.findById ctx.params.accountId
-  catch
-    ctx.response.status = 401
-    return
-
-  switch
-    when ctx.account instanceof FifaFutAccount
-      apiClient = FIFA_FUT_API_CLIENT.get ctx.account._id.toString()
-      unless apiClient?
-        FIFA_FUT_API_CLIENT.set(
-          ctx.account._id.toString(),
-          apiClient = new futapi
-        )
-        if ctx.account.cookieJar?
-          apiClient.setCookieJarJSON JSON.parse ctx.account.cookieJar
-      ctx.account.setApiClient apiClient
-
-  await next()
-
-  switch
-    when ctx.account instanceof FifaFutAccount
-      cookieJar = JSON.stringify apiClient.getCookieJarJSON()
-      if cookieJar != ctx.account.cookieJar
-        ctx.account.cookieJar = cookieJar
-        await ctx.account.save()
 
 
 accountRouter.get '/:accountId', fetchAccount, (ctx) ->
