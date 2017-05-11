@@ -1,15 +1,18 @@
-Koa               = require 'koa'
-KoaRouter         = require 'koa-router'
-Pug               = require 'koa-pug'
-bodyParser        = require 'koa-bodyparser'
-convert           = require 'koa-convert'
-csrf              = require 'koa-csrf'
-mongoose          = require 'mongoose'
-mongooseStore     = require 'koa-session-mongoose'
-session           = require 'koa-generic-session'
-staticCache       = require 'koa-static-cache'
+Koa                   = require 'koa'
+KoaRouter             = require 'koa-router'
+Pug                   = require 'koa-pug'
+bodyParser            = require 'koa-bodyparser'
+connectCoffeeScript   = require 'connect-coffee-script'
+convert               = require 'koa-convert'
+csrf                  = require 'koa-csrf'
+koaConnect            = require 'koa-connect'
+lessMiddleware        = require 'less-middleware'
+mongoose              = require 'mongoose'
+mongooseStore         = require 'koa-session-mongoose'
+session               = require 'koa-generic-session'
+staticCache           = require 'koa-static-cache'
 
-{registerModels}  = require './api/models'
+{registerModels}      = require './api/models'
 
 
 do () ->
@@ -26,6 +29,7 @@ do () ->
   app.keys   = ['my keys']
 
   pug        = new Pug {
+    debug:       true
     viewPath:    './src/views'
     helperPath:  []
     app:         app
@@ -51,6 +55,18 @@ do () ->
       maxAge:   3600
       dynamic:  true
     }
+    .use koaConnect connectCoffeeScript {
+      src:     __dirname + '/coffee'
+      prefix:  '/js'
+      dest:    './public/js'
+      bare:    true
+    }
+    .use koaConnect lessMiddleware __dirname + '/less', {
+      preprocess:
+        path:      (lessPath, req) -> lessPath.replace '/styles', ''
+      dest:        './public'
+    }
+    .use staticCache './public', dynamic: true
     .use router.routes()
     .use router.allowedMethods()
 

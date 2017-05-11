@@ -2,5 +2,20 @@ doctype html
 html
   head
     meta(charset='utf-8')
-  body
+
+    - var css = [];
+    <!-- - css.push('/bower_components/angular-material/angular-material.min'); -->
+    <!-- - css.push('/bower_components/bootstrap/dist/css/bootstrap.min'); -->
+    <!-- - css.push('/styles/fut16'); -->
+
+    each link in css
+      link(href=link + '.css', rel='stylesheet')
+
+    script(
+      src='/bower_components/requirejs/require.js',
+      data-main='/js/main',
+      type='text/javascript'
+    )
+
+  body.nodeswork
     | hello world
