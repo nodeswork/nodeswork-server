@@ -1,0 +1,25 @@
+{
+  "name": "nodeswork-server",
+  "description": "Nodeswork-server provides website and APIs.",
+  "main": "",
+  "authors": [
+    "Nodeswork<andy@nodeswork.com>"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "nodeswork",
+    "nodeswork-server"
+  ],
+  "homepage": "https://github.com/nodeswork/nodeswork-server",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "requirejs": "^2.3.3"
+  }
+}
