@@ -1,1 +1,57 @@
-| My Account Page
+h2 My Accounts
+
+div.panel.panel-default.col-sm-6.col-md-4(ng-repeat="account in accounts")
+  div.panel-body
+    div.media
+      div.media-left
+        img(
+          width=64, height=64,
+          src="https://cdn-origin.fifa-gamers-pub.com/club_items/badges/1794.png")
+      div.media-body
+        h5 {{account.accountType}}
+        p {{account.username}}
+        p {{account.status}}
+        div.pull-right
+          button.btn.btn-primary Authorize
+          button.btn.btn-danger Inactive
+
+div.panel.panel-default.col-sm-6.col-md-2
+  div.dropdown
+    div.dropdown-toggle(data-toggle="dropdown")
+      span.glyphicon.glyphicon-plus(style="font-size: 40px;text-align: center;")
+    ul.dropdown-menu
+      li
+        a(data-toggle="modal", data-target="#newFifaFutAccount") Fifa FUT Account
+
+  div#newFifaFutAccount.modal.fade
+    div.modal-dialog
+      div.modal-content
+        div.modal-header
+          h4 Register New Fifa FUT Account
+        div.modal-body
+          form.form-horizontal
+            div.form-group
+              label.col-sm-3.control-label Email Address
+              div.col-sm-9
+                input.form-control(type="email", placeholder="Email")
+            div.form-group
+              label.col-sm-3.control-label Platform
+              div.col-sm-9
+                select.form-control
+                  option Xbox One
+                  option PS4
+            div.form-group
+              label.col-sm-3.control-label Password
+              div.col-sm-9
+                input.form-control(type="password", placeholder="Password")
+                div.checkbox
+                  label
+                    input(type="checkbox")
+                    | Show Password
+            div.form-group
+              label.col-sm-3.control-label Secret
+              div.col-sm-9
+                input.form-control(type="text", placeholder="Secret Question Answers")
+        div.modal-footer
+          button.btn.btn-default(data-dismiss="modal") Close
+          button.btn.btn-primary Create

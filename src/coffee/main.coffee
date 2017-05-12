@@ -6,6 +6,8 @@ require.config
     angularMaterial:          '../bower_components/angular-material/angular-material.min'
     angularResource:          '../bower_components/angular-resource/angular-resource.min'
     angularRoute:             '../bower_components/angular-route/angular-route'
+    bootstrap:                '../bower_components/bootstrap/dist/js/bootstrap.min'
+    jquery:                   '../bower_components/jquery/dist/jquery.min'
     underscore:               '../bower_components/underscore/underscore-min'
   shim:
     angular:
@@ -17,11 +19,13 @@ require.config
       deps:                   [ 'angular' ]
     angularRoute:
       deps:                   [ 'angular' ]
+    bootstrap:
+      deps:                   [ 'jquery' ]
     underscore:
       exports:                '_'
 
 require [
-  'angular', 'angularRoute', 'angularResource'
+  'angular', 'angularRoute', 'angularResource', 'bootstrap'
 
   'routes'
 
@@ -29,7 +33,7 @@ require [
 
   'resources/nodeswork_resource'
 ], (
-  angular, angularRoute, angularResource
+  angular, angularRoute, angularResource, bootstrap
 
   routes
 

@@ -21,6 +21,12 @@ define [], () ->
         controller:   'AppletsController'
         templateUrl:  '/views/applets/index.html'
       }
+      .when '/devices', {
+        name:         'My Devices'
+        menu:         'Devices'
+        controller:   'DevicesController'
+        templateUrl:  '/views/devices/index.html'
+      }
       .when '/discover', {
         name:         'Discover Applets'
         menu:         'Discover'

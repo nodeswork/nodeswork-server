@@ -14,3 +14,9 @@ define ['resources/resource'], (Resource) ->
           method: 'POST'
       }
       UserResource
+
+
+    @AccountResource: ($resource) ->
+      AccountResource = $resource '/api/v1/accounts/:accountId', {
+        accountId: '@_id'
+      }

@@ -20,6 +20,11 @@ define ['controllers/controller'], (Controller) -> new Controller {
           active:    false
           link:      '/applets'
         }
+        {
+          name:      'Devices'
+          active:    false
+          link:      '/devices'
+        }
       ]
 
     $scope.loginInfo = userType: 'EmailUser'
@@ -45,8 +50,11 @@ define ['controllers/controller'], (Controller) -> new Controller {
 
   AppletsController: ($scope) ->
 
-  AccountsController: ($scope) ->
+  AccountsController: ($scope, AccountResource) ->
+    console.log $scope.accounts = AccountResource.query()
 
   HomeController: ($scope) ->
+
+  DevicesController: ($scope) ->
 
 }
