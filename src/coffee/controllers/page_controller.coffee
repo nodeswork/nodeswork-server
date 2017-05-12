@@ -25,12 +25,17 @@ define ['controllers/controller'], (Controller) -> new Controller {
           active:    false
           link:      '/devices'
         }
+        {
+          name:      'Explore'
+          active:    false
+          link:      '/explore'
+        }
       ]
 
     $scope.loginInfo = userType: 'EmailUser'
     $rootScope.user = UserResource.get()
 
-    console.log $rootScope.user
+    console.log 'user', $rootScope.user
 
     $scope.login = () ->
       $rootScope.user = UserResource.login $scope.loginInfo
@@ -50,11 +55,27 @@ define ['controllers/controller'], (Controller) -> new Controller {
 
   AppletsController: ($scope) ->
 
-  AccountsController: ($scope, AccountResource) ->
-    console.log $scope.accounts = AccountResource.query()
+  AccountsController: ($scope, AccountResource, $) ->
+    console.log $
+    console.log 'accounts', $scope.accounts = AccountResource.query()
+    $scope.target = {}
+
+    $scope.editAccount = (account) ->
+      account.platform ?= 'xone'
+      $scope.target = account
+
+    $scope.saveTarget = () ->
+      console.log $scope.target
+      target = new AccountResource $scope.target
+      target.accountType = 'FifaFutAccount'
+      console.log target.$save () ->
+        $scope.accounts = AccountResource.query()
+      $('#FifaFutAccountModal').modal 'hide'
 
   HomeController: ($scope) ->
 
   DevicesController: ($scope) ->
+
+  ExploreAppletController: ($scope) ->
 
 }

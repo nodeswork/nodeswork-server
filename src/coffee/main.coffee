@@ -21,11 +21,12 @@ require.config
       deps:                   [ 'angular' ]
     bootstrap:
       deps:                   [ 'jquery' ]
+      exports:                '$'
     underscore:
       exports:                '_'
 
 require [
-  'angular', 'angularRoute', 'angularResource', 'bootstrap'
+  'angular', 'angularRoute', 'angularResource', 'bootstrap', 'jquery', 'underscore'
 
   'routes'
 
@@ -33,7 +34,7 @@ require [
 
   'resources/nodeswork_resource'
 ], (
-  angular, angularRoute, angularResource, bootstrap
+  angular, angularRoute, angularResource, bootstrap, $, _
 
   routes
 
@@ -47,6 +48,9 @@ require [
   ]
 
   app.config routes
+
+  app.factory '_', () -> _
+  app.factory '$', () -> $
 
   NodesworkResource.export app
   PageController.export    app

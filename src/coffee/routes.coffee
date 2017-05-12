@@ -27,11 +27,11 @@ define [], () ->
         controller:   'DevicesController'
         templateUrl:  '/views/devices/index.html'
       }
-      .when '/discover', {
-        name:         'Discover Applets'
-        menu:         'Discover'
-        controller:   'DiscoverAppletController'
-        templateUrl:  '/views/discover/index.html'
+      .when '/explore', {
+        name:         'Explore Applets'
+        menu:         'Explore'
+        controller:   'ExploreAppletController'
+        templateUrl:  '/views/explore/index.html'
       }
       .when '/settings', {
         name:         'My Settings'
