@@ -3,9 +3,11 @@ html
   head
     meta(charset='utf-8')
 
+    title Nodeswork
+
     - var css = [];
-    <!-- - css.push('/bower_components/angular-material/angular-material.min'); -->
-    <!-- - css.push('/bower_components/bootstrap/dist/css/bootstrap.min'); -->
+    - css.push('/bower_components/angular-material/angular-material.min');
+    - css.push('/bower_components/bootstrap/dist/css/bootstrap.min');
     <!-- - css.push('/styles/fut16'); -->
 
     each link in css
@@ -18,4 +20,28 @@ html
     )
 
   body.nodeswork
-    | hello world
+    nav.navbar.navbar-default(ng-controller="MenuController")
+      div.container-fluid.container
+        div.navbar-header
+          a.navbar-brand(href="/") Nodeswork
+        div.collapse.navbar-collapse
+          ul.nav.navbar-nav
+            li(ng-repeat="item in menu.items", ng-class="{active: item.active}")
+              a(href="{{item.link}}") {{item.name}}
+
+          form.nav.navbar-nav.navbar-form.navbar-right(
+            ng-submit="login()", ng-show="!user._id")
+            div.form-group
+              input.form-control(
+                type="text", placeholder="username",
+                ng-model="loginInfo.email")
+            div.form-group
+              input.form-control(
+                type="password", placeholder="password",
+                ng-model="loginInfo.password")
+            button.btn.btn-default(type="submit") Login
+          div.nav.navbar-nav.navbar-form.navbar-right(
+            ng-show="user._id", ng-click="logout()")
+            button.btn.btn-default logout
+
+    div.container(data-ng-view)

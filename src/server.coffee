@@ -2,6 +2,7 @@ Koa                   = require 'koa'
 KoaRouter             = require 'koa-router'
 Pug                   = require 'koa-pug'
 bodyParser            = require 'koa-bodyparser'
+coffeescript          = require 'coffeescript'
 connectCoffeeScript   = require 'connect-coffee-script'
 convert               = require 'koa-convert'
 csrf                  = require 'koa-csrf'
@@ -30,6 +31,7 @@ do () ->
 
   pug        = new Pug {
     debug:       true
+    noCache:     true
     viewPath:    './src/views'
     helperPath:  []
     app:         app
@@ -39,8 +41,10 @@ do () ->
 
   router
     .use api.router.routes(), api.router.allowedMethods()
-    .get '/', (ctx) ->
+    .get /^\/($|accounts|applets|settings|discover)(.*)/, (ctx) ->
       ctx.render 'index'
+    .get /\/views\/(.*)\.html/, (ctx) ->
+      ctx.render ctx.params[0]
 
   app
     # .use new csrf.default()  # ES6 style
@@ -60,6 +64,8 @@ do () ->
       prefix:  '/js'
       dest:    './public/js'
       bare:    true
+      compile: (str, options, coffeePath) ->
+        coffeescript.compile str, options
     }
     .use koaConnect lessMiddleware __dirname + '/less', {
       preprocess:

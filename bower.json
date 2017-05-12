@@ -20,6 +20,12 @@
     "tests"
   ],
   "dependencies": {
-    "requirejs": "^2.3.3"
+    "requirejs": "^2.3.3",
+    "angular": "^1.6.4",
+    "underscore": "^1.8.3",
+    "angular-route": "^1.6.4",
+    "angular-material": "^1.1.4",
+    "bootstrap": "^3.3.7",
+    "angular-resource": "^1.6.4"
   }
 }

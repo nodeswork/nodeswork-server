@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "bcrypt": "^1.0.2",
+    "coffeescript": "^2.0.0-beta1",
     "connect-coffee-script": "^0.2.1",
     "fut-api": "https://github.com/nodeswork/fut-api.git",
     "koa": "2.2.0",
@@ -34,7 +35,6 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
-    "coffee-script": "^1.11.0",
     "mocha": "^3.3.0",
     "should": "^11.2.1"
   },
