@@ -11,6 +11,7 @@ exports.AccountSchema = AccountSchema = mongoose.Schema {
     type:       mongoose.Schema.ObjectId
     ref:        'User'
     require:    true
+    index:      true
 
   status:
     enum:       ["ACTIVE", "ERROR", "INACTIVE"]
