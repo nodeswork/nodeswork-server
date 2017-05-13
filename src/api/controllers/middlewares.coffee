@@ -15,7 +15,10 @@ FIFA_FUT_API_CLIENT = LRU {
 
 exports.fetchAccount = (ctx, next) ->
   try
-    ctx.account = await Account.findById ctx.params.accountId
+    ctx.account = await Account.findOne {
+      _id:   ctx.params.accountId
+      user:  ctx.user
+    }
   catch
     ctx.response.status = 401
     return

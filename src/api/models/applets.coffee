@@ -1,3 +1,4 @@
+_                       = require 'underscore'
 mongoose                = require 'mongoose'
 
 
@@ -69,8 +70,13 @@ exports.NpmAppletSchema = NpmAppletSchema = AppletSchema.extend {
   packageName:
     type:       String
     required:   true
+    unique:     true
 
   version:
     type:       String
     required:   true
 }
+
+
+NpmAppletSchema.methods.toJSON = () ->
+  _.omit @toObject(), 'packageName_unique'
