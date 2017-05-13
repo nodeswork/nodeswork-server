@@ -10,6 +10,11 @@ SALT_WORK_FACTOR = 10
 
 exports.UserSchema = UserSchema = mongoose.Schema {
 
+  attributes:
+    developer:
+      type:         Boolean
+      default:      false
+
 }, collection: 'users', discriminatorKey: 'userType'
 
   .plugin modelUtils.TimestampModelPlugin
@@ -18,7 +23,7 @@ exports.UserSchema = UserSchema = mongoose.Schema {
 exports.EmailUserSchema = EmailUserSchema = UserSchema.extend {
   email:
     type:       mongoose.SchemaTypes.Email
-    require:    true
+    required:   true
     unique:     true
     trim:       true
 

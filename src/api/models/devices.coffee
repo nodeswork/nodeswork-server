@@ -9,12 +9,12 @@ exports.DeviceSchema = DeviceSchema = mongoose.Schema {
   user:
     type:       mongoose.Schema.ObjectId
     ref:        'User'
-    require:    true
+    required:   true
     index:      true
 
   deviceId:
     type:       String
-    require:    true
+    required:   true
 
   status:
     enum:       ["ONLINE", "OFFLINE", "UNVERIFIED"]

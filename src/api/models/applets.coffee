@@ -9,17 +9,18 @@ exports.AppletSchema = AppletSchema = mongoose.Schema {
   owner:
     type:       mongoose.Schema.ObjectId
     ref:        'User'
-    require:    true
+    required:   true
     index:      true
 
   permission:
     enum:       [ "PRIVATE", "PUBLIC", "LIMIT" ]
     type:       String
+    default:    "PRIVATE"
 
   limitedToUsers: [
     type:       mongoose.Schema.ObjectId
     ref:        'User'
-    require:    true
+    required:   true
   ]
 
   containers:
@@ -36,6 +37,8 @@ exports.AppletSchema = AppletSchema = mongoose.Schema {
 
     virtualAccountType:
       type:     String
+      enum:     [ "FifaFutAccount" ]
+      required: true
 
     number:
       type:     String

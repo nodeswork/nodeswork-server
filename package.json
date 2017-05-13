@@ -21,6 +21,7 @@
     "koa-connect": "^2.0.0",
     "koa-convert": "^1.2.0",
     "koa-csrf": "^3.0.5",
+    "koa-error": "^3.0.0",
     "koa-generic-session": "^1.11.5",
     "koa-pug": "^3.0.0-2",
     "koa-router": "^7.0.0",

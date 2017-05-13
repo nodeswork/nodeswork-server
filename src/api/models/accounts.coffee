@@ -10,7 +10,7 @@ exports.AccountSchema = AccountSchema = mongoose.Schema {
   user:
     type:       mongoose.Schema.ObjectId
     ref:        'User'
-    require:    true
+    required:   true
     index:      true
 
   status:

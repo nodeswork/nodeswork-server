@@ -6,6 +6,7 @@ coffeescript          = require 'coffeescript'
 connectCoffeeScript   = require 'connect-coffee-script'
 convert               = require 'koa-convert'
 csrf                  = require 'koa-csrf'
+error                 = require 'koa-error'
 koaConnect            = require 'koa-connect'
 lessMiddleware        = require 'less-middleware'
 mongoose              = require 'mongoose'
@@ -47,6 +48,10 @@ do () ->
       ctx.render ctx.params[0]
 
   app
+    .use error {
+      engine: 'pug'
+      template: './src/views/errors.pug'
+    }
     # .use new csrf.default()  # ES6 style
     .use convert session store: mongooseStore.create {
       model:       'KoaSession'

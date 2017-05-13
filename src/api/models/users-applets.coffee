@@ -9,13 +9,13 @@ exports.UserAppletSchema = UserAppletSchema = mongoose.Schema {
   user:
     type:       mongoose.Schema.ObjectId
     ref:        'User'
-    require:    true
+    required:   true
     index:      true
 
   applet:
     type:       mongoose.Schema.ObjectId
     ref:        'Applet'
-    require:    true
+    required:   true
 
   status:
     enum:       ["ON", "OFF", "INSUFFICIENT_ACCOUNT"]
