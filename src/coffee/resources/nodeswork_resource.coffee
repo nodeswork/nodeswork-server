@@ -20,3 +20,13 @@ define ['resources/resource'], (Resource) ->
       AccountResource = $resource '/api/v1/accounts/:accountId', {
         accountId: '@_id'
       }
+
+    @AppletResource: ($resource) ->
+      AppletResource = $resource '/api/v1/applets/:appletId', {
+        appletId: '@_id'
+      }, {
+        explore:
+          url: '/api/v1/explore'
+          method: 'GET'
+          array: true
+      }

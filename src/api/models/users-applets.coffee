@@ -31,6 +31,19 @@ exports.UserAppletSchema = UserAppletSchema = mongoose.Schema {
     type:       mongoose.Schema.ObjectId
     ref:        'Device'
 
+  accounts:     [
+    type:       mongoose.Schema.ObjectId
+    ref:        'Account'
+  ]
+
 }, collection: 'users.applets', discriminatorKey: 'appletType'
 
   .plugin TimestampModelPlugin
+
+
+UserAppletSchema.index {
+  user:    1
+  applet:  1
+}, {
+  unique:  true
+}

@@ -1,8 +1,10 @@
 KoaRouter        = require 'koa-router'
 
 {appletRouter}   = require './applet'
+{appletsRouter}  = require './applets'
 {accountRouter}  = require './accounts'
 {devRouter}      = require './devs'
+{exploreRouter}  = require './explore'
 {userRouter}     = require './users'
 {User}           = require '../models'
 
@@ -27,3 +29,5 @@ router
   .use accountRouter.routes(), accountRouter.allowedMethods()
   .use userRouter.routes(), userRouter.allowedMethods()
   .use devRouter.routes(), devRouter.allowedMethods()
+  .use exploreRouter.routes(), exploreRouter.allowedMethods()
+  .use appletsRouter.routes(), appletsRouter.allowedMethods()
