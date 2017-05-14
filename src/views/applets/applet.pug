@@ -7,11 +7,10 @@ div.panel.panel-default.col-sm-12.col-md-6
           src="https://cdn-origin.fifa-gamers-pub.com/club_items/badges/1794.png")
       div.media-body
         h5 {{applet.applet.name}}
-        p Enabled: {{applet.status}}
-        p In Cloud: {{applet.inCloud}}
-        p Device: {{applet.device}}
-        p Last Execution: UNKOWN
+        p(ng-if="applet.cloud.mode != 'NO'") In Cloud: {{applet.cloud.mode}}
+        p(ng-if="applet.device") Device: {{applet.device}}
+        p Last Execution: NEVER
         div.pull-right
-          button.btn.btn-success Enabled
+          button.btn.btn-success(ng-if="applet.status == 'ON'") Enabled
           button.btn.btn-primary Config
           button.btn.btn-default Details

@@ -24,7 +24,7 @@ appletsRouter.get '/:appletId', (ctx) ->
 
 appletsRouter.post '/:appletId', (ctx) ->
   userApplet = await UserApplet.findOne {
-    user: ctx.user, applet: ctx.params.appletId
+    user: ctx.user, _id: ctx.params.appletId
   }
     .populate 'applet'
 

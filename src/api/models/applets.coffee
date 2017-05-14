@@ -59,6 +59,11 @@ exports.AppletSchema = AppletSchema = mongoose.Schema {
 
   description:
     type:       String
+    max:        [1400, 'Short description should be at most 1400 charactors.']
+
+  shortDescription:
+    type:       String
+    max:        [140, 'Short description should be at most 140 charactors.']
 
 }, collection: 'applets', discriminatorKey: 'appletType'
 

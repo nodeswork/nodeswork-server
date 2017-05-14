@@ -12,14 +12,22 @@ exports.DeviceSchema = DeviceSchema = mongoose.Schema {
     required:   true
     index:      true
 
+  platform:
+    type:       String
+    required:   true
+
+  os:
+    type:       String
+    required:   true
+
   deviceId:
     type:       String
     required:   true
 
   status:
-    enum:       ["ONLINE", "OFFLINE", "UNVERIFIED"]
+    enum:       [ "ONLINE", "OFFLINE", "ERROR" ]
     type:       String
-    default:    "UNVERIFIED"
+    default:    "OFFLINE"
 
   errMsg:       String
 

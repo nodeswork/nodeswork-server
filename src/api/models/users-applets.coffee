@@ -23,9 +23,11 @@ exports.UserAppletSchema = UserAppletSchema = mongoose.Schema {
 
   errMsg:       String
 
-  inCloud:
-    type:       Boolean
-    default:    false
+  cloud:
+    mode:
+      enum:     ["NO", "SHARED", "PRIVATE"]
+      type:     String
+      default:  "NO"
 
   device:
     type:       mongoose.Schema.ObjectId

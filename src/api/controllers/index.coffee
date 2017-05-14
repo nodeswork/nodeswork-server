@@ -4,6 +4,7 @@ KoaRouter        = require 'koa-router'
 {appletsRouter}  = require './applets'
 {accountRouter}  = require './accounts'
 {devRouter}      = require './devs'
+{deviceRouter}   = require './devices'
 {exploreRouter}  = require './explore'
 {userRouter}     = require './users'
 {User}           = require '../models'
@@ -30,4 +31,9 @@ router
   .use userRouter.routes(), userRouter.allowedMethods()
   .use devRouter.routes(), devRouter.allowedMethods()
   .use exploreRouter.routes(), exploreRouter.allowedMethods()
+
+  # TODO: Debug when deviceRouter after appletsRouter,
+  # http://localhost:3000/api/v1/devices/5917c491f063893f90af1dff/applets is
+  # routed to appletsRouter.
+  .use deviceRouter.routes(), deviceRouter.allowedMethods()
   .use appletsRouter.routes(), appletsRouter.allowedMethods()
