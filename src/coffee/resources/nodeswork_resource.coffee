@@ -26,7 +26,7 @@ define ['resources/resource'], (Resource) ->
         appletId: '@_id'
       }, {
         explore:
-          url: '/api/v1/explore'
-          method: 'GET'
-          array: true
+          url:      '/api/v1/explore'
+          method:   'GET'
+          isArray:  true
       }

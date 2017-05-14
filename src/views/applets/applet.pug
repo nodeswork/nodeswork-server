@@ -1,0 +1,17 @@
+div.panel.panel-default.col-sm-12.col-md-6
+  div.panel-body
+    div.media
+      div.media-left
+        img(
+          width=64, height=64,
+          src="https://cdn-origin.fifa-gamers-pub.com/club_items/badges/1794.png")
+      div.media-body
+        h5 {{applet.applet.name}}
+        p Enabled: {{applet.status}}
+        p In Cloud: {{applet.inCloud}}
+        p Device: {{applet.device}}
+        p Last Execution: UNKOWN
+        div.pull-right
+          button.btn.btn-success Enabled
+          button.btn.btn-primary Config
+          button.btn.btn-default Details

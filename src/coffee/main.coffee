@@ -33,6 +33,8 @@ require [
   'controllers/page_controller'
 
   'resources/nodeswork_resource'
+
+  'directives/page_directives'
 ], (
   angular, angularRoute, angularResource, bootstrap, $, _
 
@@ -41,6 +43,8 @@ require [
   PageController
 
   NodesworkResource
+
+  PageDirectives
 ) ->
 
   app = angular.module 'nodesworkWeb', [
@@ -54,5 +58,6 @@ require [
 
   NodesworkResource.export app
   PageController.export    app
+  PageDirectives.export    app
 
   angular.bootstrap document, ['nodesworkWeb']
