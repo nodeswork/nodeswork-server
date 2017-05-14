@@ -30,3 +30,13 @@ define ['resources/resource'], (Resource) ->
           method:   'GET'
           isArray:  true
       }
+
+    @DeviceResource: ($resource) ->
+      DeviceResource = $resource '/api/v1/devices/:deviceId', {
+        deviceId: '@_id'
+      }, {
+        applets:
+          url:      '/api/v1/devices/:deviceId/applets'
+          method:   'GET'
+          isArray:  true
+      }

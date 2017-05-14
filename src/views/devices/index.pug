@@ -1,1 +1,19 @@
 h2 My Devices
+
+table.table.table-striped
+  thead
+    tr
+      th ID
+      th Platform
+      th OS
+      th Device ID
+      th Status
+      th Running Applets
+  tbody
+    tr(ng-repeat="device in devices")
+      td {{device._id}}
+      td {{device.platform}}
+      td {{device.os}}
+      td {{device.deviceId}}
+      td {{device.status}}
+      td 1

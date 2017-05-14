@@ -74,7 +74,8 @@ define ['controllers/controller'], (Controller) -> new Controller {
 
   HomeController: ($scope) ->
 
-  DevicesController: ($scope) ->
+  DevicesController: ($scope, DeviceResource) ->
+    $scope.devices = DeviceResource.query()
 
   ExploreAppletController: ($scope, AppletResource) ->
     console.log 'applets', $scope.applets = AppletResource.explore()
