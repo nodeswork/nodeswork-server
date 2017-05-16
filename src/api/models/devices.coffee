@@ -1,8 +1,12 @@
 mongoose                = require 'mongoose'
+randtoken               = require 'rand-token'
 
 
 {TimestampModelPlugin}  = require './utils'
 errors                  = require '../errors'
+
+
+DEVICE_TOKEN_LEN        = 16
 
 exports.DeviceSchema = DeviceSchema = mongoose.Schema {
 
@@ -11,6 +15,12 @@ exports.DeviceSchema = DeviceSchema = mongoose.Schema {
     ref:        'User'
     required:   true
     index:      true
+
+  deviceToken:
+    type:       String
+    required:   true
+    index:      true
+    default:    () -> randtoken.generate DEVICE_TOKEN_LEN
 
   platform:
     type:       String
@@ -34,3 +44,7 @@ exports.DeviceSchema = DeviceSchema = mongoose.Schema {
 }, collection: 'devices', discriminatorKey: 'deviceType'
 
   .plugin TimestampModelPlugin
+
+
+DeviceSchema.methods.regenerateDeviceToken = () ->
+  @deviceToken = randtoken.generate DEVICE_TOKEN_LEN

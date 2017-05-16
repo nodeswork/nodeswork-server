@@ -1,5 +1,6 @@
 Koa                   = require 'koa'
 KoaRouter             = require 'koa-router'
+KoaSocket             = require 'koa-socket'
 Pug                   = require 'koa-pug'
 bodyParser            = require 'koa-bodyparser'
 coffeescript          = require 'coffeescript'
@@ -27,6 +28,7 @@ do () ->
 
   api        = require './api'
   app        = new Koa
+  device     = new KoaSocket namespace: 'device'
 
   app.keys   = ['my keys']
 
@@ -80,6 +82,15 @@ do () ->
     .use staticCache './public', dynamic: true
     .use router.routes()
     .use router.allowedMethods()
+
+  device.attach app
+
+  device.on 'connection', (ctx) ->
+    console.log 'join event fired.', ctx.socket.id
+
+  device.on 'disconnect', (ctx, data) ->
+    # console.log 'left', ctx.io.id
+    console.log 'left.', ctx.socket.id
 
   app.listen 3000, ->
     console.log 'server is started.'
