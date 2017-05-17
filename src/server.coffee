@@ -1,21 +1,33 @@
+IO                    = require 'socket.io'
 Koa                   = require 'koa'
 KoaRouter             = require 'koa-router'
-KoaSocket             = require 'koa-socket'
 Pug                   = require 'koa-pug'
 bodyParser            = require 'koa-bodyparser'
 coffeescript          = require 'coffeescript'
 connectCoffeeScript   = require 'connect-coffee-script'
 convert               = require 'koa-convert'
 csrf                  = require 'koa-csrf'
+d3                    = require 'd3'
 error                 = require 'koa-error'
+http                  = require 'http'
 koaConnect            = require 'koa-connect'
 lessMiddleware        = require 'less-middleware'
 mongoose              = require 'mongoose'
 mongooseStore         = require 'koa-session-mongoose'
 session               = require 'koa-generic-session'
 staticCache           = require 'koa-static-cache'
+winston               = require 'winston'
 
 {registerModels}      = require './api/models'
+
+
+fmt = d3.timeFormat '%Y-%m-%d %X'
+winston.remove winston.transports.Console
+winston.add    winston.transports.Console, {
+  colorize: true
+  timestamp: () ->
+    fmt new Date()
+}
 
 
 do () ->
@@ -28,7 +40,6 @@ do () ->
 
   api        = require './api'
   app        = new Koa
-  device     = new KoaSocket namespace: 'device'
 
   app.keys   = ['my keys']
 
@@ -83,14 +94,8 @@ do () ->
     .use router.routes()
     .use router.allowedMethods()
 
-  device.attach app
+  server = http.Server app.callback()
+  api.attachIO IO server
 
-  device.on 'connection', (ctx) ->
-    console.log 'join event fired.', ctx.socket.id
-
-  device.on 'disconnect', (ctx, data) ->
-    # console.log 'left', ctx.io.id
-    console.log 'left.', ctx.socket.id
-
-  app.listen 3000, ->
-    console.log 'server is started.'
+  server.listen 3000, ->
+    winston.info 'server is started.'
