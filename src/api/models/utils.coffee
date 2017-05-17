@@ -1,3 +1,4 @@
+_  = require 'underscore'
 
 exports.TimestampModelPlugin = TimestampModelPlugin = (schema, {
   createdAtIndex,
@@ -25,3 +26,16 @@ exports.TimestampModelPlugin = TimestampModelPlugin = (schema, {
         createdAt: Date.now()
     }
     next()
+
+
+exports.ExcludeFieldsToJSON = ExcludeFieldsToJSON = (schema, {
+  fields  # excluted fields
+}) ->
+
+  schema.methods.toJSON = () ->
+    _.omit @toObject(), _.difference fields, @_fieldsToJSON
+
+  schema.methods.withFieldsToJSON = (fields...) ->
+    @_fieldsToJSON ?= []
+    @_fieldsToJSON = _.union @_fieldsToJSON, _.flatten fields
+    @

@@ -19,19 +19,23 @@ deviceRouter.get '/:deviceId', (ctx) ->
   }
 
 deviceRouter.post '/', (ctx) ->
-  ctx.response.body = await Device.create _.extend(
+  device = await Device.create _.extend(
     {}
     ctx.request.body
     user: ctx.user
   )
+  ctx.response.body = device.withFieldsToJSON 'deviceToken'
 
 deviceRouter.post '/:deviceId', (ctx) ->
   device = await Device.findOne {
     user: ctx.user, _id: ctx.params.deviceId
   }
   _.extend device, _.omit(
-    ctx.request.body, 'user'
+    ctx.request.body, 'user', 'deviceToken'
   )
+  if ctx.params.deviceToken == null
+    device.regenerateDeviceToken()
+    device.withFieldsToJSON 'deviceToken'
   ctx.response.body = await device.save()
 
 deviceRouter.get '/:deviceId/applets', (ctx) ->

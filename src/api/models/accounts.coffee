@@ -2,7 +2,10 @@ _                       = require 'underscore'
 mongoose                = require 'mongoose'
 LRU                     = require 'lru-cache'
 
-{TimestampModelPlugin}  = require './utils'
+{
+  TimestampModelPlugin
+  ExcludeFieldsToJSON
+}                       = require './utils'
 errors                  = require '../errors'
 
 exports.AccountSchema = AccountSchema = mongoose.Schema {
@@ -51,6 +54,7 @@ exports.FifaFutAccountSchema = FifaFutAccountSchema = AccountSchema.extend {
     type:       String
     default:    null
 }
+  .plugin ExcludeFieldsToJSON, fields: ['cookieJar']
 
 
 FIFA_FUT_LOGIN_CACHE = LRU {
@@ -67,10 +71,6 @@ FifaFutAccountSchema.statics.register = ({user, username, password, secret, plat
     secret:    secret
     status:    'INACTIVE'
   }
-
-
-FifaFutAccountSchema.methods.toJSON = () ->
-  return _.omit @toObject(), 'cookieJar'
 
 
 FifaFutAccountSchema.methods.setApiClient = (@apiClient) ->

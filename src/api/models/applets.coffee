@@ -2,7 +2,10 @@ _                       = require 'underscore'
 mongoose                = require 'mongoose'
 
 
-{TimestampModelPlugin}  = require './utils'
+{
+  TimestampModelPlugin
+  ExcludeFieldsToJSON
+}                       = require './utils'
 errors                  = require '../errors'
 
 exports.AppletSchema = AppletSchema = mongoose.Schema {
@@ -81,7 +84,4 @@ exports.NpmAppletSchema = NpmAppletSchema = AppletSchema.extend {
     type:       String
     required:   true
 }
-
-
-NpmAppletSchema.methods.toJSON = () ->
-  _.omit @toObject(), 'packageName_unique'
+  .plugin ExcludeFieldsToJSON, fields: ['packageName_unique']

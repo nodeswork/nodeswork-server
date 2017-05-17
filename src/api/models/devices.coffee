@@ -1,8 +1,12 @@
+_                       = require 'underscore'
 mongoose                = require 'mongoose'
 randtoken               = require 'rand-token'
 
 
-{TimestampModelPlugin}  = require './utils'
+{
+  ExcludeFieldsToJSON
+  TimestampModelPlugin
+}                       = require './utils'
 errors                  = require '../errors'
 
 
@@ -44,6 +48,15 @@ exports.DeviceSchema = DeviceSchema = mongoose.Schema {
 }, collection: 'devices', discriminatorKey: 'deviceType'
 
   .plugin TimestampModelPlugin
+  .plugin ExcludeFieldsToJSON, fields: ['deviceToken']
+
+
+DeviceSchema.index {
+  user:      1
+  deviceId:  1
+}, {
+  unique: true
+}
 
 
 DeviceSchema.methods.regenerateDeviceToken = () ->

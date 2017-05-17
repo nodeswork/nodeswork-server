@@ -1,8 +1,11 @@
-_           = require 'underscore'
-bcrypt      = require 'bcrypt'
-mongoose    = require 'mongoose'
+_                      = require 'underscore'
+bcrypt                 = require 'bcrypt'
+mongoose               = require 'mongoose'
 
-modelUtils  = require './utils'
+{
+  TimestampModelPlugin
+  ExcludeFieldsToJSON
+}                      = require './utils'
 
 
 SALT_WORK_FACTOR = 10
@@ -17,7 +20,7 @@ exports.UserSchema = UserSchema = mongoose.Schema {
 
 }, collection: 'users', discriminatorKey: 'userType'
 
-  .plugin modelUtils.TimestampModelPlugin
+  .plugin TimestampModelPlugin
 
 
 exports.EmailUserSchema = EmailUserSchema = UserSchema.extend {
@@ -33,6 +36,8 @@ exports.EmailUserSchema = EmailUserSchema = UserSchema.extend {
     min:        [6,  'Password should be at least 6 charactors.']
     max:        [80, 'Password should be at most 80 charactors.']
 }
+
+  .plugin ExcludeFieldsToJSON, fields: ['password', 'email_unique']
 
 
 EmailUserSchema.statics.register = ({email, password}) ->
@@ -53,7 +58,3 @@ EmailUserSchema.pre 'save', (next) ->
 
 EmailUserSchema.methods.comparePassword = (password) ->
   bcrypt.compare password, @password
-
-
-EmailUserSchema.methods.toJSON = () ->
-  _.omit @toObject(), 'password', 'email_unique'
