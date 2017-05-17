@@ -5,6 +5,7 @@ LRU                     = require 'lru-cache'
 {
   TimestampModelPlugin
   ExcludeFieldsToJSON
+  KoaMiddlewares
 }                       = require './utils'
 errors                  = require '../errors'
 
@@ -19,16 +20,14 @@ exports.AccountSchema = AccountSchema = mongoose.Schema {
   status:
     enum:       ["ACTIVE", "ERROR", "INACTIVE"]
     type:       String
+    default:    "INACTIVE"
 
   errMsg:       String
 
 }, collection: 'accounts', discriminatorKey: 'accountType'
 
   .plugin TimestampModelPlugin
-
-
-AccountSchema.statics.findByUser = (user) ->
-  @find user: user
+  .plugin KoaMiddlewares
 
 
 exports.FifaFutAccountSchema = FifaFutAccountSchema = AccountSchema.extend {
@@ -62,19 +61,8 @@ FIFA_FUT_LOGIN_CACHE = LRU {
   maxAge: 1000 * 60 * 60    # 60 minutes
 }
 
-FifaFutAccountSchema.statics.register = ({user, username, password, secret, platform}) ->
-  @create {
-    user:      user
-    username:  username
-    password:  password
-    platform:  platform
-    secret:    secret
-    status:    'INACTIVE'
-  }
-
 
 FifaFutAccountSchema.methods.setApiClient = (@apiClient) ->
-
 
 
 FifaFutAccountSchema.methods.authorize = () ->

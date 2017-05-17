@@ -45,12 +45,12 @@ exports.KoaMiddlewares = KoaMiddlewares = (schema) ->
 
   schema.statics.getMiddleware = (opts={}) ->
     {
-      fieldName
+      field
       writeToBody=true
     } = opts
     (ctx, next) =>
       query              = ctx.overrides?.query ? {}
-      query._id          = ctx.params[fieldName]
+      query._id          = ctx.params[field]
       ctx.object         = await @findOne query
       await next()
       ctx.response.body  = ctx.object if writeToBody
@@ -67,13 +67,14 @@ exports.KoaMiddlewares = KoaMiddlewares = (schema) ->
 
   schema.statics.updateMiddleware = (opts={}) ->
     {
+      field
       omits=[]
       writeToBody=true
     } = opts
 
     (ctx, next) =>
       query           = ctx.overrides?.query ? {}
-      query._id       = ctx.params[fieldName]
+      query._id       = ctx.params[field]
       ctx.object      = object = await @findOne query
 
       _.extend object, _.omit ctx.request.body, omits
@@ -87,8 +88,24 @@ exports.KoaMiddlewares = KoaMiddlewares = (schema) ->
       writeToBody=true
     } = opts
     (ctx, next) =>
-      ctx.object = await @create _.extend(
-        {}, ctx.request.body, ctx.overrides?.doc
-      )
+      doc = _.extend {}, ctx.request.body, ctx.overrides?.doc
+
+      key = schema.options.discriminatorKey
+
+      if key
+        unless doc[key]
+          throw new Error "Missing required parameter #{key}."
+
+        try
+          model = @db.model doc[key]
+        catch
+          throw new Error "Unkown required parameter #{key} value: #{doc[key]}."
+
+        if model.schema.options.discriminatorKey != key
+          throw new Error "Unkown required parameter #{key} value: #{doc[key]}."
+      else
+        model = @
+
+      ctx.object = await model.create doc
       await next()
       ctx.response.body = ctx.object if writeToBody

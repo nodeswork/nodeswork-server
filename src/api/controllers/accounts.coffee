@@ -1,7 +1,12 @@
 _                                  = require 'underscore'
 KoaRouter                          = require 'koa-router'
 
-{requireLogin, fetchAccount}       = require './middlewares'
+{
+  fetchAccount
+  requireLogin
+  overrideUserToQuery
+  overrideUserToDoc
+}                                  = require './middlewares'
 {Account, FifaFutAccount}          = require '../models'
 errors                             = require '../errors'
 
@@ -9,52 +14,48 @@ errors                             = require '../errors'
 exports.accountRouter = accountRouter = new KoaRouter prefix: '/accounts'
 
 
-accountRouter.use requireLogin
+accountRouter
 
+  .use requireLogin
 
-accountRouter.get '/', (ctx) ->
-  ctx.body = await Account.findByUser ctx.user
+  .get '/', overrideUserToQuery(), Account.findMiddleware()
 
+  .post '/', overrideUserToDoc(), Account.createMiddleware()
 
-accountRouter.post '/', (ctx) ->
-  switch ctx.request.body.accountType
-    when 'FifaFutAccount'
-      account = await FifaFutAccount.register _.extend {
-        user:   ctx.user
-      }, _.pick ctx.request.body, 'username', 'platform', 'password', 'secret'
-      ctx.body = account
-    else
-      ctx.response.status = 422
-      ctx.body = message: 'Unkown or missing accountType.'
+  .get '/:accountId', Account.getMiddleware field: 'accountId'
 
+  .post('/:accountId/authorize'
+    fetchAccount
+    (ctx) ->
+      try
+        ctx.body = await ctx.account.authorize()
+      catch e
+        switch e
+          when errors.FUT_TWO_FACTOR_CODE_REQUIRED
+            ctx.body = message: errors.FUT_TWO_FACTOR_CODE_REQUIRED
+          else throw e
+  )
 
-accountRouter.get '/:accountId', fetchAccount, (ctx) ->
-  ctx.body = ctx.account
+  .post('/:accountId/two-factor-authorize'
+    fetchAccount
+    (ctx) ->
+      try
+        ctx.body = await ctx.account.twoFactorAuthorize {
+          code: ctx.request.body.code
+        }
+      catch e
+        switch e
+          when errors.FUT_TWO_FACTOR_FUNCTION_NOT_FOUND
+            ctx.body = message: errors.FUT_TWO_FACTOR_FUNCTION_NOT_FOUND
+          else throw e
+  )
 
-
-accountRouter.post '/:accountId/authorize', fetchAccount, (ctx) ->
-  try
-    ctx.body = await ctx.account.authorize()
-  catch e
-    switch e
-      when errors.FUT_TWO_FACTOR_CODE_REQUIRED
-        ctx.body = message: errors.FUT_TWO_FACTOR_CODE_REQUIRED
-      else throw e
-
-
-accountRouter.post '/:accountId/two-factor-authorize', fetchAccount, (ctx) ->
-  try
-    ctx.body = await ctx.account.twoFactorAuthorize code: ctx.request.body.code
-  catch e
-    switch e
-      when errors.FUT_TWO_FACTOR_FUNCTION_NOT_FOUND
-        ctx.body = message: errors.FUT_TWO_FACTOR_FUNCTION_NOT_FOUND
-      else throw e
-
-
-accountRouter.post '/:accountId/operate', fetchAccount, (ctx) ->
-  try
-    ctx.body = await ctx.account.operate ctx.request.body
-  catch e
-    ctx.body = error: e.toString()
-    ctx.response.status = 401
+  .post('/:accountId/operate'
+    fetchAccount
+    (ctx) ->
+      try
+        ctx.body = await ctx.account.operate ctx.request.body
+      catch e
+        ctx.body = error: e.toString()
+        ctx.response.status = 401
+  )

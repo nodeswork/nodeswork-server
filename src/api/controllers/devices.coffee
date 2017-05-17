@@ -19,7 +19,7 @@ deviceRouter
   .get '/', overrideUserToQuery(), Device.findMiddleware()
 
   .get '/:deviceId', overrideUserToQuery(), Device.getMiddleware {
-    fieldName: 'deviceId'
+    field: 'deviceId'
   }
 
   .post('/', overrideUserToDoc(),
@@ -28,7 +28,7 @@ deviceRouter
   )
 
   .post('/:deviceId', overrideUserToQuery(),
-    Device.updateMiddleware omits: ['user', 'deviceToken']
+    Device.updateMiddleware omits: ['user', 'deviceToken'], field: 'deviceId'
     (ctx) ->
       if ctx.params.deviceToken == null
         ctx.object.regenerateDeviceToken()
@@ -37,7 +37,7 @@ deviceRouter
 
   .get('/:deviceId/applets',
     overrideUserToQuery(),
-    Device.getMiddleware fieldName: 'deviceId', writeToBody: false
+    Device.getMiddleware field: 'deviceId', writeToBody: false
     (ctx) ->
       device = ctx.object
 
