@@ -16,9 +16,11 @@ deviceRouter.use requireLogin
 
 deviceRouter
 
-  .get '/', Device.findMiddleware()
+  .get '/', overrideUserToQuery(), Device.findMiddleware()
 
-  .get '/:deviceId', overrideUserToQuery(), Device.getMiddleware('deviceId')
+  .get '/:deviceId', overrideUserToQuery(), Device.getMiddleware {
+    fieldName: 'deviceId'
+  }
 
   .post('/', overrideUserToDoc(),
     Device.createMiddleware(),
@@ -33,14 +35,16 @@ deviceRouter
         ctx.object.withFieldsToJSON 'deviceToken'
   )
 
-  .get '/:deviceId/applets', (ctx) ->
-    device = await Device.findOne {
-      user: ctx.user, _id: ctx.params.deviceId
-    }
+  .get('/:deviceId/applets',
+    overrideUserToQuery(),
+    Device.getMiddleware fieldName: 'deviceId', writeToBody: false
+    (ctx) ->
+      device = ctx.object
 
-    ctx.response.body = await UserApplet.find {
-      user:    ctx.user
-      device:  device
-      status:  "ON"
-    }
-      .populate 'applet'
+      ctx.response.body = await UserApplet.find {
+        user:    ctx.user
+        device:  device
+        status:  "ON"
+      }
+        .populate 'applet'
+  )

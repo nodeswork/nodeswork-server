@@ -43,22 +43,33 @@ exports.ExcludeFieldsToJSON = ExcludeFieldsToJSON = (schema, {
 
 exports.KoaMiddlewares = KoaMiddlewares = (schema) ->
 
-  schema.statics.getMiddleware = (fieldName) ->
+  schema.statics.getMiddleware = (opts={}) ->
+    {
+      fieldName
+      writeToBody=true
+    } = opts
     (ctx, next) =>
       query              = ctx.overrides?.query ? {}
       query._id          = ctx.params[fieldName]
       ctx.object         = await @findOne query
       await next()
-      ctx.response.body  = ctx.object
+      ctx.response.body  = ctx.object if writeToBody
 
-  schema.statics.findMiddleware = () ->
+  schema.statics.findMiddleware = (opts={}) ->
+    {
+      writeToBody=true
+    } = opts
     (ctx, next) =>
-      ctx.object = await @find ctx.query ? {}
+      query              = ctx.overrides?.query ? {}
+      ctx.object         = await @find query
       await next()
-      ctx.response.body = ctx.object
+      ctx.response.body = ctx.object if writeToBody
 
   schema.statics.updateMiddleware = (opts={}) ->
-    {omits=[]}           = opts
+    {
+      omits=[]
+      writeToBody=true
+    } = opts
 
     (ctx, next) =>
       query           = ctx.overrides?.query ? {}
@@ -68,13 +79,16 @@ exports.KoaMiddlewares = KoaMiddlewares = (schema) ->
       _.extend object, _.omit ctx.request.body, omits
 
       await next()
+      await ctx.object.save()
+      ctx.response.body = ctx.object if writeToBody
 
-      ctx.response.body = await ctx.object.save()
-
-  schema.statics.createMiddleware = () ->
+  schema.statics.createMiddleware = (opts={}) ->
+    {
+      writeToBody=true
+    } = opts
     (ctx, next) =>
       ctx.object = await @create _.extend(
         {}, ctx.request.body, ctx.overrides?.doc
       )
       await next()
-      ctx.response.body = ctx.object
+      ctx.response.body = ctx.object if writeToBody
