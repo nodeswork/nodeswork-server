@@ -39,3 +39,42 @@ exports.ExcludeFieldsToJSON = ExcludeFieldsToJSON = (schema, {
     @_fieldsToJSON ?= []
     @_fieldsToJSON = _.union @_fieldsToJSON, _.flatten fields
     @
+
+
+exports.KoaMiddlewares = KoaMiddlewares = (schema) ->
+
+  schema.statics.getMiddleware = (fieldName) ->
+    (ctx, next) =>
+      query              = ctx.overrides?.query ? {}
+      query._id          = ctx.params[fieldName]
+      ctx.object         = await @findOne query
+      await next()
+      ctx.response.body  = ctx.object
+
+  schema.statics.findMiddleware = () ->
+    (ctx, next) =>
+      ctx.object = await @find ctx.query ? {}
+      await next()
+      ctx.response.body = ctx.object
+
+  schema.statics.updateMiddleware = (opts={}) ->
+    {omits=[]}           = opts
+
+    (ctx, next) =>
+      query           = ctx.overrides?.query ? {}
+      query._id       = ctx.params[fieldName]
+      ctx.object      = object = await @findOne query
+
+      _.extend object, _.omit ctx.request.body, omits
+
+      await next()
+
+      ctx.response.body = await ctx.object.save()
+
+  schema.statics.createMiddleware = () ->
+    (ctx, next) =>
+      ctx.object = await @create _.extend(
+        {}, ctx.request.body, ctx.overrides?.doc
+      )
+      await next()
+      ctx.response.body = ctx.object

@@ -1,3 +1,4 @@
+_                                  = require 'underscore'
 LRU                                = require 'lru-cache'
 futapi                             = require 'fut-api'
 
@@ -43,3 +44,19 @@ exports.fetchAccount = (ctx, next) ->
       if cookieJar != ctx.account.cookieJar
         ctx.account.cookieJar = cookieJar
         await ctx.account.save()
+
+
+exports.overrideUserToDoc = overrideUserToDoc = (fieldName='user') ->
+  (ctx, next) ->
+    ctx.overrides ?= {}
+    ctx.overrides.doc ?= {}
+    ctx.overrides.doc[fieldName] = ctx.user
+    await next()
+
+
+exports.overrideUserToQuery = overrideUserToQuery = (fieldName='user') ->
+  (ctx, next) ->
+    ctx.overrides ?= {}
+    ctx.overrides.query ?= {}
+    ctx.overrides.query[fieldName] = ctx.user
+    await next()
