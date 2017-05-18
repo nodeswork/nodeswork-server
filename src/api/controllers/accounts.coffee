@@ -1,14 +1,14 @@
-_                                  = require 'underscore'
-KoaRouter                          = require 'koa-router'
+_                      = require 'underscore'
+KoaRouter              = require 'koa-router'
 
 {
   fetchAccount
   requireLogin
   overrideUserToQuery
   overrideUserToDoc
-}                                  = require './middlewares'
-{Account, FifaFutAccount}          = require '../models'
-errors                             = require '../errors'
+}                      = require './middlewares'
+{ Account }            = require '../models'
+errors                 = require '../errors'
 
 
 exports.accountRouter = accountRouter = new KoaRouter prefix: '/accounts'

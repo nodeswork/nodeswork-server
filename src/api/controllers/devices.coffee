@@ -11,10 +11,9 @@ KoaRouter                   = require 'koa-router'
 
 exports.deviceRouter = deviceRouter = new KoaRouter prefix: '/devices'
 
-deviceRouter.use requireLogin
-
-
 deviceRouter
+
+  .use requireLogin
 
   .get '/', overrideUserToQuery(), Device.findMiddleware()
 
