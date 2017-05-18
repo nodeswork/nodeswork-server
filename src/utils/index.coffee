@@ -7,29 +7,11 @@ winston      = require 'winston'
 
 
 module.exports = utils = Object.create Object.prototype, {
-  logger: {
-    get: () ->
-      label = getLabel()
-      new winston.Logger {
-        transports: [
-          new winston.transports.Console {
-            colorize: true
-            timestamp: () -> fmt new Date()
-            label: label
-            exitOnError: true
-          }
-          new winston.transports.File {
-            stream:    fs.createWriteStream './logs', flags: 'a'
-            timestamp: () -> fmt new Date()
-            label: label
-            json:  false
-            level: 'verbose'
-          }
-        ]
-      }
-  }
+  logger:
+    get: () -> require('./logger').logger
 
-  RpcClient: RpcClient
+  RpcClient:
+    value: RpcClient
 }
 
 

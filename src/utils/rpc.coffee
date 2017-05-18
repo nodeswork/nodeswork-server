@@ -1,5 +1,7 @@
-_       = require 'underscore'
-LRU     = require 'lru-cache'
+_         = require 'underscore'
+LRU       = require 'lru-cache'
+
+{logger}  = require './logger'
 
 exports.RpcClient = class RpcClient
 
@@ -30,7 +32,7 @@ exports.RpcClient = class RpcClient
       sid:     @sid++
     }
 
-    winston.info 'Send a rpc call', request
+    logger.info 'Send a rpc call', request
     socket.emit 'rpcCall', request
 
     new Promise (resolve, reject) =>
@@ -47,14 +49,14 @@ exports.RpcClient = class RpcClient
   registerSocket: (socket) ->
     socket.on 'rpcResponse', (resp) =>
       if @callStack.has resp.sid
-        winston.info 'rcpResponse', resp
+        logger.info 'rcpResponse', resp
         [resolve, reject] = @callStack.get resp.sid
 
         if resp.status == 'ok' then resolve resp.data
         else reject resp.error
         @callStack.del resp.sid
       else
-        winston.info 'Got rcpResponse, but entry is gone.', resp
+        logger.info 'Got rcpResponse, but entry is gone.', resp
     new @RpcClass socket: socket
 
 
