@@ -1,6 +1,8 @@
-winston        = require 'winston'
+{
+  logger
+  RpcClient
+}              = require '../../utils'
 
-{RpcClient}    = require '../../utils'
 
 exports.deviceSocket = deviceSocket = (io) ->
   io
@@ -8,21 +10,24 @@ exports.deviceSocket = deviceSocket = (io) ->
     .of '/device'
 
     .on 'connection', (socket) ->
-      winston.info 'New device connection.', socket.handshake.query
+      logger.info 'New device connection.'
 
-      deviceClient = new RpcClient {
-        socket: socket
-        timeout: 100
-        funcs: ['notify']
-      }
+      socket.deviceRpc = deviceRpcClient.registerSocket socket
 
-      data = await deviceClient.notify 'good'
-      winston.info "Get data for notify:", data
+      data = await socket.deviceRpc.notify 'good'
+      logger.info "Get data for notify:", data
 
       try
-        await deviceClient.sendRequest name: 'unkown func'
+        await deviceRpcClient.sendRequest socket, name: 'unkown func'
       catch e
-        winston.error "Catch an exception:", e
+        logger.error "Catch an exception:", e
 
     .on 'disconnect', (socket) ->
-      winston.info 'Lost device connection.', socket.handshake.query
+      logger.info 'Lost device connection.', socket.handshake.query
+      deviceRpcClient.unregisterSocket socket
+
+
+deviceRpcClient = new RpcClient {
+  timeout: 1000
+  funcs: ['notify']
+}

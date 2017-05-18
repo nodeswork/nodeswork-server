@@ -1,7 +1,6 @@
-winston        = require 'winston'
-
 {deviceSocket} = require './device'
 {Device}       = require '../models'
+{logger}       = require '../../utils'
 
 exports.attachIO = (io) ->
   deviceSocket io
@@ -13,7 +12,7 @@ rootSocket = (io) ->
     .use authorization
 
     .on 'connection', (socket) ->
-      winston.info "New socket connection with", socket.handshake.query
+      logger.info "New socket connection with", socket.handshake.query
 
     .on 'disconnect', (socket) ->
       console.log 'Lost connection.', socket.handshake.query.token
@@ -23,15 +22,20 @@ rootSocket = (io) ->
 
 
 authorization = (socket, next) ->
-  winston.info "Autorization on socket"
-  return next()
+  logger.info "Autorization on socket"
   unless token = socket.handshake.query.token
+    logger.error "Token is missing."
     return next new Error "Token is invalid."
 
   device = await Device.findOne {
     deviceToken: token
   }
 
-  unless device? then return next new Error "Token is invalid."
+  unless device?
+    logger.error "Token is invalid, because Device is not found."
+    return next new Error "Token is invalid."
+
+  device.status = "ONLINE"
+  await device.save()
 
   next()

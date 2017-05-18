@@ -16,18 +16,9 @@ mongoose              = require 'mongoose'
 mongooseStore         = require 'koa-session-mongoose'
 session               = require 'koa-generic-session'
 staticCache           = require 'koa-static-cache'
-winston               = require 'winston'
 
 {registerModels}      = require './api/models'
-
-
-fmt = d3.timeFormat '%Y-%m-%d %X'
-winston.remove winston.transports.Console
-winston.add    winston.transports.Console, {
-  colorize: true
-  timestamp: () ->
-    fmt new Date()
-}
+{logger}              = require './utils'
 
 
 do () ->
@@ -98,4 +89,4 @@ do () ->
   api.attachIO IO server
 
   server.listen 3000, ->
-    winston.info 'server is started.'
+    logger.info 'server is started.'
