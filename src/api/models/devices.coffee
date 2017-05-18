@@ -40,9 +40,9 @@ exports.DeviceSchema = DeviceSchema = mongoose.Schema {
     required:   true
 
   status:
-    enum:       [ "ONLINE", "OFFLINE", "ERROR" ]
+    enum:       [ "ACTIVE", "DEACTIVE", "ERROR" ]
     type:       String
-    default:    "OFFLINE"
+    default:    "ACTIVE"
 
   errMsg:       String
 
