@@ -22,9 +22,9 @@ exports.deviceSocket = deviceSocket = (io) ->
       catch e
         logger.error "Catch an exception:", e
 
-    .on 'disconnect', (socket) ->
-      logger.info 'Lost device connection.', socket.handshake.query
-      deviceRpcClient.unregisterSocket socket
+      socket.on 'disconnect', () ->
+        logger.info 'Lost device connection.', socket.handshake.query
+        deviceRpcClient.unregisterSocket socket
 
 
 exports.deviceRpcClient = deviceRpcClient = new RpcClient {

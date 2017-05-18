@@ -8,6 +8,7 @@ table.table.table-striped
       th OS
       th Device ID
       th Status
+      th Online
       th Running Applets
   tbody
     tr(ng-repeat="device in devices")
@@ -16,4 +17,5 @@ table.table.table-striped
       td {{device.os}}
       td {{device.deviceId}}
       td {{device.status}}
+      td {{device.online}}
       td 1
