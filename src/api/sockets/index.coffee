@@ -40,7 +40,6 @@ authorization = (socket, next) ->
     logger.error "Token is invalid, because Device is not found."
     return next new Error "Token is invalid."
 
-  device.status = "ONLINE"
   await device.save()
 
   next()
