@@ -61,5 +61,13 @@ DeviceSchema.index {
 }
 
 
+DeviceSchema.set 'toJSON',  getters: true, virtuals: true
+DeviceSchema.set 'toObject', getters: true, virtuals: true
+
+
+DeviceSchema
+  .virtual 'online'
+  .get () -> !!require('../sockets').deviceRpcClient.getRpc(@deviceToken)
+
 DeviceSchema.methods.regenerateDeviceToken = () ->
   @deviceToken = randtoken.generate DEVICE_TOKEN_LEN

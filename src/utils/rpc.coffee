@@ -25,6 +25,8 @@ exports.RpcClient = class RpcClient
       @RpcClass::[func] = (params...) ->
         that.sendRequest @socket, name: func, params: params
 
+    @devices = {}
+
   sendRequest: (socket, {name, params}) ->
     request = {
       name:    name
@@ -57,10 +59,16 @@ exports.RpcClient = class RpcClient
         @callStack.del resp.sid
       else
         logger.info 'Got rcpResponse, but entry is gone.', resp
-    new @RpcClass socket: socket
+    @devices[socket.handshake.query.token] = new @RpcClass socket: socket
 
 
   unregisterSocket: (socket) ->
+    delete @devices[socket.handshake.query.token]
+
+  getRpc: (socketOrToken) ->
+    if socketOrToken?.handshake?.query?.token
+      @devices[socketOrToken.handshake.query.token]
+    else @devices[socketOrToken]
 
 
 exports.Rpc = class Rpc

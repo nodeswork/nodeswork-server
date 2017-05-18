@@ -1,10 +1,15 @@
-{deviceSocket} = require './device'
-{Device}       = require '../models'
-{logger}       = require '../../utils'
+{
+  deviceSocket
+  deviceRpcClient
+}                 = require './device'
+{Device}          = require '../models'
+{logger}          = require '../../utils'
 
 exports.attachIO = (io) ->
   deviceSocket io
   rootSocket io
+
+exports.deviceRpcClient = deviceRpcClient
 
 
 rootSocket = (io) ->

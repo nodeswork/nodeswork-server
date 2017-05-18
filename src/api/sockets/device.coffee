@@ -27,7 +27,7 @@ exports.deviceSocket = deviceSocket = (io) ->
       deviceRpcClient.unregisterSocket socket
 
 
-deviceRpcClient = new RpcClient {
+exports.deviceRpcClient = deviceRpcClient = new RpcClient {
   timeout: 1000
   funcs: ['notify']
 }
