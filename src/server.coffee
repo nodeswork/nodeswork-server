@@ -16,9 +16,9 @@ mongoose              = require 'mongoose'
 mongooseStore         = require 'koa-session-mongoose'
 session               = require 'koa-generic-session'
 staticCache           = require 'koa-static-cache'
+{logger}              = require 'nodeswork-utils'
 
 {registerModels}      = require './api/models'
-{logger}              = require './utils'
 
 
 do () ->
@@ -57,11 +57,11 @@ do () ->
       template: './src/views/errors.pug'
     }
     # .use new csrf.default()  # ES6 style
-    .use convert session store: mongooseStore.create {
+    .use convert(session store: mongooseStore.create {
       model:       'KoaSession'
       collection:  'sessions'
       expires:     60 * 60 * 24 * 7 # 1 week
-    }
+    })
     .use bodyParser()
     .use staticCache './bower_components', {
       prefix:   '/bower_components'
