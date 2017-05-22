@@ -46,15 +46,15 @@ EmailUserSchema.statics.register = ({email, password}) ->
     password: password
   }
 
-# EmailUserSchema.pre 'save', (next) ->
-  # unless @isModified 'password' then return next()
+EmailUserSchema.pre 'save', (next) ->
+  unless @isModified 'password' then return next()
 
-  # (do =>
-    # salt = await bcrypt.genSalt SALT_WORK_FACTOR
-    # @password = await bcrypt.hash @password, salt
-  # )
-    # .then -> next()
-    # .catch next
+  (do =>
+    salt = await bcrypt.genSalt SALT_WORK_FACTOR
+    @password = await bcrypt.hash @password, salt
+  )
+    .then -> next()
+    .catch next
 
 EmailUserSchema.methods.comparePassword = (password) ->
   bcrypt.compare password, @password

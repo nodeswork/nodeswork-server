@@ -89,4 +89,4 @@ do () ->
   api.attachIO IO server
 
   server.listen 3000, ->
-    logger.info 'server is started.'
+    logger.info "server is started at http://localhost:#{3000}."
