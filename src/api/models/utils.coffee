@@ -77,6 +77,8 @@ exports.KoaMiddlewares = KoaMiddlewares = (schema) ->
       query._id       = ctx.params[field]
       ctx.object      = object = await @findOne query
 
+      Array::push.apply omits, ['_id', 'createdAt', 'lastUpdateTime']
+
       _.extend object, _.omit ctx.request.body, omits
 
       await next()

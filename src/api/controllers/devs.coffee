@@ -1,38 +1,36 @@
 _                       = require 'underscore'
 KoaRouter               = require 'koa-router'
 
-{requireLogin}          = require './middlewares'
-{Applet, NpmApplet}     = require '../models'
+{
+  overrideUserToDoc
+  overrideUserToQuery
+  requireLogin
+}                       = require './middlewares'
+{Applet}                = require '../models'
 
 
 exports.devRouter = devRouter = new KoaRouter prefix: '/dev/'
 
-devRouter.use requireLogin
+devRouter
 
+  .use requireLogin
 
-devRouter.post '/applets', (ctx) ->
+  .get 'applets', overrideUserToQuery('owner'), Applet.findMiddleware()
 
-  switch ctx.request.body.appletType
-    when 'NpmApplet'
-      ctx.body = await NpmApplet.create _.extend {}, ctx.request.body, {
-        owner:    ctx.user
-      }
-    else
-      ctx.response.status = 422
-      ctx.body = message: 'Unkown or missing appletType.'
-
-
-devRouter.post '/applets/:appletId', (ctx) ->
-  applet = await Applet.findOne _id: ctx.params.appletId, owner: ctx.user
-  _.extend applet, _.omit(
-    ctx.request.body, '_id', 'createdAt', 'lastUpdateTime', 'packageName_unique'
+  .get('applets/:appletId'
+    overrideUserToQuery 'owner'
+    Applet.getMiddleware field: 'appletId'
   )
-  ctx.body = await applet.save()
 
+  .post('applets'
+    overrideUserToDoc 'owner'
+    Applet.createMiddleware()
+  )
 
-devRouter.get '/applets', (ctx) ->
-  ctx.body = await Applet.find owner: ctx.user
-
-
-devRouter.get '/applets/:appletId', (ctx) ->
-  ctx.body = await Applet.findOne _id: ctx.params.appletId, owner: ctx.user
+  .post('applets/:appletId'
+    overrideUserToQuery 'owner'
+    overrideUserToDoc 'owner'
+    Applet.updateMiddleware {
+      omits: ['packageName_unique']
+    }
+  )

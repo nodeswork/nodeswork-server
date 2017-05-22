@@ -5,6 +5,7 @@ mongoose                = require 'mongoose'
 {
   TimestampModelPlugin
   ExcludeFieldsToJSON
+  KoaMiddlewares
 }                       = require './utils'
 errors                  = require '../errors'
 
@@ -71,6 +72,7 @@ exports.AppletSchema = AppletSchema = mongoose.Schema {
 }, collection: 'applets', discriminatorKey: 'appletType'
 
   .plugin TimestampModelPlugin
+  .plugin KoaMiddlewares
 
 
 exports.NpmAppletSchema = NpmAppletSchema = AppletSchema.extend {

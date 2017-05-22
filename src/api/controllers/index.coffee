@@ -1,5 +1,6 @@
 _                = require 'underscore'
 KoaRouter        = require 'koa-router'
+{logger}         = require 'nodeswork-utils'
 
 {appletRouter}   = require './applet'
 {appletsRouter}  = require './applets'
@@ -9,7 +10,6 @@ KoaRouter        = require 'koa-router'
 {exploreRouter}  = require './explore'
 {userRouter}     = require './users'
 {User}           = require '../models'
-{logger}         = require '../../utils'
 
 exports.router = router = new KoaRouter prefix: '/api/v1'
 

@@ -31,7 +31,11 @@ exports.DeviceSchema = DeviceSchema = mongoose.Schema {
     type:       String
     required:   true
 
-  os:
+  osType:
+    type:       String
+    required:   true
+
+  release:
     type:       String
     required:   true
 
