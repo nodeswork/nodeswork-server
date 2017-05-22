@@ -5,7 +5,7 @@ KoaRouter               = require 'koa-router'
 {Applet, NpmApplet}     = require '../models'
 
 
-exports.devRouter = devRouter = new KoaRouter prefix: '/dev'
+exports.devRouter = devRouter = new KoaRouter prefix: '/dev/'
 
 devRouter.use requireLogin
 

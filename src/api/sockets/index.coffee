@@ -19,16 +19,14 @@ rootSocket = (io) ->
     .on 'connection', (socket) ->
       logger.info "New socket connection with", socket.handshake.query
 
-    .on 'disconnect', (socket) ->
-      console.log 'Lost connection.', socket.handshake.query.token
-
-    .on 'message', (msg) ->
-      console.log 'message', msg
+      socket.on 'disconnect', () ->
+        logger.info 'Lost connection.', socket.handshake.query.token
 
 
 authorization = (socket, next) ->
-  logger.info "Autorization on socket"
-  unless token = socket.handshake.query.token
+  token = socket.handshake.query.token
+  logger.info "Autorization on socket", token: token
+  unless token
     logger.error "Token is missing."
     return next new Error "Token is invalid."
 
@@ -39,7 +37,5 @@ authorization = (socket, next) ->
   unless device?
     logger.error "Token is invalid, because Device is not found."
     return next new Error "Token is invalid."
-
-  await device.save()
 
   next()

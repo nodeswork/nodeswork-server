@@ -86,13 +86,14 @@ exports.KoaMiddlewares = KoaMiddlewares = (schema) ->
   schema.statics.createMiddleware = (opts={}) ->
     {
       writeToBody=true
+      fromExtend=true
     } = opts
     (ctx, next) =>
       doc = _.extend {}, ctx.request.body, ctx.overrides?.doc
 
       key = schema.options.discriminatorKey
 
-      if key
+      if key and fromExtend
         unless doc[key]
           throw new Error "Missing required parameter #{key}."
 
