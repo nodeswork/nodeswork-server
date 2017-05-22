@@ -1,3 +1,4 @@
+_                = require 'underscore'
 KoaRouter        = require 'koa-router'
 
 {appletRouter}   = require './applet'
@@ -8,24 +9,27 @@ KoaRouter        = require 'koa-router'
 {exploreRouter}  = require './explore'
 {userRouter}     = require './users'
 {User}           = require '../models'
+{logger}         = require '../../utils'
 
 exports.router = router = new KoaRouter prefix: '/api/v1'
 
-router.use (ctx, next) ->
-  ctx.user = (
-    if ctx.session.userId? then await User.findById ctx.session.userId
-    else {}
-  )
-  try
-    await next()
-  catch e
-    switch e?.name
-      when 'ValidationError'
-        ctx.body             = e.errors
-        ctx.response.status  = 500
-      else throw e
-
 router
+  .use (ctx, next) ->
+    logger.info "Request:", _.pick ctx.request, 'method', 'url', 'headers'
+    await next()
+  .use (ctx, next) ->
+    ctx.user = (
+      if ctx.session.userId? then await User.findById ctx.session.userId
+      else {}
+    )
+    try
+      await next()
+    catch e
+      switch e?.name
+        when 'ValidationError'
+          ctx.body             = e.errors
+          ctx.response.status  = 500
+        else throw e
   .use appletRouter.routes(), appletRouter.allowedMethods()
   .use accountRouter.routes(), accountRouter.allowedMethods()
   .use userRouter.routes(), userRouter.allowedMethods()
