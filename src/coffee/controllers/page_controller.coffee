@@ -53,8 +53,8 @@ define ['controllers/controller'], (Controller) -> new Controller {
       activeMenu $route.current?.$$route
 
 
-  AppletsController: ($scope, AppletResource) ->
-    console.log 'applets', $scope.applets = AppletResource.query()
+  AppletsController: ($scope, UserAppletResource) ->
+    console.log 'applets', $scope.applets = UserAppletResource.query()
 
   AccountsController: ($scope, AccountResource, $) ->
     console.log 'accounts', $scope.accounts = AccountResource.query()
