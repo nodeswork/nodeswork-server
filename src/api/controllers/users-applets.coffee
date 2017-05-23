@@ -15,7 +15,7 @@ params                      = require './params'
 {ParameterValidationError}  = require '../errors'
 
 
-exports.appletsRouter = appletsRouter = new KoaRouter prefix: '/my-applets'
+exports.usersAppletsRouter = usersAppletsRouter = new KoaRouter prefix: '/my-applets'
 
 
 validateUserApplet = (ctx, next) ->
@@ -32,7 +32,7 @@ validateUserApplet = (ctx, next) ->
 
   await next()
 
-appletsRouter
+usersAppletsRouter
 
   .use requireLogin
 

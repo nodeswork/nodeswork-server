@@ -1,15 +1,15 @@
-_                = require 'underscore'
-KoaRouter        = require 'koa-router'
-{logger}         = require 'nodeswork-utils'
+_                      = require 'underscore'
+KoaRouter              = require 'koa-router'
+{logger}               = require 'nodeswork-utils'
 
-{appletRouter}   = require './applet'
-{appletsRouter}  = require './applets'
-{accountRouter}  = require './accounts'
-{devRouter}      = require './devs'
-{deviceRouter}   = require './devices'
-{exploreRouter}  = require './explore'
-{userRouter}     = require './users'
-{User}           = require '../models'
+{appletRouter}         = require './applet'
+{usersAppletsRouter}   = require './users-applets'
+{accountRouter}        = require './accounts'
+{devRouter}            = require './devs'
+{deviceRouter}         = require './devices'
+{exploreRouter}        = require './explore'
+{userRouter}           = require './users'
+{User}                 = require '../models'
 
 exports.router = router = new KoaRouter prefix: '/api/v1'
 
@@ -36,8 +36,8 @@ router
   .use devRouter.routes(), devRouter.allowedMethods()
   .use exploreRouter.routes(), exploreRouter.allowedMethods()
 
-  # TODO: Debug when deviceRouter after appletsRouter,
+  # TODO: Debug when deviceRouter after usersAppletsRouter,
   # http://localhost:3000/api/v1/devices/5917c491f063893f90af1dff/applets is
-  # routed to appletsRouter.
+  # routed to usersAppletsRouter.
   .use deviceRouter.routes(), deviceRouter.allowedMethods()
-  .use appletsRouter.routes(), appletsRouter.allowedMethods()
+  .use usersAppletsRouter.routes(), usersAppletsRouter.allowedMethods()
