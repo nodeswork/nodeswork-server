@@ -7,8 +7,6 @@ KoaRouter       = require 'koa-router'
 
 exports.exploreRouter = exploreRouter = new KoaRouter prefix: '/explore'
 
-exploreRouter.use requireLogin
 
-
-exploreRouter.get '/', (ctx) ->
-  ctx.body = await Applet.find {}
+exploreRouter
+  .get '/', (ctx) -> ctx.body = await Applet.find {}

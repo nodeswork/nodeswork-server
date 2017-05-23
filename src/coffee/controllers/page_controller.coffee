@@ -13,6 +13,7 @@ define ['controllers/controller'], (Controller) -> new Controller {
 
       login: () ->
         $rootScope.user = UserResource.login $scope.loginInfo
+        $location.path '/'
 
       logout: () ->
         $rootScope.user = UserResource.logout()
@@ -24,10 +25,9 @@ define ['controllers/controller'], (Controller) -> new Controller {
       return unless route?
       $scope.menu  = route.menu
 
-      console.log 'route', route.menu
-
-      if $scope.menu.requireLogin and not $rootScope.isUserLogin()
-        $location.path route.menu.defaultLink
+      $rootScope.user.$promise.then () ->
+        if $scope.menu.requireLogin and not $rootScope.isUserLogin()
+          $location.path route.menu.defaultLink
 
       for item in $scope.menu.items
         item.active = item.name == route.item
