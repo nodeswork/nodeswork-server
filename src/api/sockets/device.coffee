@@ -17,6 +17,9 @@ exports.deviceSocket = deviceSocket = (io) ->
       data = await socket.deviceRpc.notify 'good'
       logger.info "Get data for notify:", data
 
+      runningApplets = await socket.deviceRpc.runningApplets()
+      logger.info "Get data for runningApplets:", runningApplets
+
       try
         await deviceRpcClient.sendRequest socket, name: 'unkown func'
       catch e
@@ -29,5 +32,5 @@ exports.deviceSocket = deviceSocket = (io) ->
 
 exports.deviceRpcClient = deviceRpcClient = new RpcClient {
   timeout: 1000
-  funcs: ['notify']
+  funcs: ['notify', 'runningApplets']
 }
