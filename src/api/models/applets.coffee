@@ -29,7 +29,6 @@ exports.AppletSchema = AppletSchema = mongoose.Schema {
   ]
 
   containers:
-
     userDevice:
       type:     Boolean
       default:  false
@@ -73,6 +72,11 @@ exports.AppletSchema = AppletSchema = mongoose.Schema {
 
   .plugin TimestampModelPlugin
   .plugin KoaMiddlewares
+
+
+AppletSchema
+  .virtual 'requireDevice'
+  .get () -> @containers.userDevice and not @containers.cloud
 
 
 AppletSchema.methods.avaiableTo = (user) ->

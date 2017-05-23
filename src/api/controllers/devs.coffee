@@ -31,6 +31,7 @@ devRouter
     overrideUserToQuery 'owner'
     overrideUserToDoc 'owner'
     Applet.updateMiddleware {
+      field: 'appletId'
       omits: ['packageName_unique']
     }
   )

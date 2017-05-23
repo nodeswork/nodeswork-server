@@ -49,7 +49,14 @@ params.isRequired = (ctx, val, path) ->
 
 params.populateFromModel = (model) ->
   (ctx, val, path) ->
-    object = await model.findById val
-    unless object?
-      throw new ParameterValidationError "#{path} is not valid."
-    object
+    if val?
+      object = await model.findById val
+      unless object?
+        throw new ParameterValidationError "#{path} is not valid id."
+      object
+    else
+      val
+
+
+params.body = (rules) ->
+  params body: rules

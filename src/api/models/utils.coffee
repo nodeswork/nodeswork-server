@@ -1,4 +1,6 @@
-_  = require 'underscore'
+_                            = require 'underscore'
+
+{ParameterValidationError}   = require '../errors'
 
 exports.TimestampModelPlugin = TimestampModelPlugin = (schema, {
   createdAtIndex,
@@ -79,7 +81,10 @@ exports.KoaMiddlewares = KoaMiddlewares = (schema) ->
       omits=[]
       writeToBody=true
       populate=[]
+      target='object'
     } = opts
+
+    unless field? then throw new Error 'Parameter field is missing.'
 
     (ctx, next) =>
       query           = ctx.overrides?.query ? {}
@@ -87,21 +92,22 @@ exports.KoaMiddlewares = KoaMiddlewares = (schema) ->
       queryPromise    = @findOne query
       for field in populate
         queryPromise = queryPromise.populate field
-      ctx.object      = object = await queryPromise
+      ctx[target]     = object = await queryPromise
 
       Array::push.apply omits, ['_id', 'createdAt', 'lastUpdateTime']
 
       _.extend object, _.omit ctx.request.body, omits
 
       await next()
-      await ctx.object.save()
-      ctx.response.body = ctx.object if writeToBody
+      await ctx[target].save()
+      ctx.response.body = ctx[target] if writeToBody
 
   schema.statics.createMiddleware = (opts={}) ->
     {
       writeToBody=true
       fromExtend=true
       populate=[]
+      target='object'
     } = opts
     (ctx, next) =>
       doc = _.extend {}, ctx.request.body, ctx.overrides?.doc
@@ -122,9 +128,17 @@ exports.KoaMiddlewares = KoaMiddlewares = (schema) ->
       else
         model = @
 
-      ctx.object = await model.create doc
-      if populate.length
-        ctx.object = await model.populate ctx.object, populate.join(' ')
+      ctx[target] = doc
 
       await next()
-      ctx.response.body = ctx.object if writeToBody
+
+      try
+        await model.create ctx[target]
+      catch e
+        switch
+          when e.name == 'MongoError' and e.code == 11000
+            throw new ParameterValidationError 'Dumplite records detected.'
+          else throw e
+      if populate.length
+        ctx[target] = await model.populate ctx[target], populate.join(' ')
+      ctx.response.body = ctx[target] if writeToBody
