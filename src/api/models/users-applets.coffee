@@ -1,7 +1,10 @@
 mongoose                = require 'mongoose'
 
 
-{TimestampModelPlugin}  = require './utils'
+{
+  KoaMiddlewares
+  TimestampModelPlugin
+}                       = require './utils'
 errors                  = require '../errors'
 
 exports.UserAppletSchema = UserAppletSchema = mongoose.Schema {
@@ -41,6 +44,7 @@ exports.UserAppletSchema = UserAppletSchema = mongoose.Schema {
 }, collection: 'users.applets', discriminatorKey: 'appletType'
 
   .plugin TimestampModelPlugin
+  .plugin KoaMiddlewares
 
 
 UserAppletSchema.index {

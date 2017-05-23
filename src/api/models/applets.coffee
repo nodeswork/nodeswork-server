@@ -75,6 +75,14 @@ exports.AppletSchema = AppletSchema = mongoose.Schema {
   .plugin KoaMiddlewares
 
 
+AppletSchema.methods.avaiableTo = (user) ->
+  switch @permission
+    when 'PRIVATE' then user._id.toString() == @owner.toString()
+    when 'PUBLIC' then true
+    when 'LIMIT' then _.any @limitedToUsers, (userId) ->
+      userId.toString() == user._id.toString()
+
+
 exports.NpmAppletSchema = NpmAppletSchema = AppletSchema.extend {
 
   packageName:

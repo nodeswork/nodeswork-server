@@ -47,21 +47,29 @@ exports.KoaMiddlewares = KoaMiddlewares = (schema) ->
     {
       field
       writeToBody=true
+      populate=[]
     } = opts
     (ctx, next) =>
       query              = ctx.overrides?.query ? {}
       query._id          = ctx.params[field]
-      ctx.object         = await @findOne query
+      queryPromise       = @findOne query
+      for field in populate
+        queryPromise = queryPromise.populate field
+      ctx.object         = await queryPromise
       await next()
       ctx.response.body  = ctx.object if writeToBody
 
   schema.statics.findMiddleware = (opts={}) ->
     {
       writeToBody=true
+      populate=[]
     } = opts
     (ctx, next) =>
       query              = ctx.overrides?.query ? {}
-      ctx.object         = await @find query
+      queryPromise       = @find query
+      for field in populate
+        queryPromise = queryPromise.populate field
+      ctx.object         = await queryPromise
       await next()
       ctx.response.body = ctx.object if writeToBody
 
@@ -70,12 +78,16 @@ exports.KoaMiddlewares = KoaMiddlewares = (schema) ->
       field
       omits=[]
       writeToBody=true
+      populate=[]
     } = opts
 
     (ctx, next) =>
       query           = ctx.overrides?.query ? {}
       query._id       = ctx.params[field]
-      ctx.object      = object = await @findOne query
+      queryPromise    = @findOne query
+      for field in populate
+        queryPromise = queryPromise.populate field
+      ctx.object      = object = await queryPromise
 
       Array::push.apply omits, ['_id', 'createdAt', 'lastUpdateTime']
 
@@ -89,6 +101,7 @@ exports.KoaMiddlewares = KoaMiddlewares = (schema) ->
     {
       writeToBody=true
       fromExtend=true
+      populate=[]
     } = opts
     (ctx, next) =>
       doc = _.extend {}, ctx.request.body, ctx.overrides?.doc
@@ -110,5 +123,8 @@ exports.KoaMiddlewares = KoaMiddlewares = (schema) ->
         model = @
 
       ctx.object = await model.create doc
+      if populate.length
+        ctx.object = await model.populate ctx.object, populate.join(' ')
+
       await next()
       ctx.response.body = ctx.object if writeToBody
