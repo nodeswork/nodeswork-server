@@ -1,22 +1,35 @@
-_                      = require 'underscore'
-KoaRouter              = require 'koa-router'
-{logger}               = require 'nodeswork-utils'
+_                           = require 'underscore'
+KoaRouter                   = require 'koa-router'
+{logger}                    = require 'nodeswork-utils'
 
-{appletRouter}         = require './applet'
-{usersAppletsRouter}   = require './users-applets'
-{accountRouter}        = require './accounts'
-{devRouter}            = require './devs'
-{deviceRouter}         = require './devices'
-{exploreRouter}        = require './explore'
-{userRouter}           = require './users'
-{User}                 = require '../models'
+{appletRouter}              = require './applet'
+{usersAppletsRouter}        = require './users-applets'
+{accountRouter}             = require './accounts'
+{devRouter}                 = require './devs'
+{deviceRouter}              = require './devices'
+{exploreRouter}             = require './explore'
+{userRouter}                = require './users'
+{User}                      = require '../models'
+{ParameterValidationError}  = require '../errors'
 
 exports.router = router = new KoaRouter prefix: '/api/v1'
 
 router
+
   .use (ctx, next) ->
     logger.info "Request:", _.pick ctx.request, 'method', 'url', 'headers'
-    await next()
+    try
+      await next()
+    catch e
+      if e instanceof ParameterValidationError
+        ctx.body = {
+          status: 'error'
+          message: e.message
+        }
+        ctx.response.status = 422
+      else
+        throw e
+
   .use (ctx, next) ->
     ctx.user = (
       if ctx.session.userId? then await User.findById ctx.session.userId
@@ -30,6 +43,7 @@ router
           ctx.body             = e.errors
           ctx.response.status  = 500
         else throw e
+
   .use appletRouter.routes(), appletRouter.allowedMethods()
   .use accountRouter.routes(), accountRouter.allowedMethods()
   .use userRouter.routes(), userRouter.allowedMethods()

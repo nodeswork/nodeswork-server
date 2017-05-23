@@ -5,6 +5,7 @@ mongoose               = require 'mongoose'
 {
   TimestampModelPlugin
   ExcludeFieldsToJSON
+  KoaMiddlewares
 }                      = require './utils'
 
 
@@ -18,9 +19,15 @@ exports.UserSchema = UserSchema = mongoose.Schema {
       type:         Boolean
       default:      false
 
+  status:
+    enum:           ['ACTIVE', 'INACTIVE', 'UNVERIFIED']
+    type:           String
+    default:        'UNVERIFIED'
+
 }, collection: 'users', discriminatorKey: 'userType'
 
   .plugin TimestampModelPlugin
+  .plugin KoaMiddlewares
 
 
 exports.EmailUserSchema = EmailUserSchema = UserSchema.extend {
