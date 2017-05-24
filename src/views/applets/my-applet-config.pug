@@ -1,0 +1,27 @@
+h2 Config: {{userApplet.applet.name}}
+
+div.row.md-padding
+  div.col-md-8.col-sm-12
+    form.form-horizontal(ng-submit="save()")
+      div.form-group
+        label.col-sm-4.control-label(for="device") Device
+        div.col-sm-8
+          select#device.form-control(
+            ng-model="userApplet.device",
+            ng-options="device._id as device._id for device in devices track by device._id")
+      div.form-group
+        label.col-sm-4.control-label(for="status") Status
+        div.col-sm-8
+          select#status.form-control(ng-model="userApplet.status")
+            option(value="ON") ON
+            option(value="OFF") OFF
+            option(value="INSUFFICIENT_ACCOUNT") Insufficient Account
+      div.form-group
+        label.col-sm-4.control-label(for="require-accounts") Require Accounts
+        div.col-sm-8
+          input#require-accounts.form-control(type="text", ng-model="userApplet.requiredAccountsNN")
+      div.form-group
+        div.col-sm-offset-4.col-sm-8
+          button.btn.btn-success(type="submit") Save
+
+pre {{userApplet | json}}

@@ -88,6 +88,14 @@ define [], () ->
         templateUrl:  '/views/applets/my-applets.html'
       }
 
+      .when '/my-applets/:relationId/config', {
+        name:         'Applets'
+        menu:         menus.userMenu
+        item:         'My Applets'
+        controller:   'UserAppletConfigController'
+        templateUrl:  '/views/applets/my-applet-config.html'
+      }
+
       .when '/devices', {
         name:         'Devices'
         menu:         menus.userMenu

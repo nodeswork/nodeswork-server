@@ -10,5 +10,5 @@ div.panel.panel-default.col-sm-12.col-md-6
         p Last Execution: NEVER
         div.pull-right
           button.btn.btn-success(ng-if="applet.status == 'ON'") Enabled
-          button.btn.btn-primary Config
+          a.btn.btn-primary(href='/my-applets/{{applet._id}}/config') Config
           button.btn.btn-default Details

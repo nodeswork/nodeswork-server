@@ -55,8 +55,8 @@ exports.KoaMiddlewares = KoaMiddlewares = (schema) ->
       query              = ctx.overrides?.query ? {}
       query._id          = ctx.params[field]
       queryPromise       = @findOne query
-      for field in populate
-        queryPromise = queryPromise.populate field
+      for f in populate
+        queryPromise = queryPromise.populate f
       ctx.object         = await queryPromise
       await next()
       ctx.response.body  = ctx.object if writeToBody
@@ -69,8 +69,8 @@ exports.KoaMiddlewares = KoaMiddlewares = (schema) ->
     (ctx, next) =>
       query              = ctx.overrides?.query ? {}
       queryPromise       = @find query
-      for field in populate
-        queryPromise = queryPromise.populate field
+      for f in populate
+        queryPromise = queryPromise.populate f
       ctx.object         = await queryPromise
       await next()
       ctx.response.body = ctx.object if writeToBody
@@ -90,8 +90,8 @@ exports.KoaMiddlewares = KoaMiddlewares = (schema) ->
       query           = ctx.overrides?.query ? {}
       query._id       = ctx.params[field]
       queryPromise    = @findOne query
-      for field in populate
-        queryPromise = queryPromise.populate field
+      for f in populate
+        queryPromise = queryPromise.populate f
       ctx[target]     = object = await queryPromise
 
       Array::push.apply omits, ['_id', 'createdAt', 'lastUpdateTime']

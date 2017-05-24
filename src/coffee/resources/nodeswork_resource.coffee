@@ -22,8 +22,8 @@ define ['resources/resource'], (Resource) ->
       }
 
     @UserAppletResource: ($resource) ->
-      AppletResource = $resource '/api/v1/my-applets/:appletId', {
-        appletId: '@_id'
+      UserAppletResource = $resource '/api/v1/my-applets/:relationId', {
+        relationId: '@_id'
       }
 
     @AppletResource: ($resource) ->

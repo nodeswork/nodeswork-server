@@ -62,6 +62,17 @@ define ['controllers/controller'], (Controller) -> new Controller {
   UsersAppletsController: ($scope, UserAppletResource) ->
     console.log 'applets', $scope.applets = UserAppletResource.query()
 
+  UserAppletConfigController: ($scope, $routeParams, UserAppletResource
+    DeviceResource
+  ) ->
+    _.extend $scope, {
+      devices:    DeviceResource.query()
+      userApplet: UserAppletResource.get(relationId: $routeParams.relationId)
+
+      save: () ->
+        $scope.userApplet.$save()
+    }
+
   AccountsController: ($scope, AccountResource, $) ->
     console.log 'accounts', $scope.accounts = AccountResource.query()
     $scope.target = {}

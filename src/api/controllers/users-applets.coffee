@@ -37,19 +37,20 @@ usersAppletsRouter
   .use requireLogin
 
   .get('/', overrideUserToQuery(), UserApplet.findMiddleware {
-    populate: ['applet']
+    populate: ['applet', 'device']
   })
 
   .get('/:relationId', overrideUserToQuery(), UserApplet.getMiddleware {
     field:    'relationId'
-    populate: ['applet']
+    populate: ['applet', 'device']
   })
 
   .post('/:relationId', overrideUserToQuery(), overrideUserToDoc()
     UserApplet.updateMiddleware {
-      field:   'relationId'
-      omits:   ['user', 'applet', 'errMsg']
-      target:  'userApplet'
+      field:     'relationId'
+      omits:     ['user', 'applet', 'errMsg']
+      target:    'userApplet'
+      populate:  ['applet', 'device']
     }
     validateUserApplet
   )
