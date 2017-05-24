@@ -1,59 +1,65 @@
 define ['controllers/controller'], (Controller) -> new Controller {
 
-  MenuController: ($rootScope, $scope, $route, UserResource) ->
-    $rootScope.menu =
-      active: 'request'
-      title: 'Automation'
-      items: [
-        {
-          name:      'Home'
-          active:    true
-          link:      '/'
-        }
-        {
-          name:      'Accounts'
-          active:    false
-          link:      '/accounts'
-        }
-        {
-          name:      'Applets'
-          active:    false
-          link:      '/applets'
-        }
-        {
-          name:      'Devices'
-          active:    false
-          link:      '/devices'
-        }
-        {
-          name:      'Explore'
-          active:    false
-          link:      '/explore'
-        }
-      ]
+  HeaderController: ($rootScope, $document) ->
+    titleElement = $document.find('title')[0]
+    themeElement = $document[0].getElementById('theme-link')
+    bodyElement  = $document.find('body')
 
-    $scope.loginInfo = userType: 'EmailUser'
-    $rootScope.user = UserResource.get()
+    themeLinks = {
+      normal: 'https://bootswatch.com/darkly/bootstrap.min.css'
+      dev:    'https://bootswatch.com/cosmo/bootstrap.min.css'
+      # dev:    '/bower_components/bootstrap/dist/css/bootstrap.min.css'
+    }
 
-    console.log 'user', $rootScope.user
+    _.extend $rootScope, {
+      changePageTitle: (title) ->
+        titleElement.innerHTML = title
 
-    $scope.login = () ->
-      $rootScope.user = UserResource.login $scope.loginInfo
+      changePageMode:  (mode) ->
+        if $rootScope.pageMode != mode
+          themeElement.href = themeLinks[mode]
+          bodyElement.removeClass 'hide'
+          $rootScope.pageMode = mode
+    }
 
-    $scope.logout = () ->
-      $rootScope.user = UserResource.logout()
+  MenuController: ($rootScope, $scope, $route, $location, UserResource) ->
+    _.extend $rootScope, {
+      user: UserResource.get()
 
-    activeMenu = (route) ->
-      for item in $rootScope.menu.items
-        item.active = item.name == route?.menu
-        _.each item.subItems, (subItem) ->
-          subItem.active = subItem.name == route?.subMenu
+      isUserLogin: () -> $rootScope.user._id?
+    }
+
+    _.extend $scope, {
+      loginInfo:
+        userType: 'EmailUser'
+
+      login: () ->
+        $rootScope.user = UserResource.login $scope.loginInfo
+        $location.path '/'
+
+      logout: () ->
+        $rootScope.user = UserResource.logout()
+        $location.path '/register'
+    }
 
     $rootScope.$on '$locationChangeSuccess', (event, newUrl, oldUrl) ->
-      activeMenu $route.current?.$$route
+      route        = $route.current.$$route
+      return unless route?
+      $scope.menu  = route.menu
+      $rootScope.changePageTitle $scope.menu.title
+      $rootScope.changePageMode  $scope.menu.mode
+
+      $rootScope.user.$promise.then () ->
+        if $scope.menu.requireLogin and not $rootScope.isUserLogin()
+          $location.path route.menu.defaultLink
+
+      for item in $scope.menu.items
+        item.active = item.name == route.item
+        _.each item.subItems, (subItem) ->
+          subItem.active = subItem.name == route.subItem
 
 
-  AppletsController: ($scope, UserAppletResource) ->
+  UsersAppletsController: ($scope, UserAppletResource) ->
     console.log 'applets', $scope.applets = UserAppletResource.query()
 
   AccountsController: ($scope, AccountResource, $) ->
@@ -80,4 +86,37 @@ define ['controllers/controller'], (Controller) -> new Controller {
   ExploreAppletController: ($scope, AppletResource) ->
     console.log 'applets', $scope.applets = AppletResource.explore()
 
+  RegisterController: ($location, $scope, UserResource) ->
+    if $scope.isUserLogin() then $location.path '/'
+
+    _.extend $scope, {
+      loginInfo:
+        userType: 'EmailUser'
+      loginErrors: {}
+
+      register: (loginInfo) ->
+        switch
+          when not loginInfo.email
+            $scope.loginErrors = email: 'Email is required.'
+          when not loginInfo.password
+            $scope.loginErrors = password: 'Password is required.'
+          when loginInfo.password != loginInfo.verifyPassword
+            $scope.loginErrors = verifyPassword: 'Passwords are different.'
+            loginInfo.password = loginInfo.verifyPassword = ''
+          else
+            UserResource.register(
+              loginInfo
+              (user) ->
+                console.log 'user', user
+              (err) ->
+                if err?.data?.status == 'error' and err.data.message == 'Dumplite records detected.'
+                  $scope.loginErrors = email: 'User already exists.'
+                else
+                  $scope.loginErrors = email: 'Server error, try again later.'
+            )
+    }
+
+  DevHomeController: () ->
+
+  DevAppletsController: () ->
 }

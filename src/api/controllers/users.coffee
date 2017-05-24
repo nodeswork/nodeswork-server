@@ -1,21 +1,16 @@
 _                 = require 'underscore'
 KoaRouter         = require 'koa-router'
 
-{EmailUser}       = require '../models'
+{EmailUser, User} = require '../models'
 
 
 exports.userRouter = userRouter = new KoaRouter prefix: '/users'
 
 
-userRouter.post '/new', (ctx) ->
-  switch ctx.request.body.userType
-    when 'EmailUser'
-      user = await EmailUser.register _.pick ctx.request.body, 'email', 'password'
-      ctx.session.userId    = user._id
-      ctx.body              = user
-    else
-      ctx.response.status = 422
-      ctx.body = message: 'Unkown or missing userType.'
+userRouter
+
+  .post '/new', User.createMiddleware()
+
 
 userRouter.post '/login', (ctx) ->
   switch ctx.request.body.userType

@@ -5,18 +5,8 @@ _                            = require 'underscore'
 
 module.exports = params = (rules) ->
   (ctx, next) ->
-    try
-      await validate ctx, rules, ctx.request, []
-      await next()
-    catch e
-      if e instanceof ParameterValidationError
-        ctx.body = {
-          status: 'error'
-          message: e.message
-        }
-        ctx.response.status = 422
-      else
-        throw e
+    await validate ctx, rules, ctx.request, []
+    await next()
 
 
 validate = (ctx, rules, target, path) ->

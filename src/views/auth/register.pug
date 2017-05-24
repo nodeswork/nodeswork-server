@@ -1,0 +1,23 @@
+h2 Register page
+
+div.row.md-padding
+  div.col-md-6.col-sm-12
+    form.form-horizontal(ng-submit="register(loginInfo)")
+      div.form-group(ng-class="{'has-error': loginErrors.email}")
+        label.col-sm-2.control-label(for="email") Email address
+        div.col-sm-10
+          input#email.form-control(type="email", ng-model="loginInfo.email")
+          small.help-block {{loginErrors.email}}
+      div.form-group(ng-class="{'has-error': loginErrors.password}")
+        label.col-sm-2.control-label(for="password") Password
+        div.col-sm-10
+          input#password.form-control(type="password", ng-model="loginInfo.password")
+          small.help-block {{loginErrors.password}}
+      div.form-group(ng-class="{'has-error': loginErrors.verifyPassword}")
+        label.col-sm-2.control-label(for="verifyPassword") Verify Password
+        div.col-sm-10
+          input#verifyPassword.form-control(type="password", ng-model="loginInfo.verifyPassword")
+          small.help-block {{loginErrors.verifyPassword}}
+      div.form-group
+        div.col-sm-offset-2.col-sm-10
+          button.btn.btn-default(type="submit") Register

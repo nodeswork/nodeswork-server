@@ -1,16 +1,17 @@
 doctype html
 html
-  head
+  head(ng-controller="HeaderController")
     meta(charset='utf-8')
 
     title Nodeswork
 
     - var css = [];
     - css.push('/bower_components/angular-material/angular-material.min');
-    - css.push('/bower_components/bootstrap/dist/css/bootstrap.min');
 
     each link in css
       link(href=link + '.css', rel='stylesheet')
+
+    link#theme-link(href='#', rel='stylesheet')
 
     script(
       src='/bower_components/requirejs/require.js',
@@ -18,29 +19,34 @@ html
       type='text/javascript'
     )
 
-  body.nodeswork
+  body.nodeswork.hide
     nav.navbar.navbar-default(ng-controller="MenuController")
       div.container-fluid.container
         div.navbar-header
-          a.navbar-brand(href="/") Nodeswork
+          a.navbar-brand(href="/") {{menu.title}}
         div.collapse.navbar-collapse
           ul.nav.navbar-nav
             li(ng-repeat="item in menu.items", ng-class="{active: item.active}")
               a(href="{{item.link}}") {{item.name}}
 
-          form.nav.navbar-nav.navbar-form.navbar-right(
-            ng-submit="login()", ng-show="!user._id")
-            div.form-group
-              input.form-control(
-                type="text", placeholder="username",
-                ng-model="loginInfo.email")
-            div.form-group
-              input.form-control(
-                type="password", placeholder="password",
-                ng-model="loginInfo.password")
-            button.btn.btn-default(type="submit") Login
-          div.nav.navbar-nav.navbar-form.navbar-right(
-            ng-show="user._id", ng-click="logout()")
-            button.btn.btn-default logout
+          ul.nav.navbar-nav.navbar-right
+            form.nav.navbar-nav.navbar-form.navbar-right(
+              ng-submit="login()", ng-show="!user._id")
+              div.form-group
+                input.form-control(
+                  type="text", placeholder="username",
+                  ng-model="loginInfo.email")
+              div.form-group
+                input.form-control(
+                  type="password", placeholder="password",
+                  ng-model="loginInfo.password")
+              button.btn.btn-default(type="submit") Login
+            li.dropdown(ng-show="user._id")
+              a.dropdown-toggle(data-toggle="dropdown")
+                span.glyphicon.glyphicon-user
+              ul.dropdown-menu
+                li(ng-if="pageMode != 'dev'") #[a(href='/dev') Developer Mode]
+                li(ng-if="pageMode != 'normal'") #[a(href='/') User Mode]
+                li #[a(ng-click="logout()") logout]
 
     div.container(data-ng-view)
