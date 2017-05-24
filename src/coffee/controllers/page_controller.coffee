@@ -7,7 +7,8 @@ define ['controllers/controller'], (Controller) -> new Controller {
 
     themeLinks = {
       normal: 'https://bootswatch.com/darkly/bootstrap.min.css'
-      dev:    '/bower_components/bootstrap/dist/css/bootstrap.min.css'
+      dev:    'https://bootswatch.com/cosmo/bootstrap.min.css'
+      # dev:    '/bower_components/bootstrap/dist/css/bootstrap.min.css'
     }
 
     _.extend $rootScope, {
@@ -58,7 +59,7 @@ define ['controllers/controller'], (Controller) -> new Controller {
           subItem.active = subItem.name == route.subItem
 
 
-  AppletsController: ($scope, UserAppletResource) ->
+  UsersAppletsController: ($scope, UserAppletResource) ->
     console.log 'applets', $scope.applets = UserAppletResource.query()
 
   AccountsController: ($scope, AccountResource, $) ->

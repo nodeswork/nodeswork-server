@@ -84,8 +84,8 @@ define [], () ->
         name:         'Applets'
         menu:         menus.userMenu
         item:         'My Applets'
-        controller:   'AppletsController'
-        templateUrl:  '/views/applets/index.html'
+        controller:   'UsersAppletsController'
+        templateUrl:  '/views/applets/my-applets.html'
       }
 
       .when '/devices', {
