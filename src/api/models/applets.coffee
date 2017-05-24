@@ -17,6 +17,9 @@ exports.AppletSchema = AppletSchema = mongoose.Schema {
     required:   true
     index:      true
 
+  imageUrl:
+    type:       String
+
   permission:
     enum:       [ "PRIVATE", "PUBLIC", "LIMIT" ]
     type:       String

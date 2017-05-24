@@ -136,6 +136,14 @@ define [], () ->
         templateUrl:  '/views/dev/applets.html'
       }
 
+      .when '/dev/applets/:appletId/edit', {
+        name:         'Developer'
+        menu:         menus.devMenu
+        item:         'Applets'
+        controller:   'DevAppletEditController'
+        templateUrl:  '/views/dev/applet-edit.html'
+      }
+
       .otherwise redirectTo: '/'
 
     $locationProvider.html5Mode {

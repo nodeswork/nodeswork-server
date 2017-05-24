@@ -11,4 +11,10 @@ define ['directives/directive'], (Directive) -> new Directive {
     templateUrl: '/views/applets/applet-directive.html'
     scope:
       applet: '=ngModel'
+
+  devAppletDirective: () ->
+    restrict: 'E'
+    templateUrl: '/views/dev/dev-applet-directive.html'
+    scope:
+      applet: '=ngModel'
 }

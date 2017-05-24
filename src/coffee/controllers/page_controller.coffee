@@ -118,5 +118,19 @@ define ['controllers/controller'], (Controller) -> new Controller {
 
   DevHomeController: () ->
 
-  DevAppletsController: () ->
+  DevAppletsController: ($scope, DevAppletResource) ->
+    _.extend $scope, {
+      devApplets: DevAppletResource.query()
+    }
+
+  DevAppletEditController: ($scope, $routeParams, DevAppletResource) ->
+    _.extend $scope, {
+      devApplet: DevAppletResource.get(appletId: $routeParams.appletId)
+
+      save: () ->
+        $scope.devApplet.$save()
+
+      editImage: () ->
+        $scope.showImageEditor = !$scope.showImageEditor
+    }
 }

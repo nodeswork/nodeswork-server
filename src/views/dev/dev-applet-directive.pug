@@ -1,0 +1,11 @@
+div.md-padding.col-md-5
+  div.panel.panel-default
+    div.panel-body
+      div.media.dev-applet
+        div.media-left
+          img.md-img(src="{{applet.imageUrl}}")
+        div.media-body
+          h5 {{applet.name}}
+          p {{applet.description}}
+          div.pull-right
+            a.btn.btn-success(href='/dev/applets/{{applet._id}}/edit') Edit

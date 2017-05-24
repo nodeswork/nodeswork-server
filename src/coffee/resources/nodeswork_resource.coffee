@@ -45,3 +45,10 @@ define ['resources/resource'], (Resource) ->
           method:   'GET'
           isArray:  true
       }
+
+
+    @DevAppletResource: ($resource) ->
+      DevAppletResource = $resource '/api/v1/dev/applets/:appletId', {
+        appletId: '@_id'
+      }, {
+      }
