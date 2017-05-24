@@ -2,7 +2,7 @@ define [], () ->
   menus = {
     userMenu:
       title:         'Nodeswork'
-      devMode:       false
+      mode:          'normal'
       requireLogin:  true
       defaultLink:   '/register'
       items:    [
@@ -30,7 +30,7 @@ define [], () ->
 
     publicMenu:
       title:         'Nodeswork'
-      devMode:       false
+      mode:          'normal'
       requireLogin:  false
       defaultLink:   '/register'
       items:    [
@@ -46,10 +46,14 @@ define [], () ->
 
     devMenu:
       title:         'Nodeswork Developer'
-      devMode:       true
+      mode:          'dev'
       requireLogin:  true
       defaultLink:   '/register'
       items:    [
+        {
+          name: 'Home'
+          link: '/dev'
+        }
         {
           name: 'Applets'
           link: '/dev/applets'
@@ -114,6 +118,22 @@ define [], () ->
         item:         'Register'
         controller:   'RegisterController'
         templateUrl:  '/views/auth/register.html'
+      }
+
+      .when '/dev', {
+        name:         'Developer'
+        menu:         menus.devMenu
+        item:         'Home'
+        controller:   'DevHomeController'
+        templateUrl:  '/views/dev/index.html'
+      }
+
+      .when '/dev/applets', {
+        name:         'Developer'
+        menu:         menus.devMenu
+        item:         'Applets'
+        controller:   'DevAppletsController'
+        templateUrl:  '/views/dev/applets.html'
       }
 
       .otherwise redirectTo: '/'

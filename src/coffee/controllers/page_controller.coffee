@@ -1,5 +1,26 @@
 define ['controllers/controller'], (Controller) -> new Controller {
 
+  HeaderController: ($rootScope, $document) ->
+    titleElement = $document.find('title')[0]
+    themeElement = $document[0].getElementById('theme-link')
+    bodyElement  = $document.find('body')
+
+    themeLinks = {
+      normal: 'https://bootswatch.com/darkly/bootstrap.min.css'
+      dev:    '/bower_components/bootstrap/dist/css/bootstrap.min.css'
+    }
+
+    _.extend $rootScope, {
+      changePageTitle: (title) ->
+        titleElement.innerHTML = title
+
+      changePageMode:  (mode) ->
+        if $rootScope.pageMode != mode
+          themeElement.href = themeLinks[mode]
+          bodyElement.removeClass 'hide'
+          $rootScope.pageMode = mode
+    }
+
   MenuController: ($rootScope, $scope, $route, $location, UserResource) ->
     _.extend $rootScope, {
       user: UserResource.get()
@@ -24,6 +45,8 @@ define ['controllers/controller'], (Controller) -> new Controller {
       route        = $route.current.$$route
       return unless route?
       $scope.menu  = route.menu
+      $rootScope.changePageTitle $scope.menu.title
+      $rootScope.changePageMode  $scope.menu.mode
 
       $rootScope.user.$promise.then () ->
         if $scope.menu.requireLogin and not $rootScope.isUserLogin()
@@ -91,4 +114,8 @@ define ['controllers/controller'], (Controller) -> new Controller {
                   $scope.loginErrors = email: 'Server error, try again later.'
             )
     }
+
+  DevHomeController: () ->
+
+  DevAppletsController: () ->
 }
