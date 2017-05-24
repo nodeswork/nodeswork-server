@@ -1,14 +1,16 @@
-div.panel.panel-default.col-sm-6.col-md-4
+div.panel.panel-default.col-sm-6.col-md-5
   div.panel-body
     div.media
       div.media-left
-        img(
-          width=64, height=64,
-          src="https://cdn-origin.fifa-gamers-pub.com/club_items/badges/1794.png")
+        img.md-img.applet-img(src="{{applet.imageUrl}}")
       div.media-body
-        h5 {{applet.appletType}}
-        p {{applet.name}}
-        p {{applet.description}}
+        h4 {{applet.name}}
+        p {{applet.shortDescription}}
+        p No account required.
+        p
+          | Work with:
+          span(ng-show="applet.containers.cloud").text-space.glyphicon.glyphicon-cloud
+          span(ng-show="applet.containers.userDevice").text-space.glyphicon.glyphicon-phone
         div.pull-right
           button.btn.btn-primary Enable
           button.btn.btn-default Details

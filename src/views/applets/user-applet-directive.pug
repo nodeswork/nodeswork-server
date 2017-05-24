@@ -2,11 +2,9 @@ div.panel.panel-default.col-sm-12.col-md-6
   div.panel-body
     div.media
       div.media-left
-        img(
-          width=64, height=64,
-          src="https://cdn-origin.fifa-gamers-pub.com/club_items/badges/1794.png")
+        img.md-img(src="{{applet.applet.imageUrl}}")
       div.media-body
-        h5 {{applet.applet.name}}
+        h4 {{applet.applet.name}}
         p(ng-if="applet.cloud.mode != 'NO'") In Cloud: {{applet.cloud.mode}}
         p(ng-if="applet.device") Device: {{applet.device}}
         p Last Execution: NEVER
