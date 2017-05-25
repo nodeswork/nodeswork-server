@@ -80,7 +80,7 @@ define [], () ->
         templateUrl:  '/views/accounts/index.html'
       }
 
-      .when '/accounts/:accountId', {
+      .when '/accounts/new', {
         name:         'Accounts'
         menu:         menus.userMenu
         item:         'Accounts'
@@ -88,7 +88,7 @@ define [], () ->
         templateUrl:  '/views/accounts/edit/index.html'
       }
 
-      .when '/accounts/new', {
+      .when '/accounts/:accountId', {
         name:         'Accounts'
         menu:         menus.userMenu
         item:         'Accounts'

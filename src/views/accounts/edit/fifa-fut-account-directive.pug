@@ -2,7 +2,7 @@ div.lg-padding-top
   div.col-md-3.no-padding
     ul.nav.nav-pills.nav-stacked
       li.active
-        a(href="#account-form", data-toggle="pill") Step 1 - Create Account
+        a(href="#account-form", data-toggle="pill") Step 1 - {{account._id ? 'Edit' : 'Create'}} Account
       li
         a(ng-class="{disabled: !account._id}", data-toggle="{{account._id ? 'pill' : ''}}"
           ng-href="{{account._id ? '#account-verify' : ''}}") Step 2 - Verify Account
@@ -17,6 +17,10 @@ div.lg-padding-top
                 type="email", placeholder="Email",
                 ng-model="account.username"
               )
+          div.form-group
+            label.col-sm-3.control-label Account Status
+            div.col-sm-9
+              label.control-label {{account.status || 'UNKOWN'}}
           div.form-group
             label.col-sm-3.control-label Platform
             div.col-sm-9
@@ -43,12 +47,12 @@ div.lg-padding-top
               )
           div.form-group
             div.col-sm-9.col-sm-offset-3
-              button.btn.btn-primary(ng-if="!account._id", ng-click="saveaccount()") Create
-              button.btn.btn-primary(ng-if="account._id", ng-click="saveaccount()") Save
-              button.btn.btn-default(data-dismiss="modal") Cancel
-              button.btn.btn-danger(ng-if="account._id") Delete
+              button.btn.btn-primary(ng-if="!account._id", ng-click="saveAccount()") Create
+              button.btn.btn-primary(ng-if="account._id", ng-click="saveAccount()", ng-class="{disabled: !formChanged}") Save
+              button.btn.btn-default(ng-click="cancel()") Cancel
+              button.btn.btn-danger.disabled(ng-if="account._id") Delete
       div#account-verify.tab-pane
         | content 2
 
-div.clearfix
-pre {{account|json}}
+//- div.clearfix
+//- pre {{account|json}}

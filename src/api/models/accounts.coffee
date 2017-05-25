@@ -18,9 +18,9 @@ exports.AccountSchema = AccountSchema = mongoose.Schema {
     index:      true
 
   status:
-    enum:       ["ACTIVE", "ERROR", "INACTIVE"]
+    enum:       ["ACTIVE", "ERROR", "INACTIVE", "UNVERIFIED"]
     type:       String
-    default:    "INACTIVE"
+    default:    "UNVERIFIED"
 
   errMsg:       String
 

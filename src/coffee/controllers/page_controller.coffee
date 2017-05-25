@@ -98,8 +98,8 @@ define ['controllers/controller'], (Controller) -> new Controller {
       when accountId
         AccountResource.get(accountId: accountId)
       when accountType == 'FifaFutAccount'
-        platform: 'xone'
-        accountType: accountType
+        platform:     'xone'
+        accountType:  accountType
 
     $editor = $document.find '#account-editor'
 
