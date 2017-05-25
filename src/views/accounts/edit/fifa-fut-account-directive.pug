@@ -1,0 +1,54 @@
+div.lg-padding-top
+  div.col-md-3.no-padding
+    ul.nav.nav-pills.nav-stacked
+      li.active
+        a(href="#account-form", data-toggle="pill") Step 1 - Create Account
+      li
+        a(ng-class="{disabled: !account._id}", data-toggle="{{account._id ? 'pill' : ''}}"
+          ng-href="{{account._id ? '#account-verify' : ''}}") Step 2 - Verify Account
+  div.col-md-7
+    div.tab-content.md-padding
+      div#account-form.tab-pane.active
+        form.form-horizontal
+          div.form-group
+            label.col-sm-3.control-label Email Address
+            div.col-sm-9
+              input.form-control(
+                type="email", placeholder="Email",
+                ng-model="account.username"
+              )
+          div.form-group
+            label.col-sm-3.control-label Platform
+            div.col-sm-9
+              select.form-control(ng-model="account.platform")
+                option(value="ps4") PS4
+                option(value="xone") Xbox One
+          div.form-group
+            label.col-sm-3.control-label Password
+            div.col-sm-9
+              input#fifa-fut-password.form-control(
+                type="password", placeholder="Password",
+                ng-model="account.password"
+              )
+              div.checkbox
+                label
+                  input(type="checkbox", ng-change="showPasswordChange()", ng-model="showPassword")
+                  | Show Password
+          div.form-group
+            label.col-sm-3.control-label Secret
+            div.col-sm-9
+              input.form-control(
+                type="text", placeholder="Secret Question Answers",
+                ng-model="account.secret"
+              )
+          div.form-group
+            div.col-sm-9.col-sm-offset-3
+              button.btn.btn-primary(ng-if="!account._id", ng-click="saveaccount()") Create
+              button.btn.btn-primary(ng-if="account._id", ng-click="saveaccount()") Save
+              button.btn.btn-default(data-dismiss="modal") Cancel
+              button.btn.btn-danger(ng-if="account._id") Delete
+      div#account-verify.tab-pane
+        | content 2
+
+div.clearfix
+pre {{account|json}}

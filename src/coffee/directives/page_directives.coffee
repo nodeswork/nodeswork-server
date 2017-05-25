@@ -23,4 +23,19 @@ define ['directives/directive'], (Directive) -> new Directive {
     templateUrl:  '/views/accounts/account-directive.html'
     scope:
       account:    '=ngModel'
+
+  fifaFutAccountDirective: (_) ->
+    restrict:     'A'
+    templateUrl:  '/views/accounts/edit/fifa-fut-account-directive.html'
+    scope:
+      account:    '=ngModel'
+    link: (scope, element) ->
+      _.extend scope, {
+        showPassword:  false
+
+        showPasswordChange:  () ->
+          element.find("#fifa-fut-password")[0].type = (
+            if scope.showPassword then 'text' else 'password'
+          )
+      }
 }

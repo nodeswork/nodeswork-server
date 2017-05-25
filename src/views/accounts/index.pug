@@ -7,55 +7,8 @@ div.md-padding
       span.caret
     ul.dropdown-menu
       li
-        a(data-toggle="modal", data-target="#FifaFutAccountModal", ng-click="editAccount({})"
-          ) Fifa FUT Account
+        a(href="/accounts/new?accountType=FifaFutAccount") Fifa FUT 17 Account
 
 div.md-padding-top
   div(ng-repeat="account in accounts")
     account(ng-model="account")
-
-
-div#FifaFutAccountModal.modal.fade
-  div.modal-dialog
-    div.modal-content
-      div.modal-header
-        h4(ng-if="!target._id") Register New Fifa FUT Account
-        h4(ng-if="target._id") Edit Fifa FUT Account
-      div.modal-body
-        form.form-horizontal
-          div.form-group
-            label.col-sm-3.control-label Email Address
-            div.col-sm-9
-              input.form-control(
-                type="email", placeholder="Email",
-                ng-model="target.username"
-              )
-          div.form-group
-            label.col-sm-3.control-label Platform
-            div.col-sm-9
-              select.form-control(ng-model="target.platform")
-                option(value="ps4") PS4
-                option(value="xone") Xbox One
-          div.form-group
-            label.col-sm-3.control-label Password
-            div.col-sm-9
-              input.form-control(
-                type="password", placeholder="Password",
-                ng-model="target.password"
-              )
-              div.checkbox
-                label
-                  input(type="checkbox")
-                  | Show Password
-          div.form-group
-            label.col-sm-3.control-label Secret
-            div.col-sm-9
-              input.form-control(
-                type="text", placeholder="Secret Question Answers",
-                ng-model="target.secret"
-              )
-      div.modal-footer
-        button.btn.btn-default(data-dismiss="modal") Close
-        button.btn.btn-danger(ng-if="target._id") Delete
-        button.btn.btn-primary(ng-if="target._id", ng-click="saveTarget()") Save
-        button.btn.btn-primary(ng-if="!target._id", ng-click="saveTarget()") Create

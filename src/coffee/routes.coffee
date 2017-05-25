@@ -80,6 +80,22 @@ define [], () ->
         templateUrl:  '/views/accounts/index.html'
       }
 
+      .when '/accounts/:accountId', {
+        name:         'Accounts'
+        menu:         menus.userMenu
+        item:         'Accounts'
+        controller:   'AccountsEditController'
+        templateUrl:  '/views/accounts/edit/index.html'
+      }
+
+      .when '/accounts/new', {
+        name:         'Accounts'
+        menu:         menus.userMenu
+        item:         'Accounts'
+        controller:   'AccountsEditController'
+        templateUrl:  '/views/accounts/edit/index.html'
+      }
+
       .when '/my-applets', {
         name:         'Applets'
         menu:         menus.userMenu

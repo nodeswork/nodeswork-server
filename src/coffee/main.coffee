@@ -7,6 +7,7 @@ require.config
     angularResource:          '../bower_components/angular-resource/angular-resource.min'
     angularRoute:             '../bower_components/angular-route/angular-route'
     bootstrap:                '../bower_components/bootstrap/dist/js/bootstrap.min'
+    case:                     '../bower_components/Case/dist/Case.min'
     jquery:                   '../bower_components/jquery/dist/jquery.min'
     underscore:               '../bower_components/underscore/underscore-min'
   shim:
@@ -22,11 +23,14 @@ require.config
     bootstrap:
       deps:                   [ 'jquery' ]
       exports:                '$'
+    case:
+      exports:                'Case'
     underscore:
       exports:                '_'
 
 require [
-  'angular', 'angularRoute', 'angularResource', 'bootstrap', 'jquery', 'underscore'
+  'angular', 'angularRoute', 'angularResource', 'bootstrap', 'jquery'
+  'underscore', 'case'
 
   'routes'
 
@@ -36,7 +40,7 @@ require [
 
   'directives/page_directives'
 ], (
-  angular, angularRoute, angularResource, bootstrap, $, _
+  angular, angularRoute, angularResource, bootstrap, $, _, Case
 
   routes
 
@@ -55,6 +59,7 @@ require [
 
   app.factory '_', () -> _
   app.factory '$', () -> $
+  app.factory 'Case', () -> Case
 
   NodesworkResource.export app
   PageController.export    app

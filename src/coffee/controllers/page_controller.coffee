@@ -89,6 +89,32 @@ define ['controllers/controller'], (Controller) -> new Controller {
         $scope.accounts = AccountResource.query()
       $('#FifaFutAccountModal').modal 'hide'
 
+  AccountsEditController: ($scope, $routeParams, $document, $compile, Case,
+    AccountResource
+  ) ->
+    {accountId, accountType} = $routeParams
+
+    account = switch
+      when accountId
+        AccountResource.get(accountId: accountId)
+      when accountType == 'FifaFutAccount'
+        platform: 'xone'
+        accountType: accountType
+
+    $editor = $document.find '#account-editor'
+
+    _.extend $scope, {
+      account:       account
+    }
+
+    updateEditor = () ->
+      $scope.accountType = Case.capital account.accountType
+      $editor.attr Case.kebab(account.accountType), ''
+      $compile($editor) $scope
+
+    if account.$promise? then account.$promise.then updateEditor
+    else updateEditor()
+
   HomeController: ($scope) ->
 
   DevicesController: ($scope, DeviceResource) ->
