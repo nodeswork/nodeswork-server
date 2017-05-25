@@ -2,7 +2,7 @@ div.panel.panel-default.col-sm-12.col-md-6
   div.panel-body
     div.media
       div.media-left
-        img.md-img(src="{{applet.applet.imageUrl}}")
+        img.md-img(ng-src="{{applet.applet.imageUrl}}")
       div.media-body
         h4 {{applet.applet.name}}
         p(ng-if="applet.cloud.mode != 'NO'") In Cloud: {{applet.cloud.mode}}

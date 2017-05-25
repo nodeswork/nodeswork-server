@@ -1,0 +1,29 @@
+div.col-sm-6.col-md-3.md-padding
+  div.panel.panel-default
+    div.list-group-item
+      div.row
+        img.center-block.md-img(
+          src="https://cdn-origin.fifa-gamers-pub.com/club_items/badges/1794.png")
+      div.row
+        h4.text-center {{account.username}}
+    div.list-group-item.active
+      ul.list-inline.text-center.account-actions
+        li.text-danger(ng-show="account.status == 'INACTIVE'", title="Account inactive")
+          span.text-space.glyphicon.glyphicon-exclamation-sign
+        li(title="Applets")
+          span.text-success.text-space.glyphicon.glyphicon-object-align-bottom
+          | 2
+        li(title="")
+          span.text-success.text-space.glyphicon.glyphicon-sort
+          | 4
+
+
+
+
+    // div.pull-right
+      // button.btn.btn-primary Authorize
+      // button.btn.btn-success(
+        // data-toggle="modal",
+        // data-target="#FifaFutAccountModal",
+        // ng-click="editAccount(account)") Edit
+      // button.btn.btn-danger Inactive
