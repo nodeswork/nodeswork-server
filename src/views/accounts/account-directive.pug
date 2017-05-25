@@ -8,9 +8,11 @@ div.col-sm-6.col-md-3.md-padding
         h4.text-center {{account.username}}
     div.list-group-item.active
       ul.list-inline.text-center.account-actions
-        li.text-danger(ng-show="account.status == 'INACTIVE'", title="Account inactive")
+        li.text-success(ng-show="account.status == 'ACTIVE'", title="Account is active")
+          span.text-space.glyphicon.glyphicon-ok-sign
+        li.text-danger(ng-show="account.status == 'INACTIVE'", title="Account is inactive")
           span.text-space.glyphicon.glyphicon-exclamation-sign
-        li.text-danger(ng-show="account.status == 'UNVERIFIED'", title="Account inactive")
+        li.text-danger(ng-show="account.status == 'UNVERIFIED'", title="Account is not verified")
           span.text-space.glyphicon.glyphicon-eye-close
         li(title="Applets")
           span.text-success.text-space.glyphicon.glyphicon-object-align-bottom
