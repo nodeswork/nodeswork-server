@@ -88,7 +88,7 @@ define [], () ->
         templateUrl:  '/views/accounts/edit/index.html'
       }
 
-      .when '/accounts/:accountId', {
+      .when '/accounts/:accountId/edit', {
         name:         'Accounts'
         menu:         menus.userMenu
         item:         'Accounts'

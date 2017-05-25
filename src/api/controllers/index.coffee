@@ -21,28 +21,31 @@ router
     try
       await next()
     catch e
-      if e instanceof ParameterValidationError
-        ctx.body = {
-          status: 'error'
-          message: e.message
-        }
-        ctx.response.status = 422
-      else
-        throw e
+      switch
+        when e instanceof ParameterValidationError
+          ctx.body = {
+            status: 'error'
+            message: e.message
+          }
+          ctx.response.status = 422
+        when e?.name == 'ValidationError'
+          errors = _.mapObject e.errors, (val, key) ->
+            switch
+              when val?.kind == "required"
+                kind:    'required'
+                message: "#{key} is required."
+              else val
+          ctx.body             = errors
+          ctx.response.status  = 422
+        else
+          throw e
 
   .use (ctx, next) ->
     ctx.user = (
       if ctx.session.userId? then await User.findById ctx.session.userId
       else {}
     )
-    try
-      await next()
-    catch e
-      switch e?.name
-        when 'ValidationError'
-          ctx.body             = e.errors
-          ctx.response.status  = 500
-        else throw e
+    await next()
 
   .use appletRouter.routes(), appletRouter.allowedMethods()
   .use accountRouter.routes(), accountRouter.allowedMethods()

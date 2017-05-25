@@ -10,13 +10,14 @@ div.lg-padding-top
     div.tab-content.md-padding
       div#account-form.tab-pane.active
         form.form-horizontal
-          div.form-group
+          div.form-group(ng-class="{'has-error': errors.username}")
             label.col-sm-3.control-label Email Address
             div.col-sm-9
               input.form-control(
                 type="email", placeholder="Email",
                 ng-model="account.username"
               )
+              small.help-block(ng-show="errors.username") {{errors.username.message}}
           div.form-group
             label.col-sm-3.control-label Account Status
             div.col-sm-9
@@ -27,24 +28,26 @@ div.lg-padding-top
               select.form-control(ng-model="account.platform")
                 option(value="ps4") PS4
                 option(value="xone") Xbox One
-          div.form-group
+          div.form-group(ng-class="{'has-error': errors.password}")
             label.col-sm-3.control-label Password
             div.col-sm-9
               input#fifa-fut-password.form-control(
                 type="password", placeholder="Password",
                 ng-model="account.password"
               )
+              small.help-block(ng-show="errors.password") {{errors.password.message}}
               div.checkbox
                 label
                   input(type="checkbox", ng-change="showPasswordChange()", ng-model="showPassword")
                   | Show Password
-          div.form-group
+          div.form-group(ng-class="{'has-error': errors.secret}")
             label.col-sm-3.control-label Secret
             div.col-sm-9
               input.form-control(
                 type="text", placeholder="Secret Question Answers",
                 ng-model="account.secret"
               )
+              small.help-block(ng-show="errors.secret") {{errors.username.secret}}
           div.form-group
             div.col-sm-9.col-sm-offset-3
               button.btn.btn-primary(ng-if="!account._id", ng-click="saveAccount()") Create
@@ -52,7 +55,27 @@ div.lg-padding-top
               button.btn.btn-default(ng-click="cancel()") Cancel
               button.btn.btn-danger.disabled(ng-if="account._id") Delete
       div#account-verify.tab-pane
-        | content 2
+        div.alert.alert-success(ng-show="verifySuccess")
+          strong Yeah!
+          | Account has been verified successfully.
+        div.alert.alert-danger(ng-show="verifyError")
+          strong Oops!
+          | Account verification failed, please try again later.
+        div(ng-show="step == 1")
+          p The current account status is {{account.status}}, click the following button to verify.
+          div.text-center.md-padding
+            button.btn.btn-success(ng-click="verify()") Start to Verify
+        form.form.form-horizontal(ng-show="step == 2", ng-submit="sendCode()")
+          div.form-group
+            label.col-sm-3.control-label Code
+            div.col-sm-9
+              input.form-control(
+                type="text", placeholder="2 step verification code",
+                ng-model="code"
+              )
+          div.form-group
+            div.col-sm-9.col-sm-offset-3
+              button.btn.btn-success(type="submit") Send code
 
 //- div.clearfix
 //- pre {{account|json}}

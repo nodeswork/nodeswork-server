@@ -5,13 +5,13 @@ define ['resources/resource'], (Resource) ->
     @UserResource: ($resource) ->
       UserResource = $resource '/api/v1/users/current', {}, {
         login:
-          url: '/api/v1/users/login'
-          method: 'POST'
+          url:     '/api/v1/users/login'
+          method:  'POST'
         logout:
-          url: '/api/v1/users/logout'
+          url:     '/api/v1/users/logout'
         register:
-          url: '/api/v1/users/new'
-          method: 'POST'
+          url:     '/api/v1/users/new'
+          method:  'POST'
       }
       UserResource
 
@@ -19,6 +19,13 @@ define ['resources/resource'], (Resource) ->
     @AccountResource: ($resource) ->
       AccountResource = $resource '/api/v1/accounts/:accountId', {
         accountId: '@_id'
+      }, {
+        authorize:
+          url:     '/api/v1/accounts/:accountId/authorize'
+          method:  'POST'
+        twoFactorAuthorize:
+          url:     '/api/v1/accounts/:accountId/two-factor-authorize'
+          method:  'POST'
       }
 
     @UserAppletResource: ($resource) ->

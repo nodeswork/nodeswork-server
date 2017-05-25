@@ -31,7 +31,13 @@ define ['directives/directive'], (Directive) -> new Directive {
       account:    '=ngModel'
       backUrl:    '='
     link: (scope, element) ->
+      if $location.hash() == 'account-verify' and scope.account.$promise?
+        element.find('#account-form').removeClass 'active'
+        element.find('#account-verify').addClass 'active'
+        element.find('.nav-pills').find('a:last').tab 'show'
+
       _.extend scope, {
+
         showPassword:  false
 
         showPasswordChange:  () ->
@@ -44,12 +50,43 @@ define ['directives/directive'], (Directive) -> new Directive {
             scope.account = new AccountResource scope.account
           scope.account.$save(
             () ->
-            (error) ->
-              console.error error
+              $location.path "/accounts/#{scope.account._id}/edit#verify-account"
+
+            (resp) ->
+              scope.errors = resp.data
           )
 
         cancel: () ->
           $location.path scope.backUrl ? '/accounts'
+
+        step:   1
+
+        verify: () ->
+          AccountResource.authorize(
+            _id: scope.account._id
+            (account) ->
+              scope.account        = account
+              scope.verifySuccess  = true
+            (resp) ->
+              console.log resp.data
+              if resp.data.message == 'FUT Two factor code required.'
+                scope.step = 2
+              else
+                scope.verifyError = true
+          )
+
+        sendCode: () ->
+          AccountResource.twoFactorAuthorize(
+            _id:        scope.account._id
+            code:       scope.code
+            (account) ->
+              scope.account         = account
+              scope.verifySuccess   = true
+            (resp) ->
+              console.log resp.data
+              scope.verifyError = true
+              scope.step = 1
+          )
       }
 
       scope.$watch(

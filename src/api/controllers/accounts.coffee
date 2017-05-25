@@ -33,6 +33,7 @@ accountRouter
         switch e
           when errors.FUT_TWO_FACTOR_CODE_REQUIRED
             ctx.body = message: errors.FUT_TWO_FACTOR_CODE_REQUIRED
+            ctx.response.status = 422
           else throw e
   )
 
@@ -47,6 +48,7 @@ accountRouter
         switch e
           when errors.FUT_TWO_FACTOR_FUNCTION_NOT_FOUND
             ctx.body = message: errors.FUT_TWO_FACTOR_FUNCTION_NOT_FOUND
+            ctx.response.status = 422
           else throw e
   )
 
