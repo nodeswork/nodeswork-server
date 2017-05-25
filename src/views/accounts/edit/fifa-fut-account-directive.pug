@@ -59,10 +59,16 @@ div.lg-padding-top
           strong Yeah!
           | Account has been verified successfully.
         div.alert.alert-danger(ng-show="verifyError")
-          strong Oops!
-          | Account verification failed, please try again later.
+          p
+            strong Oops!
+            | &nbsp;Account verification failed, please try again later.
+          p(ng-show="reason") Possible reason: {{reason}}
+          p(ng-show="reason") Login to web app to see what's the reason.
         div(ng-show="step == 1")
-          p The current account status is {{account.status}}, click the following button to verify.
+          p
+            | The current account status is {{account.status}}, click the following button
+            span(ng-show="account.status == 'ACTIVE'") &nbsp;if you STILL want
+            | &nbsp;to verify.
           div.text-center.md-padding
             button.btn.btn-success(ng-click="verify()") Start to Verify
         form.form.form-horizontal(ng-show="step == 2", ng-submit="sendCode()")

@@ -37,6 +37,12 @@ router
               else val
           ctx.body             = errors
           ctx.response.status  = 422
+        when e?.details
+          ctx.body = {
+            message: e.message
+            details: e.details
+          }
+          ctx.response.status  = 422
         else
           throw e
 

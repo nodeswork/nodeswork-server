@@ -36,14 +36,17 @@ exports.fetchAccount = (ctx, next) ->
           apiClient.setCookieJarJSON JSON.parse ctx.account.cookieJar
       ctx.account.setApiClient apiClient
 
-  await next()
-
-  switch
-    when ctx.account instanceof FifaFutAccount
-      cookieJar = JSON.stringify apiClient.getCookieJarJSON()
-      if cookieJar != ctx.account.cookieJar
-        ctx.account.cookieJar = cookieJar
-        await ctx.account.save()
+  try
+    await next()
+  catch e
+    throw e
+  finally
+    switch
+      when ctx.account instanceof FifaFutAccount
+        cookieJar = JSON.stringify apiClient.getCookieJarJSON()
+        if cookieJar != ctx.account.cookieJar
+          ctx.account.cookieJar = cookieJar
+          await ctx.account.save()
 
 
 exports.overrideUserToDoc = overrideUserToDoc = (fieldName='user') ->

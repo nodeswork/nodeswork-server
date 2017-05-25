@@ -80,8 +80,8 @@ FifaFutAccountSchema.methods.authorize = () ->
             else reject err
           else
             @apiClient.authorized = true
-            if FIFA_FUT_LOGIN_CACHE.has @_id.toString() then resolve2 @
-            else resolve @
+            if FIFA_FUT_LOGIN_CACHE.has @_id.toString() then resolve2 response
+            else resolve response
           FIFA_FUT_LOGIN_CACHE.del @_id.toString()
       )
 

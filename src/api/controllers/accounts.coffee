@@ -28,7 +28,8 @@ accountRouter
     fetchAccount
     (ctx) ->
       try
-        ctx.body = await ctx.account.authorize()
+        await ctx.account.authorize()
+        ctx.body = await ctx.account.save()
       catch e
         switch e
           when errors.FUT_TWO_FACTOR_CODE_REQUIRED
@@ -41,9 +42,10 @@ accountRouter
     fetchAccount
     (ctx) ->
       try
-        ctx.body = await ctx.account.twoFactorAuthorize {
+        await ctx.account.twoFactorAuthorize {
           code: ctx.request.body.code
         }
+        ctx.body = await ctx.account.save()
       catch e
         switch e
           when errors.FUT_TWO_FACTOR_FUNCTION_NOT_FOUND

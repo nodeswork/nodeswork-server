@@ -62,6 +62,7 @@ define ['directives/directive'], (Directive) -> new Directive {
         step:   1
 
         verify: () ->
+          scope.verifyError = false
           AccountResource.authorize(
             _id: scope.account._id
             (account) ->
@@ -73,6 +74,7 @@ define ['directives/directive'], (Directive) -> new Directive {
                 scope.step = 2
               else
                 scope.verifyError = true
+                handleResponse resp.data
           )
 
         sendCode: () ->
@@ -86,8 +88,15 @@ define ['directives/directive'], (Directive) -> new Directive {
               console.log resp.data
               scope.verifyError = true
               scope.step = 1
+              handleResponse resp.data
           )
       }
+
+      handleResponse = (error) ->
+        if error.details?.code == "403"
+          scope.reason = "Your account needs to login on console first."
+        if error.details?.code == "500"
+          scope.reason = "Your account has been banned."
 
       scope.$watch(
         "account",

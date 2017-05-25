@@ -1,5 +1,5 @@
 div.col-sm-6.col-md-3.md-padding
-  div.panel.panel-default
+  div.panel(ng-class="{'panel-danger': account.status != 'ACTIVE'}")
     div.list-group-item
       div.row
         img.center-block.md-img(
@@ -10,10 +10,12 @@ div.col-sm-6.col-md-3.md-padding
       ul.list-inline.text-center.account-actions
         li.text-danger(ng-show="account.status == 'INACTIVE'", title="Account inactive")
           span.text-space.glyphicon.glyphicon-exclamation-sign
+        li.text-danger(ng-show="account.status == 'UNVERIFIED'", title="Account inactive")
+          span.text-space.glyphicon.glyphicon-eye-close
         li(title="Applets")
           span.text-success.text-space.glyphicon.glyphicon-object-align-bottom
           | 2
-        li(title="")
+        li(title="API Calls")
           span.text-success.text-space.glyphicon.glyphicon-sort
           | 4
         li(title="Edit")
