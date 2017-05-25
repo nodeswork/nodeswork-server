@@ -15,7 +15,6 @@
     "bcrypt": "^1.0.2",
     "coffeescript": "^2.0.0-beta1",
     "connect-coffee-script": "^0.2.1",
-    "d3": "^4.9.1",
     "fut-api": "https://github.com/nodeswork/fut-api.git",
     "koa": "2.2.0",
     "koa-bodyparser": "^4.2.0",
