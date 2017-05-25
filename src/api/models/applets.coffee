@@ -1,5 +1,6 @@
 _                       = require 'underscore'
 mongoose                = require 'mongoose'
+randtoken               = require 'rand-token'
 
 
 {
@@ -9,6 +10,8 @@ mongoose                = require 'mongoose'
 }                       = require './utils'
 errors                  = require '../errors'
 
+TOKEN_LEN               = 16
+
 exports.AppletSchema = AppletSchema = mongoose.Schema {
 
   owner:
@@ -16,6 +19,14 @@ exports.AppletSchema = AppletSchema = mongoose.Schema {
     ref:        'User'
     required:   true
     index:      true
+
+  devToken:
+    type:       String
+    default:    () -> randtoken.generate TOKEN_LEN
+
+  prodToken:
+    type:       String
+    default:    () -> randtoken.generate TOKEN_LEN
 
   imageUrl:
     type:       String
@@ -76,6 +87,7 @@ exports.AppletSchema = AppletSchema = mongoose.Schema {
 
   .plugin TimestampModelPlugin
   .plugin KoaMiddlewares
+  .plugin ExcludeFieldsToJSON, fields: ['prodToken']
 
 
 AppletSchema
@@ -102,4 +114,5 @@ exports.NpmAppletSchema = NpmAppletSchema = AppletSchema.extend {
     type:       String
     required:   true
 }
-  .plugin ExcludeFieldsToJSON, fields: ['packageName_unique']
+  # TODO: support ExcludeFieldsToJSON with chained fields.
+  .plugin ExcludeFieldsToJSON, fields: ['prodToken', 'packageName_unique']

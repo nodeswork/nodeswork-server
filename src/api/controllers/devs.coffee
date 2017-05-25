@@ -24,7 +24,9 @@ devRouter
 
   .post('applets'
     overrideUserToDoc 'owner'
-    Applet.createMiddleware()
+    Applet.createMiddleware {
+      omits: ['devToken', 'prodToken', 'packageName_unique']
+    }
   )
 
   .post('applets/:appletId'
@@ -32,6 +34,6 @@ devRouter
     overrideUserToDoc 'owner'
     Applet.updateMiddleware {
       field: 'appletId'
-      omits: ['packageName_unique']
+      omits: ['packageName_unique', 'devToken', 'prodToken']
     }
   )

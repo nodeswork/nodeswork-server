@@ -9,6 +9,7 @@ mongooseTypeEmail       = require 'mongoose-type-email'
 accounts                = require './accounts'
 applets                 = require './applets'
 devices                 = require './devices'
+messages                = require './messages'
 users                   = require './users'
 usersApplets            = require './users-applets'
 utils                   = require './utils'
@@ -32,6 +33,8 @@ exports.registerModels = (mongooseInstance = mongoose) ->
     ['NpmApplet',          applets.NpmAppletSchema]
     ['UserApplet',         usersApplets.UserAppletSchema]
     ['Device',             devices.DeviceSchema]
+    ['Message',            messages.MessageSchema]
+    ['AppletMessage',      messages.AppletMessageSchema]
   ]
 
   return

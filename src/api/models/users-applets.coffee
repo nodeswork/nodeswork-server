@@ -47,6 +47,9 @@ exports.UserAppletSchema = UserAppletSchema = mongoose.Schema {
   .plugin KoaMiddlewares
 
 
+UserAppletSchema.methods.validate = (prefetch={}) ->
+
+
 UserAppletSchema.index {
   user:    1
   applet:  1

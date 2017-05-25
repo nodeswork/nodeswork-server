@@ -108,6 +108,7 @@ exports.KoaMiddlewares = KoaMiddlewares = (schema) ->
       fromExtend=true
       populate=[]
       target='object'
+      omits=[]
     } = opts
     (ctx, next) =>
       doc = _.extend {}, ctx.request.body, ctx.overrides?.doc
@@ -128,7 +129,9 @@ exports.KoaMiddlewares = KoaMiddlewares = (schema) ->
       else
         model = @
 
-      ctx[target] = doc
+      Array::push.apply omits, ['_id', 'createdAt', 'lastUpdateTime']
+
+      ctx[target] = _.omit doc, omits
 
       await next()
 

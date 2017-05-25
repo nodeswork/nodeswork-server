@@ -2,7 +2,7 @@ _                           = require 'underscore'
 KoaRouter                   = require 'koa-router'
 {logger}                    = require 'nodeswork-utils'
 
-{appletRouter}              = require './applet'
+{appletApiRouter}           = require './applet-api'
 {usersAppletsRouter}        = require './users-applets'
 {accountRouter}             = require './accounts'
 {devRouter}                 = require './devs'
@@ -27,7 +27,7 @@ router
             status: 'error'
             message: e.message
           }
-          ctx.response.status = 422
+          ctx.response.status = e.errorCode
         when e?.name == 'ValidationError'
           errors = _.mapObject e.errors, (val, key) ->
             switch
@@ -53,10 +53,10 @@ router
     )
     await next()
 
-  .use appletRouter.routes(), appletRouter.allowedMethods()
+  .use devRouter.routes(), devRouter.allowedMethods()
+  .use appletApiRouter.routes(), appletApiRouter.allowedMethods()
   .use accountRouter.routes(), accountRouter.allowedMethods()
   .use userRouter.routes(), userRouter.allowedMethods()
-  .use devRouter.routes(), devRouter.allowedMethods()
   .use exploreRouter.routes(), exploreRouter.allowedMethods()
 
   # TODO: Debug when deviceRouter after usersAppletsRouter,

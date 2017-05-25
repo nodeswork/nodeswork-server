@@ -5,5 +5,5 @@ module.exports = {
 
   NodesworkError: (@message) ->
 
-  ParameterValidationError: (@message) ->
+  ParameterValidationError: (@message, @errorCode=422) ->
 }
