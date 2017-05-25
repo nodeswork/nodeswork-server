@@ -19,6 +19,7 @@ exports.AppletSchema = AppletSchema = mongoose.Schema {
 
   imageUrl:
     type:       String
+    default:    'https://cdn1.iconfinder.com/data/icons/dotted-charts/512/links_diagram-256.png'
 
   permission:
     enum:       [ "PRIVATE", "PUBLIC", "LIMIT" ]
