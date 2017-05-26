@@ -108,8 +108,9 @@ appletApiRouter
     (ctx, next) ->
       ctx.overrides = {
         doc:
-          receiver:     ctx.user
-          sender:       ctx.applet
+          receiver:     ctx.user._id
+          sender:       ctx.applet._id
+          via:          ctx.userApplet._id
           messageType:  'AppletMessage'
       }
       await next()

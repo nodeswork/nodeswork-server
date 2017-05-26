@@ -1,4 +1,5 @@
 KoaRouter = require 'koa-router'
+mongoose  = require 'mongoose'
 
 {
   requireLogin
@@ -15,4 +16,15 @@ messageRouter
   .use requireLogin
 
   # TODO: enable pagination.
-  .get '/', overrideUserToQuery(), Message.findMiddleware()
+  .get('/'
+    overrideUserToQuery('receiver')
+    Message.findMiddleware {
+      target: 'messages'
+    }
+    (ctx) ->
+      for message in ctx.messages
+        await mongoose.models[message.messageType].populate message, {
+          path: 'sender'
+          select: 'name imageUrl'
+        }
+  )

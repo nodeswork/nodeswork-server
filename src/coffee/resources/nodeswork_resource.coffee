@@ -53,9 +53,13 @@ define ['resources/resource'], (Resource) ->
           isArray:  true
       }
 
-
     @DevAppletResource: ($resource) ->
       DevAppletResource = $resource '/api/v1/dev/applets/:appletId', {
         appletId: '@_id'
       }, {
+      }
+
+    @MessageResource: ($resource) ->
+      MessageResource = $resource '/api/v1/messages/:messageId', {
+        messageId: '@_id'
       }

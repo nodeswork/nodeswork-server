@@ -45,4 +45,8 @@ exports.AppletMessageSchema = AppletMessageSchema = MessageSchema.extend {
     required:   true
     index:      true
 
+  via:
+    type:       mongoose.Schema.ObjectId
+    ref:        'UserApplet'
+    required:   true
 }

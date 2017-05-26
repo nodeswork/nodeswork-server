@@ -105,4 +105,10 @@ define ['directives/directive'], (Directive) -> new Directive {
             scope.formChanged = true
         true
       )
+
+  messageDirective: () ->
+    restrict:     'E'
+    templateUrl:  '/views/messages/message-directive.html'
+    scope:
+      message:    '=ngModel'
 }

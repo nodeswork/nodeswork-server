@@ -1,1 +1,5 @@
 h2 Message Box
+
+ul.col-md-6.list-group
+  li.list-group-item(ng-repeat="message in messages")
+    message(ng-model="message")

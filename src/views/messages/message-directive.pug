@@ -1,0 +1,12 @@
+div.media.sm-padding
+  div.media-left
+    a
+      img.md-img.img-rounded(ng-src="{{message.sender.imageUrl}}")
+  div.media-body
+    div
+      h5
+        a(href="/my-applets/{{message.via}}/config") {{message.sender.name}}
+        small.pull-right {{message.createdAt | date:'medium'}}
+    p {{message.message}}
+    ul.list-inline.pull-right
+      li #[span.glyphicon.glyphicon-plus]

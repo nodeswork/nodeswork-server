@@ -120,7 +120,8 @@ define ['controllers/controller'], (Controller) -> new Controller {
   DevicesController: ($scope, DeviceResource) ->
     $scope.devices = DeviceResource.query()
 
-  MessagesController: () ->
+  MessagesController: ($scope, MessageResource) ->
+    $scope.messages = MessageResource.query()
 
   ExploreAppletController: ($scope, AppletResource) ->
     console.log 'applets', $scope.applets = AppletResource.explore()
