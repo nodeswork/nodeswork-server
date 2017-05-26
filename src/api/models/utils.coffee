@@ -136,12 +136,12 @@ exports.KoaMiddlewares = KoaMiddlewares = (schema) ->
       await next()
 
       try
-        await model.create ctx[target]
+        ctx[target] = await model.create ctx[target]
       catch e
         switch
           when e.name == 'MongoError' and e.code == 11000
             throw new ParameterValidationError 'Dumplite records detected.'
           else throw e
       if populate.length
-        ctx[target] = await model.populate ctx[target], populate.join(' ')
+        await model.populate ctx[target], populate.join(' ')
       ctx.response.body = ctx[target] if writeToBody

@@ -5,7 +5,9 @@ KoaRouter                   = require 'koa-router'
 {
   Account
   Applet
+  AppletMessage
   Device
+  Message
   User
   UserApplet
 }                           = require '../models'
@@ -50,7 +52,7 @@ fetchApplet = (ctx, next) ->
 fetchUser = (ctx, next) ->
   ctx.user    = await User.findById ctx.params.userId
 
-  unless ctx.params.userId.toString == ctx.device.user.toString()
+  unless ctx.params.userId.toString() == ctx.device.user.toString()
     throw new ParameterValidationError 'Device is not belong to user.'
 
   unless ctx.user?
@@ -64,7 +66,7 @@ fetchUser = (ctx, next) ->
   unless ctx.userApplet?
     throw new ParameterValidationError "Applet is not installed for user."
 
-  await ctx.userApplet.validate {
+  await ctx.userApplet.validateStatus {
     applet:  ctx.applet
     user:    ctx.user
     device:  ctx.device
@@ -90,17 +92,26 @@ appletApiRouter
 
   .use fetchDevice
 
-  .use fetchApplet
-
   # Returns include: 1) user applet relation 2) user's granted accounts.
-  .get '/users/:userId', fetchUser, (ctx) -> {
+  .get '/users/:userId', fetchApplet, fetchUser, (ctx) -> {
   }
 
   .post('/users/:userId/accounts/:accountId/operate'
+    fetchApplet
     fetchUser
     fetchAccount
     (ctx) ->
   )
 
-  .post '/users/:userId/messages', fetchUser, (ctx) -> {
-  }
+  .post('/users/:userId/messages'
+    fetchApplet, fetchUser
+    (ctx, next) ->
+      ctx.overrides = {
+        doc:
+          receiver:     ctx.user
+          sender:       ctx.applet
+          messageType:  'AppletMessage'
+      }
+      await next()
+    Message.createMiddleware()
+  )

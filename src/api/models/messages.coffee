@@ -20,11 +20,16 @@ exports.MessageSchema = MessageSchema = mongoose.Schema {
 
   message:
     type:       String
+    required:   true
+    min:        [1, 'Message could not be empty.']
+    max:        [1400, 'Message could not be larger than 1400 chars.']
 
   # redundant: 0, normal: 1, high priority: 2
   priority:
     type:       Number
     default:    1
+    min:        0
+    max:        2
 
 }, collection: 'messages', discriminatorKey: 'messageType'
 
