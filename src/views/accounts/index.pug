@@ -1,13 +1,14 @@
-h2 My Accounts
+h2
+  | My Accounts
 
-div.md-padding
-  div.btn-group
-    button.btn.btn-success.dropdown-toggle(data-toggle="dropdown", type="button")
-      | New Account&nbsp;
-      span.caret
-    ul.dropdown-menu
-      li
-        a(href="/accounts/new?accountType=FifaFutAccount") Fifa FUT 17 Account
+  div.md-padding.pull-right
+    div.btn-group
+      button.btn.btn-success.dropdown-toggle(data-toggle="dropdown", type="button")
+        | New Account&nbsp;
+        span.caret
+      ul.dropdown-menu
+        li
+          a(href="/accounts/new?accountType=FifaFutAccount") Fifa FUT 17 Account
 
 div.md-padding-top
   div(ng-repeat="account in accounts")

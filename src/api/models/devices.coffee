@@ -21,6 +21,10 @@ exports.DeviceSchema = DeviceSchema = mongoose.Schema {
     required:   true
     index:      true
 
+  name:
+    type:       String
+    default:    'My Device'
+
   deviceToken:
     type:       String
     required:   true

@@ -6,7 +6,7 @@ div.panel.panel-default.col-sm-12.col-md-6
       div.media-body
         h4 {{applet.applet.name}}
         p(ng-if="applet.cloud.mode != 'NO'") In Cloud: {{applet.cloud.mode}}
-        p(ng-if="applet.device") Device: {{applet.device._id}}
+        p(ng-if="applet.device") Run on: {{applet.device.name}}
         p Last Execution: NEVER
         div.pull-right
           button.btn.btn-success(ng-if="applet.status == 'ON'") Enabled

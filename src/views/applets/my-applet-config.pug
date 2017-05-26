@@ -8,7 +8,7 @@ div.row.md-padding
         div.col-sm-8
           select#device.form-control(
             ng-model="userApplet.device",
-            ng-options="device._id as device._id for device in devices track by device._id")
+            ng-options="device._id as device.name for device in devices track by device._id")
       div.form-group
         label.col-sm-4.control-label(for="status") Status
         div.col-sm-8
