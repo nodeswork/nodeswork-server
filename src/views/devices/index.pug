@@ -18,4 +18,6 @@ table.table.table-striped
       td {{device.deviceId}}
       td {{device.status}}
       td {{device.online}}
-      td 1
+      td {{device.runningApplets | numKeys}}
+
+pre {{devices | json}}

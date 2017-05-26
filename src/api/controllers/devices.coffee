@@ -11,6 +11,7 @@ KoaRouter                   = require 'koa-router'
   User
   UserApplet
 }                           = require '../models'
+{deviceRpcClient}           = require '../sockets'
 
 
 exports.deviceRouter = deviceRouter = new KoaRouter prefix: '/devices'
@@ -37,6 +38,12 @@ fetchDevice = (ctx, next) ->
   if ctx.device? then await next()
   else ctx.response.status = 401
 
+expandDevice = (device) ->
+  rpc    = deviceRpcClient.getRpc device.deviceToken
+  _.extend device.toJSON(), {
+    online: !!rpc
+    runningApplets: (await rpc?.runningApplets()) ? []
+  }
 
 deviceRouter
 
@@ -44,7 +51,14 @@ deviceRouter
 
   .use requireLogin
 
-  .get '/', overrideUserToQuery(), Device.findMiddleware()
+  .get('/', overrideUserToQuery()
+    Device.findMiddleware target: 'devices'
+    (ctx) ->
+      ctx.devices = (
+        for device in ctx.devices
+          await expandDevice device
+      )
+  )
 
   .get '/:deviceId', fetchDevice, (ctx) -> ctx.body = ctx.device
 

@@ -61,6 +61,9 @@ require [
   app.factory '$', () -> $
   app.factory 'Case', () -> Case
 
+  app.filter 'numKeys', () ->
+    (json) -> Object.keys(json).length
+
   NodesworkResource.export app
   PageController.export    app
   PageDirectives.export    app
