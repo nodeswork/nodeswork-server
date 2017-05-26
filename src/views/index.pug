@@ -27,7 +27,7 @@ html
           a.navbar-brand(href="/") {{menu.title}}
         div.collapse.navbar-collapse
           ul.nav.navbar-nav
-            li(ng-repeat="item in menu.items", ng-class="{active: item.active}")
+            li(ng-repeat="item in menu.items", ng-class="{active: item.active, hide: !item.active && item.autohide}")
               a(href="{{item.link}}") {{item.name}}
 
           ul.nav.navbar-nav.navbar-right
@@ -42,6 +42,8 @@ html
                   type="password", placeholder="password",
                   ng-model="loginInfo.password")
               button.btn.btn-default(type="submit") Login
+            li
+              a(href="/messages") #[span.glyphicon.glyphicon-envelope]
             li.dropdown(ng-show="user._id")
               a.dropdown-toggle(data-toggle="dropdown")
                 span.glyphicon.glyphicon-user

@@ -7,24 +7,29 @@ define [], () ->
       defaultLink:   '/register'
       items:    [
         {
-          name: 'Home'
-          link: '/'
+          name:      'Home'
+          link:      '/'
         }
         {
-          name: 'Accounts'
-          link: '/accounts'
+          name:      'Accounts'
+          link:      '/accounts'
         }
         {
-          name: 'My Applets'
-          link: '/my-applets'
+          name:      'My Applets'
+          link:      '/my-applets'
         }
         {
-          name: 'Devices'
-          link: '/devices'
+          name:      'Devices'
+          link:      '/devices'
         }
         {
-          name: 'Explore'
-          link: '/explore'
+          name:      'Explore'
+          link:      '/explore'
+        }
+        {
+          name:      'Messages'
+          link:      '/messages'
+          autohide:  true
         }
       ]
 
@@ -118,6 +123,14 @@ define [], () ->
         item:         'Devices'
         controller:   'DevicesController'
         templateUrl:  '/views/devices/index.html'
+      }
+
+      .when '/messages', {
+        name:         'Messages'
+        menu:         menus.userMenu
+        item:         'Messages'
+        controller:   'MessagesController'
+        templateUrl:  '/views/messages/index.html'
       }
 
       .when '/explore', {
