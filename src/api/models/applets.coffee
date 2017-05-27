@@ -116,3 +116,24 @@ exports.NpmAppletSchema = NpmAppletSchema = AppletSchema.extend {
 }
   # TODO: support ExcludeFieldsToJSON with chained fields.
   .plugin ExcludeFieldsToJSON, fields: ['prodToken', 'packageName_unique']
+
+
+exports.SystemAppletSchema = SystemAppletSchema = AppletSchema.extend {
+
+  systemAppletType:
+    type:                 String
+    enum:                 ['CONTAINER']
+}
+
+SystemAppletSchema.statics.containerApplet = () ->
+  unless @_containerApplet?
+    @_containerApplet = await @findOneAndUpdate {
+      systemAppletType: 'CONTAINER'
+    }, {
+      systemAppletType: 'CONTAINER'
+      owner:            await @db.model('SystemUser').containerAppletOwner()
+    }, {
+      upsert:         true
+    }
+
+  return @_containerApplet

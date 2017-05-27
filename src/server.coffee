@@ -26,7 +26,7 @@ do () ->
 
   await mongoose.connect dbURI
 
-  registerModels mongoose
+  await registerModels mongoose
 
   api        = require './api'
   app        = new Koa

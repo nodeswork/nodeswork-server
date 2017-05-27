@@ -27,14 +27,28 @@ exports.registerModels = (mongooseInstance = mongoose) ->
   registerModel modelName, modelSchema for [modelName, modelSchema] in [
     ['User',               users.UserSchema]
     ['EmailUser',          users.EmailUserSchema]
+    ['SystemUser',         users.SystemUserSchema]
     ['Account',            accounts.AccountSchema]
     ['FifaFutAccount',     accounts.FifaFutAccountSchema]
     ['Applet',             applets.AppletSchema]
     ['NpmApplet',          applets.NpmAppletSchema]
+    ['SystemApplet',       applets.SystemAppletSchema]
     ['UserApplet',         usersApplets.UserAppletSchema]
     ['Device',             devices.DeviceSchema]
     ['Message',            messages.MessageSchema]
     ['AppletMessage',      messages.AppletMessageSchema]
   ]
+
+  containerAppletOwner = await mongoose.models.SystemUser.containerAppletOwner()
+  logger.info(
+    'Ensure system user container applet exists:'
+    containerAppletOwner.toJSON()
+  )
+
+  containerApplet = await mongoose.models.SystemApplet.containerApplet()
+  logger.info(
+    'Ensure system applet container exists:'
+    containerAppletOwner.toJSON()
+  )
 
   return

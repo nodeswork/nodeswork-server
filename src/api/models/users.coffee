@@ -65,3 +65,23 @@ EmailUserSchema.pre 'save', (next) ->
 
 EmailUserSchema.methods.comparePassword = (password) ->
   bcrypt.compare password, @password
+
+
+exports.SystemUserSchema = SystemUserSchema = UserSchema.extend {
+  systemUserType:
+    type:       String
+    enum:       ['CONTAINER_APPLET_OWNER']
+}
+
+SystemUserSchema.statics.containerAppletOwner = () ->
+  unless @_containerAppletOwner?
+    @_containerAppletOwner = await @findOneAndUpdate {
+      systemUserType: 'CONTAINER_APPLET_OWNER'
+    }, {
+      systemUserType: 'CONTAINER_APPLET_OWNER'
+      status:         'ACTIVE'
+    }, {
+      upsert:         true
+    }
+
+  return @_containerAppletOwner
