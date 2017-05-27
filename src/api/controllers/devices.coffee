@@ -63,8 +63,21 @@ deviceRouter
   .get '/:deviceId', fetchDevice, (ctx) -> ctx.body = ctx.device
 
   .post('/', overrideUserToDoc(),
-    Device.createMiddleware fromExtend: false
-    (ctx) -> ctx.object.withFieldsToJSON 'deviceToken'
+    (ctx, next) ->
+      device = await Device.findOne {
+        user:      ctx.user
+        deviceId:  ctx.request.body.deviceId
+      }
+      if device?
+        ctx.device = _.extend device, _.omit ctx.request.body, [
+          '_id', 'createdAt', 'lastUpdateTime', 'user', 'deviceToken'
+        ]
+        await ctx.device.save()
+      else
+        await next()
+      ctx.device.withFieldsToJSON 'deviceToken'
+      ctx.body = ctx.device
+    Device.createMiddleware fromExtend: false, target: 'device'
   )
 
   # .post('/:deviceId', overrideUserToQuery(),
