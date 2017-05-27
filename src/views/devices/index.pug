@@ -1,23 +1,47 @@
 h2 My Devices
 
-table.table.table-striped
-  thead
-    tr
-      th ID
-      th Platform
-      th OS
-      th Device ID
-      th Status
-      th Online
-      th Running Applets
-  tbody
-    tr(ng-repeat="device in devices")
-      td {{device._id}}
-      td {{device.platform}}
-      td {{device.os}}
-      td {{device.deviceId}}
-      td {{device.status}}
-      td {{device.online}}
-      td {{device.runningApplets | numKeys}}
+div.row
+  ul.list-group.col-md-3
+    li.list-group-item(ng-repeat="device in devices", ng-class="{active: device == activeDevice}")
+      h4 {{device.name}}
+      small {{device.runningApplets | numKeys}} running applets.
+  div.col-md-9.panel.panel-default
+    div.panel-body
+      div.form.form-horizontal
+        div.form-group
+          label.col-md-2 Device Name
+          span.col-md-2 {{activeDevice.name}}
+          label.col-md-2 Status
+          span.col-md-2 {{activeDevice.status}}
+          label.col-md-2 Online
+          span.col-md-2 {{activeDevice.online}}
+        div.form-group
+          label.col-md-2 Device ID
+          span.col-md-10 {{activeDevice.deviceId}}
+        div.form-group
+          label.col-md-2 Running Applets
+          div.col-md-10
+            div(ng-if="!activeDevice.runningApplets.length") There is no applets running.
+
+
+//- table.table.table-striped
+  //- thead
+    //- tr
+      //- th ID
+      //- th Platform
+      //- th OS
+      //- th Device ID
+      //- th Status
+      //- th Online
+      //- th Running Applets
+  //- tbody
+    //- tr(ng-repeat="device in devices")
+      //- td {{device._id}}
+      //- td {{device.platform}}
+      //- td {{device.os}}
+      //- td {{device.deviceId}}
+      //- td {{device.status}}
+      //- td {{device.online}}
+      //- td {{device.runningApplets | numKeys}}
 
 pre {{devices | json}}

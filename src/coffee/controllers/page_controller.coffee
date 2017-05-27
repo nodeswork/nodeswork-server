@@ -118,7 +118,8 @@ define ['controllers/controller'], (Controller) -> new Controller {
   HomeController: ($scope) ->
 
   DevicesController: ($scope, DeviceResource) ->
-    $scope.devices = DeviceResource.query()
+    $scope.devices = DeviceResource.query {}, () ->
+      $scope.activeDevice = $scope.devices[0]
 
   MessagesController: ($scope, MessageResource) ->
     $scope.messages = MessageResource.query()
