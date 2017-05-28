@@ -7,8 +7,11 @@ div.panel.panel-default.col-sm-12.col-md-6
         h4 {{applet.applet.name}}
         p(ng-if="applet.cloud.mode != 'NO'") In Cloud: {{applet.cloud.mode}}
         p(ng-if="applet.device") Run on: {{applet.device.name}}
-        p Last Execution: NEVER
-        div.pull-right
-          button.btn.btn-success(ng-if="applet.status == 'ON'") Enabled
-          a.btn.btn-primary(href='/my-applets/{{applet._id}}/config') Config
-          button.btn.btn-default Details
+        p Last Execution: {{applet.lastExecution | date:'medium'}}
+        ul.pull-right.list-inline
+          li
+            button.btn.btn-success(ng-if="applet.status == 'ON'", ng-click="run()") Run
+          li
+            a.btn.btn-primary(href='/my-applets/{{applet._id}}/config') Config
+          li
+            button.btn.btn-default Details

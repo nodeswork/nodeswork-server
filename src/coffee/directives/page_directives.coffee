@@ -1,10 +1,21 @@
 define ['directives/directive'], (Directive) -> new Directive {
 
-  userAppletDirective: () ->
+  userAppletDirective: (_) ->
     restrict:     'E'
     templateUrl:  '/views/applets/user-applet-directive.html'
     scope:
       applet:     '=ngModel'
+    link: (scope) ->
+      _.extend scope, {
+        run: () ->
+          scope.applet.$run(
+            {},
+            (resp) ->
+              console.log "Execution success.", resp
+            (e) ->
+              console.error "Execution failed.", e
+          )
+      }
 
   appletDirective: () ->
     restrict:     'E'

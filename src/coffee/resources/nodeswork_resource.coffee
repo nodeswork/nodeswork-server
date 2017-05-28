@@ -30,7 +30,11 @@ define ['resources/resource'], (Resource) ->
 
     @UserAppletResource: ($resource) ->
       UserAppletResource = $resource '/api/v1/my-applets/:relationId', {
-        relationId: '@_id'
+        relationId:  '@_id'
+      }, {
+        run:
+          url:       '/api/v1/my-applets/:relationId/run'
+          method:    'POST'
       }
 
     @AppletResource: ($resource) ->

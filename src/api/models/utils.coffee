@@ -50,6 +50,7 @@ exports.KoaMiddlewares = KoaMiddlewares = (schema) ->
       field
       writeToBody=true
       populate=[]
+      target='object'
     } = opts
     (ctx, next) =>
       query              = ctx.overrides?.query ? {}
@@ -57,9 +58,9 @@ exports.KoaMiddlewares = KoaMiddlewares = (schema) ->
       queryPromise       = @findOne query
       for f in populate
         queryPromise = queryPromise.populate f
-      ctx.object         = await queryPromise
+      ctx[target]        = await queryPromise
       await next()
-      ctx.response.body  = ctx.object if writeToBody
+      ctx.response.body  = ctx[target] if writeToBody
 
   schema.statics.findMiddleware = (opts={}) ->
     {

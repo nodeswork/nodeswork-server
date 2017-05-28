@@ -13,6 +13,7 @@ KoaRouter                   = require 'koa-router'
 }                           = require '../models'
 params                      = require './params'
 {ParameterValidationError}  = require '../errors'
+{deviceRpcClient}           = require '../sockets'
 
 
 exports.usersAppletsRouter = usersAppletsRouter = new KoaRouter prefix: '/my-applets'
@@ -53,6 +54,39 @@ usersAppletsRouter
       populate:  ['applet', 'device']
     }
     validateUserApplet
+  )
+
+  .post('/:relationId/run', overrideUserToQuery()
+    UserApplet.getMiddleware {
+      field:        'relationId'
+      writeToBody:  false
+      target:       'userApplet'
+      populate:     ['device']
+    }
+    (ctx) ->
+      unless ctx.userApplet.device?
+        throw new ParameterValidationError "Applet is not running on device."
+
+
+      rpc = deviceRpcClient.getRpc ctx.userApplet.device.deviceToken
+
+      unless rpc?
+        throw new ParameterValidationError "Applet is not running on active device."
+
+      try
+        await rpc.run {
+          appletId: ctx.userApplet.applet
+          userId: ctx.user._id
+        }
+        ctx.userApplet.lastExecution = new Date
+        await ctx.userApplet.save()
+        ctx.body = await UserApplet.populate ctx.userApplet, 'device applet'
+      catch e
+        ctx.body = {
+          status: 'error'
+          error: e
+        }
+        ctx.response.status = 422
   )
 
   # Load applet and verify the permission.

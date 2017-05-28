@@ -41,6 +41,9 @@ exports.UserAppletSchema = UserAppletSchema = mongoose.Schema {
     ref:        'Account'
   ]
 
+  lastExecution:
+    type:       Date
+
 }, collection: 'users.applets', discriminatorKey: 'appletType'
 
   .plugin TimestampModelPlugin
