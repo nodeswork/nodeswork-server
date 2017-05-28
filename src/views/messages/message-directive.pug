@@ -5,7 +5,9 @@ div.media.sm-padding
   div.media-body
     div
       h5
-        a(href="/my-applets/{{message.via}}/config") {{message.sender.name}}
+        a(ng-href="/my-applets/{{message.via}}/config", ng-show="message.via")
+          strong {{message.sender.name}}
+        strong(ng-show="!message.via") {{message.sender.name}}
         small.pull-right {{message.createdAt | date:'medium'}}
     p {{message.message}}
     ul.list-inline.pull-right

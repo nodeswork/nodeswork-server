@@ -4,7 +4,7 @@ div.row
   ul.list-group.col-md-3
     li.list-group-item(ng-repeat="device in devices", ng-class="{active: device == activeDevice}")
       h4 {{device.name}}
-      small {{device.runningApplets.length}} running applets.
+      small {{device.runningApplets.length}} applets {{onlineApplets(device.runningApplets).length}} online.
   div.col-md-9.panel.panel-default
     div.panel-body
       div.form.form-horizontal
@@ -22,26 +22,8 @@ div.row
           label.col-md-2 Running Applets
           div.col-md-10
             div(ng-if="!activeDevice.runningApplets.length") There is no applets running.
-
-
-//- table.table.table-striped
-  //- thead
-    //- tr
-      //- th ID
-      //- th Platform
-      //- th OS
-      //- th Device ID
-      //- th Status
-      //- th Online
-      //- th Running Applets
-  //- tbody
-    //- tr(ng-repeat="device in devices")
-      //- td {{device._id}}
-      //- td {{device.platform}}
-      //- td {{device.os}}
-      //- td {{device.deviceId}}
-      //- td {{device.status}}
-      //- td {{device.online}}
-      //- td {{device.runningApplets }}
-
-pre {{devices | json}}
+            ul.list-inline
+              li(ng-repeat="runningApplet in activeDevice.runningApplets")
+                a(ng-href="/my-applets/{{userAppletsDict[runningApplet.appletId]._id}}/config")
+                  img.center-block.md-img(ng-src="{{userAppletsDict[runningApplet.appletId].applet.imageUrl}}")
+                  div.text-center {{runningApplet.status}}

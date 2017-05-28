@@ -114,7 +114,7 @@ appletApiRouter
         doc:
           receiver:     ctx.user._id
           sender:       ctx.applet._id
-          via:          ctx.userApplet._id
+          via:          ctx.userApplet?._id
           messageType:  'AppletMessage'
       }
       await next()

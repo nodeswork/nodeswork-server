@@ -20,6 +20,7 @@ messageRouter
     overrideUserToQuery('receiver')
     Message.findMiddleware {
       target: 'messages'
+      sort:   '-createdAt'
     }
     (ctx) ->
       for message in ctx.messages

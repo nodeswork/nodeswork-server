@@ -117,9 +117,18 @@ define ['controllers/controller'], (Controller) -> new Controller {
 
   HomeController: ($scope) ->
 
-  DevicesController: ($scope, DeviceResource) ->
+  DevicesController: (_, $scope, DeviceResource, UserAppletResource) ->
+    $scope.userApplets = UserAppletResource.query {}, () ->
+      $scope.userAppletsDict = _.object _.map $scope.userApplets, (userApplet) ->
+        [userApplet.applet._id, userApplet]
+
     $scope.devices = DeviceResource.query {}, () ->
       $scope.activeDevice = $scope.devices[0]
+
+    _.extend $scope, {
+      onlineApplets: (runningApplets) ->
+        _.filter runningApplets, (applet) -> applet.status == 'online'
+    }
 
   MessagesController: ($scope, MessageResource) ->
     $scope.messages = MessageResource.query()

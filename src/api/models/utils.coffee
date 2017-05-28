@@ -66,12 +66,15 @@ exports.KoaMiddlewares = KoaMiddlewares = (schema) ->
       writeToBody=true
       populate=[]
       target='object'
+      sort=null
     } = opts
     (ctx, next) =>
       query              = ctx.overrides?.query ? {}
       queryPromise       = @find query
       for f in populate
         queryPromise = queryPromise.populate f
+      if sort?
+        queryPromise     = queryPromise.sort sort
       ctx[target]        = await queryPromise
       await next()
       ctx.response.body = ctx[target] if writeToBody
