@@ -42,7 +42,10 @@ expandDevice = (device) ->
   rpc    = deviceRpcClient.getRpc device.deviceToken
   _.extend device.toJSON(), {
     online: !!rpc
-    runningApplets: (await rpc?.runningApplets()) ? []
+    runningApplets: _.sortBy(
+      _.values (await rpc?.runningApplets()) ? {}
+      'name'
+    )
   }
 
 deviceRouter

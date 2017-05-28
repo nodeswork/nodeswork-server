@@ -63,16 +63,16 @@ fetchUser = (ctx, next) ->
       .populate 'accounts device'
   )
 
-  unless ctx.userApplet?
+  unless ctx.userApplet? or ctx.applet.appletType == 'SystemApplet'
     throw new ParameterValidationError "Applet is not installed for user."
 
-  await ctx.userApplet.validateStatus {
+  await ctx.userApplet?.validateStatus {
     applet:  ctx.applet
     user:    ctx.user
     device:  ctx.device
   }
 
-  unless ctx.status != "ON"
+  unless not ctx.userApplet? or ctx.userApplet.status == "ON"
     throw new ParameterValidationError "Applet is not active."
 
   await next()
@@ -92,9 +92,13 @@ appletApiRouter
 
   .use fetchDevice
 
-  # Returns include: 1) user applet relation 2) user's granted accounts.
-  .get '/users/:userId', fetchApplet, fetchUser, (ctx) -> {
-  }
+  # Returns include: 1) user; 2) user's applet relationship; 3) applet.
+  .get '/users/:userId', fetchApplet, fetchUser, (ctx) ->
+    ctx.body = {
+      user:        ctx.user
+      userApplet:  ctx.userApplet
+      applet:      ctx.applet
+    }
 
   .post('/users/:userId/accounts/:accountId/operate'
     fetchApplet

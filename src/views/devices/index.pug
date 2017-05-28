@@ -4,7 +4,7 @@ div.row
   ul.list-group.col-md-3
     li.list-group-item(ng-repeat="device in devices", ng-class="{active: device == activeDevice}")
       h4 {{device.name}}
-      small {{device.runningApplets | numKeys}} running applets.
+      small {{device.runningApplets.length}} running applets.
   div.col-md-9.panel.panel-default
     div.panel-body
       div.form.form-horizontal
@@ -42,6 +42,6 @@ div.row
       //- td {{device.deviceId}}
       //- td {{device.status}}
       //- td {{device.online}}
-      //- td {{device.runningApplets | numKeys}}
+      //- td {{device.runningApplets }}
 
 pre {{devices | json}}

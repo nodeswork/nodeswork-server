@@ -127,13 +127,13 @@ exports.SystemAppletSchema = SystemAppletSchema = AppletSchema.extend {
 
 SystemAppletSchema.statics.containerApplet = () ->
   unless @_containerApplet?
-    @_containerApplet = await @findOneAndUpdate {
-      systemAppletType: 'CONTAINER'
-    }, {
-      systemAppletType: 'CONTAINER'
-      owner:            await @db.model('SystemUser').containerAppletOwner()
-    }, {
-      upsert:         true
-    }
+    @_containerApplet = await @findOne systemAppletType: 'CONTAINER'
 
+  unless @_containerApplet?
+    owner = await @db.model('SystemUser').containerAppletOwner()
+    @_containerApplet = await @create {
+      owner:            owner
+      name:             'System Container Applet'
+      systemAppletType: 'CONTAINER'
+    }
   return @_containerApplet

@@ -23,6 +23,7 @@ router
     try
       await next()
     catch e
+      console.log e
       switch
         when e instanceof ParameterValidationError
           ctx.body = {
@@ -44,6 +45,11 @@ router
             message: e.message
             details: e.details
           }
+          ctx.response.status  = 422
+        when e?.name == 'CastError'
+          ctx.body = _.pick e, [
+            'message', 'name', 'stringValue', 'kind', 'value'
+          ]
           ctx.response.status  = 422
         else
           throw e
