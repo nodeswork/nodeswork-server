@@ -3,21 +3,16 @@ h2 My Applet: {{userApplet.applet.name}}
 div.md-padding-top.ro
   ul.col-md-3.nav.nav-pills.nav-stacked
     li.active
-      a(data-toggle="pill", href="#home-channel") Home Channel
-    li
-      a(data-toggle="pill", href="#view-tree") View Tree
+      a(data-toggle="pill", href="#applet-channel") Applet Channel
     li
       a(data-toggle="pill", href="#configurations") Configurations
     li
       a(data-toggle="pill", href="#executions") Executions
 
   div.col-md-9.tab-content
-    div#home-channel.panel.panel-default.active.tab-pane
+    div#applet-channel.panel.panel-default.active.tab-pane
       div.panel-body
-        | HOME CHANNEL
-    div#view-tree.panel.panel-default.tab-pane
-      div.panel-body
-        | View Tree
+        | APPLET CHANNEL
     div#configurations.panel.panel-default.tab-pane
       div.panel-body.lg-padding-top
         form.form-horizontal(ng-submit="save()")

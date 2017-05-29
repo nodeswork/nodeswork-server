@@ -110,11 +110,12 @@ define [], () ->
       }
 
       .when '/my-applets/:relationId', {
-        name:         'Applets'
-        menu:         menus.userMenu
-        item:         'My Applets'
-        controller:   'UserAppletController'
-        templateUrl:  '/views/applets/user-applet.html'
+        name:            'Applets'
+        menu:            menus.userMenu
+        item:            'My Applets'
+        controller:      'UserAppletController'
+        templateUrl:     '/views/applets/user-applet.html'
+        reloadOnSearch:  false
       }
 
       .when '/my-applets/:relationId/config', {

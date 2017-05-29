@@ -64,13 +64,20 @@ define ['controllers/controller'], (Controller) -> new Controller {
   UsersAppletsController: ($scope, UserAppletResource) ->
     console.log 'applets', $scope.applets = UserAppletResource.query()
 
-  UserAppletController: (_, $scope, $routeParams, UserAppletResource
-    DeviceResource
+  UserAppletController: (_, $scope, $routeParams, $location, $document
+    UserAppletResource, DeviceResource
   ) ->
     _.extend $scope, {
       devices:    DeviceResource.query()
       userApplet: UserAppletResource.get(relationId: $routeParams.relationId)
     }
+
+    $document.find("a[href='##{$location.hash()}']").tab 'show'
+
+    $document.find('a[data-toggle="pill"]').on 'shown.bs.tab', (e) ->
+      hashStr = $(e.target).attr('href').substr(1)
+      $location.hash hashStr
+      $scope.$apply()
 
   UserAppletConfigController: ($scope, $routeParams, UserAppletResource
     DeviceResource

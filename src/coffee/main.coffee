@@ -21,7 +21,7 @@ require.config
     angularRoute:
       deps:                   [ 'angular' ]
     bootstrap:
-      deps:                   [ 'jquery' ]
+      deps:                   [ 'angular' ]
       exports:                '$'
     case:
       exports:                'Case'
@@ -29,7 +29,7 @@ require.config
       exports:                '_'
 
 require [
-  'angular', 'angularRoute', 'angularResource', 'bootstrap', 'jquery'
+  'angular', 'angularRoute', 'angularResource', 'bootstrap'
   'underscore', 'case'
 
   'routes'
@@ -40,7 +40,7 @@ require [
 
   'directives/page_directives'
 ], (
-  angular, angularRoute, angularResource, bootstrap, $, _, Case
+  angular, angularRoute, angularResource, bootstrap, _, Case
 
   routes
 
@@ -58,7 +58,7 @@ require [
   app.config routes
 
   app.factory '_', () -> _
-  app.factory '$', () -> $
+  # app.factory '$', () -> $
   app.factory 'Case', () -> Case
 
   app.filter 'numKeys', () ->
