@@ -6,9 +6,11 @@ define ['controllers/controller'], (Controller) -> new Controller {
     bodyElement  = $document.find('body')
 
     themeLinks = {
-      normal: 'https://bootswatch.com/darkly/bootstrap.min.css'
-      dev:    'https://bootswatch.com/cosmo/bootstrap.min.css'
       # dev:    '/bower_components/bootstrap/dist/css/bootstrap.min.css'
+      # normal: 'https://bootswatch.com/darkly/bootstrap.min.css'
+      # dev:    'https://bootswatch.com/cosmo/bootstrap.min.css'
+      dev:    'https://bootswatch.com/darkly/bootstrap.min.css'
+      normal: 'https://bootswatch.com/sandstone/bootstrap.min.css'
     }
 
     _.extend $rootScope, {
@@ -61,6 +63,14 @@ define ['controllers/controller'], (Controller) -> new Controller {
 
   UsersAppletsController: ($scope, UserAppletResource) ->
     console.log 'applets', $scope.applets = UserAppletResource.query()
+
+  UserAppletController: (_, $scope, $routeParams, UserAppletResource
+    DeviceResource
+  ) ->
+    _.extend $scope, {
+      devices:    DeviceResource.query()
+      userApplet: UserAppletResource.get(relationId: $routeParams.relationId)
+    }
 
   UserAppletConfigController: ($scope, $routeParams, UserAppletResource
     DeviceResource

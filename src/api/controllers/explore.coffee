@@ -2,11 +2,11 @@ _               = require 'underscore'
 KoaRouter       = require 'koa-router'
 
 {requireLogin}  = require './middlewares'
-{Applet}        = require '../models'
+{NpmApplet}     = require '../models'
 
 
 exports.exploreRouter = exploreRouter = new KoaRouter prefix: '/explore'
 
 
 exploreRouter
-  .get '/', (ctx) -> ctx.body = await Applet.find {}
+  .get '/', (ctx) -> ctx.body = await NpmApplet.find {}

@@ -109,6 +109,14 @@ define [], () ->
         templateUrl:  '/views/applets/my-applets.html'
       }
 
+      .when '/my-applets/:relationId', {
+        name:         'Applets'
+        menu:         menus.userMenu
+        item:         'My Applets'
+        controller:   'UserAppletController'
+        templateUrl:  '/views/applets/user-applet.html'
+      }
+
       .when '/my-applets/:relationId/config', {
         name:         'Applets'
         menu:         menus.userMenu

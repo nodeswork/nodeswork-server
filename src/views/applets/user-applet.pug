@@ -1,0 +1,50 @@
+h2 My Applet: {{userApplet.applet.name}}
+
+div.md-padding-top.ro
+  ul.col-md-3.nav.nav-pills.nav-stacked
+    li.active
+      a(data-toggle="pill", href="#home-channel") Home Channel
+    li
+      a(data-toggle="pill", href="#view-tree") View Tree
+    li
+      a(data-toggle="pill", href="#configurations") Configurations
+    li
+      a(data-toggle="pill", href="#executions") Executions
+
+  div.col-md-9.tab-content
+    div#home-channel.panel.panel-default.active.tab-pane
+      div.panel-body
+        | HOME CHANNEL
+    div#view-tree.panel.panel-default.tab-pane
+      div.panel-body
+        | View Tree
+    div#configurations.panel.panel-default.tab-pane
+      div.panel-body.lg-padding-top
+        form.form-horizontal(ng-submit="save()")
+          div.form-group
+            label.col-sm-3.control-label(for="device") Device
+            div.col-sm-9
+              select#device.form-control(
+                ng-model="userApplet.device",
+                ng-options="device._id as device.name for device in devices track by device._id")
+          div.form-group
+            label.col-sm-3.control-label(for="status") Status
+            div.col-sm-9
+              select#status.form-control(ng-model="userApplet.status")
+                option(value="ON") ON
+                option(value="OFF") OFF
+                option(value="INSUFFICIENT_ACCOUNT") Insufficient Account
+          div.form-group
+            label.col-sm-3.control-label(for="require-accounts") Require Accounts
+            div.col-sm-9
+              input#require-accounts.form-control(type="text", ng-model="userApplet.requiredAccountsNN")
+          div.form-group
+            div.col-sm-offset-3.col-sm-9
+              ul.list-inline
+                li
+                  button.btn.btn-success(type="submit") Save
+                li
+                  a.btn.btn-default(href="/my-applets") Cancel
+    div#executions.panel.panel-default.tab-pane
+      div.panel-body
+        | Executions
