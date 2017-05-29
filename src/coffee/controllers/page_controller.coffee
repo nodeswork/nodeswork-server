@@ -79,16 +79,16 @@ define ['controllers/controller'], (Controller) -> new Controller {
       $location.hash hashStr
       $scope.$apply()
 
-  UserAppletConfigController: ($scope, $routeParams, UserAppletResource
-    DeviceResource
-  ) ->
-    _.extend $scope, {
-      devices:    DeviceResource.query()
-      userApplet: UserAppletResource.get(relationId: $routeParams.relationId)
+  # UserAppletConfigController: ($scope, $routeParams, UserAppletResource
+    # DeviceResource
+  # ) ->
+    # _.extend $scope, {
+      # devices:    DeviceResource.query()
+      # userApplet: UserAppletResource.get(relationId: $routeParams.relationId)
 
-      save: () ->
-        $scope.userApplet.$save()
-    }
+      # save: () ->
+        # $scope.userApplet.$save()
+    # }
 
   AccountsController: ($scope, AccountResource, $) ->
     console.log 'accounts', $scope.accounts = AccountResource.query()

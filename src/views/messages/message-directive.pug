@@ -1,11 +1,11 @@
 div.media.sm-padding
   div.media-left
-    a
+    a(ng-href="/my-applets/{{message.via}}")
       img.md-img.img-rounded(ng-src="{{message.sender.imageUrl}}")
   div.media-body
     div
       h5
-        a(ng-href="/my-applets/{{message.via}}/config", ng-show="message.via")
+        a(ng-href="/my-applets/{{message.via}}", ng-show="message.via")
           strong {{message.sender.name}}
         strong(ng-show="!message.via") {{message.sender.name}}
         small.pull-right {{message.createdAt | date:'medium'}}
