@@ -9,6 +9,7 @@ mongooseTypeEmail       = require 'mongoose-type-email'
 accounts                = require './accounts'
 applets                 = require './applets'
 devices                 = require './devices'
+appletsExecutions       = require './applets-executions'
 messages                = require './messages'
 users                   = require './users'
 usersApplets            = require './users-applets'
@@ -37,6 +38,7 @@ exports.registerModels = (mongooseInstance = mongoose) ->
     ['Device',             devices.DeviceSchema]
     ['Message',            messages.MessageSchema]
     ['AppletMessage',      messages.AppletMessageSchema]
+    ['AppletExecution',    appletsExecutions.AppletExecutionSchema]
   ]
 
   containerAppletOwner = await mongoose.models.SystemUser.containerAppletOwner()

@@ -68,9 +68,14 @@ exports.KoaMiddlewares = KoaMiddlewares = (schema) ->
       populate=[]
       target='object'
       sort=null
+      allowedQueryFields=[]
     } = opts
     (ctx, next) =>
-      query              = ctx.overrides?.query ? {}
+      query              = {}
+      if allowedQueryFields
+        inputQuery       = JSON.parse(ctx.request.query.query ? '{}')
+        query            = _.extend query, _.pick inputQuery, allowedQueryFields
+      query              = _.extend query, ctx.overrides?.query ? {}
       queryPromise       = @find query
       for f in populate
         queryPromise = queryPromise.populate f

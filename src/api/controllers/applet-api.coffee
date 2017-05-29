@@ -6,6 +6,7 @@ KoaRouter                   = require 'koa-router'
   Account
   Applet
   AppletMessage
+  AppletExecution
   Device
   Message
   User
@@ -119,4 +120,32 @@ appletApiRouter
       }
       await next()
     Message.createMiddleware()
+  )
+
+  .post('/users/:userId/executions'
+    fetchApplet, fetchUser
+    (ctx, next) ->
+      ctx.overrides = {
+        doc:
+          user:         ctx.user._id
+          device:       ctx.device?._id
+      }
+      await next()
+    AppletExecution.createMiddleware fromExtend: false
+  )
+
+  .post('/users/:userId/executions/:executionId'
+    fetchApplet, fetchUser
+    (ctx, next) ->
+      ctx.overrides = {
+        query:
+          _id:          ctx.params.executionId
+          user:         ctx.user._id
+          device:       ctx.device?._id
+      }
+      await next()
+    AppletExecution.updateMiddleware {
+      field: 'executionId'
+      omits: ['user', 'applet', 'device']
+    }
   )

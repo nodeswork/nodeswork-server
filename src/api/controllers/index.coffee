@@ -7,6 +7,7 @@ KoaRouter                   = require 'koa-router'
 {accountRouter}             = require './accounts'
 {devRouter}                 = require './devs'
 {deviceRouter}              = require './devices'
+{executionRouter}           = require './executions'
 {exploreRouter}             = require './explore'
 {messageRouter}             = require './messages'
 {userRouter}                = require './users'
@@ -74,3 +75,4 @@ router
   .use usersAppletsRouter.routes(), usersAppletsRouter.allowedMethods()
   .use messageRouter.routes(), messageRouter.allowedMethods()
   .use systemRouter.routes(), systemRouter.allowedMethods()
+  .use executionRouter.routes(), executionRouter.allowedMethods()

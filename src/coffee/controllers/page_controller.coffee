@@ -65,18 +65,31 @@ define ['controllers/controller'], (Controller) -> new Controller {
     console.log 'applets', $scope.applets = UserAppletResource.query()
 
   UserAppletController: (_, $scope, $routeParams, $location, $document
-    UserAppletResource, DeviceResource
+    UserAppletResource, DeviceResource, ExecutionResource
   ) ->
     _.extend $scope, {
       devices:    DeviceResource.query()
       userApplet: UserAppletResource.get(relationId: $routeParams.relationId)
     }
 
+    onTabChanged = (tab) ->
+      switch tab
+        when 'executions'
+          $scope.userApplet.$promise.then () ->
+            _.extend $scope, {
+              executions: ExecutionResource.query {
+                query:
+                  applet: $scope.userApplet.applet._id
+              }
+            }
+
     $document.find("a[href='##{$location.hash()}']").tab 'show'
+    onTabChanged $location.hash()
 
     $document.find('a[data-toggle="pill"]').on 'shown.bs.tab', (e) ->
       hashStr = $(e.target).attr('href').substr(1)
       $location.hash hashStr
+      onTabChanged hashStr
       $scope.$apply()
 
   # UserAppletConfigController: ($scope, $routeParams, UserAppletResource

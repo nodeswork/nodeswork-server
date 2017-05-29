@@ -67,3 +67,8 @@ define ['resources/resource'], (Resource) ->
       MessageResource = $resource '/api/v1/messages/:messageId', {
         messageId: '@_id'
       }
+
+    @ExecutionResource: ($resource) ->
+      ExecutionResource = $resource '/api/v1/executions/:executionId', {
+        executionId: '@_id'
+      }

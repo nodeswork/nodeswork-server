@@ -24,6 +24,6 @@ div.row.md-padding-top
             div(ng-if="!activeDevice.runningApplets.length") There is no applets running.
             ul.list-inline
               li(ng-repeat="runningApplet in activeDevice.runningApplets")
-                a(ng-href="/my-applets/{{userAppletsDict[runningApplet.appletId]._id}}/config")
+                a(ng-href="/my-applets/{{userAppletsDict[runningApplet.appletId]._id}}")
                   img.center-block.md-img(ng-src="{{userAppletsDict[runningApplet.appletId].applet.imageUrl}}")
                   div.text-center {{runningApplet.status}}
