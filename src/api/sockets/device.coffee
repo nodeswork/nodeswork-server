@@ -2,6 +2,9 @@
   logger
   RpcClient
 }              = require '../../utils'
+{
+  Device
+}              = require '../models'
 
 
 exports.deviceSocket = deviceSocket = (io) ->
@@ -18,8 +21,14 @@ exports.deviceSocket = deviceSocket = (io) ->
         logger.info 'Lost device connection.', socket.handshake.query
         deviceRpcClient.unregisterSocket socket
 
+      token            = socket.handshake.query.token
+      device = await Device.findOne deviceToken: token
+      if device?
+        await socket.deviceRpc.deploy device.user
+
+
 
 exports.deviceRpcClient = deviceRpcClient = new RpcClient {
   timeout: 60000
-  funcs: ['run', 'runningApplets']
+  funcs: ['run', 'runningApplets', 'deploy']
 }
