@@ -52,7 +52,8 @@ exports.UserAppletSchema = UserAppletSchema = mongoose.Schema {
 
     timezone:
       type:     String
-      enum:     momentTimezones.tz.names()
+      enum:     ['default'].concat(momentTimezones.tz.names())
+      default:  'default'
 
 }, collection: 'users.applets', discriminatorKey: 'appletType'
 

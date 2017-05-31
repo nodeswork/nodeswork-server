@@ -15,7 +15,7 @@ div.md-padding-top
         | APPLET CHANNEL (UNDER CONSTRUCTION)
     div#configurations.panel.panel-default.tab-pane
       div.panel-body.lg-padding-top
-        form.form-horizontal(ng-submit="save()")
+        form.form-horizontal(ng-submit="saveUserApplet()")
           div.form-group
             label.col-sm-3.control-label(for="device") Device
             div.col-sm-9
@@ -33,6 +33,13 @@ div.md-padding-top
             label.col-sm-3.control-label(for="require-accounts") Require Accounts
             div.col-sm-9
               input#require-accounts.form-control(type="text", ng-model="userApplet.requiredAccountsNN")
+          div.form-group
+            label.col-sm-3.control-label(for="timezone") Timezone
+            div.col-sm-9
+              select#timezone.form-control(
+                ng-model="userApplet.scheduler.timezone",
+                ng-options="timezone for timezone in timezones"
+              )
           div.form-group
             div.col-sm-offset-3.col-sm-9
               ul.list-inline
@@ -59,3 +66,5 @@ div.md-padding-top
               td {{execution.trigger}}
               td {{execution.duration}}
               td {{execution.createdAt}}
+
+pre {{userApplet|json}}

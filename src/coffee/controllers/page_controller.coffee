@@ -65,11 +65,16 @@ define ['controllers/controller'], (Controller) -> new Controller {
     console.log 'applets', $scope.applets = UserAppletResource.query()
 
   UserAppletController: (_, $scope, $routeParams, $location, $document
-    UserAppletResource, DeviceResource, ExecutionResource
+    UserAppletResource, DeviceResource, ExecutionResource, TimezoneResource
   ) ->
     _.extend $scope, {
       devices:    DeviceResource.query()
       userApplet: UserAppletResource.get(relationId: $routeParams.relationId)
+      timezones:  TimezoneResource.query {}, (timezones) ->
+        $scope.timezones = ['default'].concat timezones
+
+      saveUserApplet: () ->
+        $scope.userApplet.$save()
     }
 
     onTabChanged = (tab) ->
@@ -91,17 +96,6 @@ define ['controllers/controller'], (Controller) -> new Controller {
       $location.hash hashStr
       onTabChanged hashStr
       $scope.$apply()
-
-  # UserAppletConfigController: ($scope, $routeParams, UserAppletResource
-    # DeviceResource
-  # ) ->
-    # _.extend $scope, {
-      # devices:    DeviceResource.query()
-      # userApplet: UserAppletResource.get(relationId: $routeParams.relationId)
-
-      # save: () ->
-        # $scope.userApplet.$save()
-    # }
 
   AccountsController: ($scope, AccountResource, $) ->
     console.log 'accounts', $scope.accounts = AccountResource.query()
