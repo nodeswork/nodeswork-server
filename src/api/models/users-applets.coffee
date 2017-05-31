@@ -1,4 +1,5 @@
 mongoose                = require 'mongoose'
+momentTimezones         = require 'moment-timezone'
 
 
 {
@@ -43,6 +44,15 @@ exports.UserAppletSchema = UserAppletSchema = mongoose.Schema {
 
   lastExecution:
     type:       Date
+
+  scheduler:
+
+    cron:
+      type:     String
+
+    timezone:
+      type:     String
+      enum:     momentTimezones.tz.names()
 
 }, collection: 'users.applets', discriminatorKey: 'appletType'
 

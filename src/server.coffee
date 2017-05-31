@@ -45,7 +45,7 @@ do () ->
 
   router
     .use api.router.routes(), api.router.allowedMethods()
-    .get /^\/($|accounts|my-applets|settings|explore|devices|messages|register|dev)(.*)/, (ctx) ->
+    .get /^\/($|accounts|my-applets|preferences|explore|devices|messages|register|dev)(.*)/, (ctx) ->
       ctx.render 'index'
     .get /\/views\/(.*)\.html/, (ctx) ->
       ctx.render ctx.params[0]

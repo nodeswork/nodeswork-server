@@ -31,6 +31,11 @@ define [], () ->
           link:      '/messages'
           autohide:  true
         }
+        {
+          name:      'Preferences'
+          link:      '/preferences'
+          autohide:  true
+        }
       ]
 
     publicMenu:
@@ -150,12 +155,12 @@ define [], () ->
         templateUrl:  '/views/explore/index.html'
       }
 
-      .when '/settings', {
-        name:         'My Settings'
+      .when '/preferences', {
+        name:         'Preferences'
         menu:         menus.userMenu
-        item:         'Settings'
-        controller:   'SettingsController'
-        templateUrl:  '/views/settings/index.html'
+        item:         'Preferences'
+        controller:   'PreferencesController'
+        templateUrl:  '/views/preferences/index.html'
       }
 
       .when '/register', {

@@ -1,7 +1,9 @@
 _                 = require 'underscore'
 KoaRouter         = require 'koa-router'
+momentTimezones   = require 'moment-timezone'
 
 {EmailUser, User} = require '../models'
+{requireLogin}    = require './middlewares'
 
 
 exports.userRouter = userRouter = new KoaRouter prefix: '/users'
@@ -31,3 +33,14 @@ userRouter.get '/logout', (ctx) ->
 
 userRouter.get '/current', (ctx) ->
   ctx.body = ctx.user
+
+userRouter
+
+  .get  '/timezones', (ctx) ->
+    ctx.body = momentTimezones.tz.names()
+
+  .post '/preferences', requireLogin, (ctx) ->
+    _.extend ctx.user, _.pick ctx.request.body, [
+      'timezone'
+    ]
+    ctx.body = await ctx.user.save()

@@ -50,6 +50,8 @@ html
               ul.dropdown-menu
                 li(ng-if="pageMode != 'dev'") #[a(href='/dev') Developer Mode]
                 li(ng-if="pageMode != 'normal'") #[a(href='/') User Mode]
+                li #[a(href='/preferences') Preferences]
+                li.divider
                 li #[a(ng-click="logout()") logout]
 
     div.container(data-ng-view)

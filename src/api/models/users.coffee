@@ -1,6 +1,7 @@
 _                      = require 'underscore'
 bcrypt                 = require 'bcrypt'
 mongoose               = require 'mongoose'
+momentTimezones        = require 'moment-timezone'
 
 {
   TimestampModelPlugin
@@ -23,6 +24,11 @@ exports.UserSchema = UserSchema = mongoose.Schema {
     enum:           ['ACTIVE', 'INACTIVE', 'UNVERIFIED']
     type:           String
     default:        'UNVERIFIED'
+
+  timezone:
+    type:           String
+    default:        'America/Los_Angeles'
+    enum:           momentTimezones.tz.names()
 
 }, collection: 'users', discriminatorKey: 'userType'
 

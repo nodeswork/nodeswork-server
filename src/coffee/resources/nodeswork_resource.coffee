@@ -7,14 +7,22 @@ define ['resources/resource'], (Resource) ->
         login:
           url:     '/api/v1/users/login'
           method:  'POST'
+
         logout:
           url:     '/api/v1/users/logout'
+
         register:
           url:     '/api/v1/users/new'
+          method:  'POST'
+
+        savePreference:
+          url:     '/api/v1/users/preferences'
           method:  'POST'
       }
       UserResource
 
+    @TimezoneResource: ($resource) ->
+      TimezoneResource = $resource '/api/v1/users/timezones', {}
 
     @AccountResource: ($resource) ->
       AccountResource = $resource '/api/v1/accounts/:accountId', {

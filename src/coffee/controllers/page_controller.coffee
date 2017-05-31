@@ -213,4 +213,12 @@ define ['controllers/controller'], (Controller) -> new Controller {
       editImage: () ->
         $scope.showImageEditor = !$scope.showImageEditor
     }
+
+  PreferencesController: (_, $scope, TimezoneResource) ->
+    _.extend $scope, {
+      timezones:       TimezoneResource.query()
+
+      savePreferences:  () ->
+        $scope.user.$savePreference()
+    }
 }
