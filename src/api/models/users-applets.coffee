@@ -3,6 +3,7 @@ momentTimezones         = require 'moment-timezone'
 
 
 {
+  CronValidator
   KoaMiddlewares
   TimestampModelPlugin
 }                       = require './utils'
@@ -48,12 +49,13 @@ exports.UserAppletSchema = UserAppletSchema = mongoose.Schema {
   scheduler:
 
     cron:
-      type:     String
+      type:         String
+      validate:     CronValidator
 
     timezone:
-      type:     String
-      enum:     ['default'].concat(momentTimezones.tz.names())
-      default:  'default'
+      type:         String
+      enum:         ['default'].concat(momentTimezones.tz.names())
+      default:      'default'
 
 }, collection: 'users.applets', discriminatorKey: 'appletType'
 

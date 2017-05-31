@@ -41,6 +41,10 @@ div.md-padding-top
                 ng-options="timezone for timezone in timezones"
               )
           div.form-group
+            label.col-sm-3.control-label(for="cron") Scheduler
+            div.col-sm-9
+              input#cron.form-control(type="text", ng-model="userApplet.scheduler.cron")
+          div.form-group
             div.col-sm-offset-3.col-sm-9
               ul.list-inline
                 li

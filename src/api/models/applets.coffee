@@ -4,6 +4,7 @@ randtoken               = require 'rand-token'
 
 
 {
+  CronValidator
   TimestampModelPlugin
   ExcludeFieldsToJSON
   KoaMiddlewares
@@ -82,6 +83,12 @@ exports.AppletSchema = AppletSchema = mongoose.Schema {
   shortDescription:
     type:       String
     max:        [140, 'Short description should be at most 140 charactors.']
+
+  defaultScheduler:
+
+    cron:
+      type:     String
+      validate: CronValidator
 
 }, collection: 'applets', discriminatorKey: 'appletType'
 

@@ -1,4 +1,5 @@
 _                            = require 'underscore'
+{CronJob}                    = require 'cron'
 
 {ParameterValidationError}   = require '../errors'
 
@@ -44,7 +45,6 @@ exports.ExcludeFieldsToJSON = ExcludeFieldsToJSON = (schema, {
 
 
 exports.KoaMiddlewares = KoaMiddlewares = (schema) ->
-
   schema.statics.getMiddleware = (opts={}) ->
     {
       field
@@ -155,3 +155,14 @@ exports.KoaMiddlewares = KoaMiddlewares = (schema) ->
       if populate.length
         await model.populate ctx[target], populate.join(' ')
       ctx.response.body = ctx[target] if writeToBody
+
+exports.CronValidator =  {
+  validator:  (v) ->
+    try
+      new CronJob v, () ->
+      return true
+    catch e
+      return false
+
+  message:    '{VALUE} is not a valid cron scheduler'
+}

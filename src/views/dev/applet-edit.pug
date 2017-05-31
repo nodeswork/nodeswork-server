@@ -67,6 +67,10 @@ div.row.md-padding
         div.col-sm-8
           textarea#short-description.form-control(rows="3", ng-model="devApplet.shortDescription")
       div.form-group
+        label.col-sm-4.control-label(for="default-cron") Default Scheduler
+        div.col-sm-8
+          input#default-cron.form-control(type="text", ng-model="devApplet.defaultScheduler.cron")
+      div.form-group
         div.col-sm-offset-4.col-sm-8
           button.btn.btn-success(type="submit") Save
 
