@@ -1,4 +1,4 @@
-require.config
+requirejs.config
   baseUrl:                    '/js'
   waitSeconds:                20
   paths:
@@ -21,51 +21,54 @@ require.config
     angularRoute:
       deps:                   [ 'angular' ]
     bootstrap:
-      deps:                   [ 'angular' ]
-      exports:                '$'
+      deps:                   [ 'angular', 'jquery' ]
     case:
       exports:                'Case'
     underscore:
       exports:                '_'
 
-require [
-  'angular', 'angularRoute', 'angularResource', 'bootstrap', 'jquery'
-  'underscore', 'case'
+# somehow requirejs doesn't load jQuery in electron.
+requirejs ['jquery'], ($) ->
+  window.jQuery = $
 
-  'routes'
+  requirejs [
+    'angular', 'angularRoute', 'angularResource', 'bootstrap', 'jquery'
+    'underscore', 'case'
 
-  'controllers/page_controller'
+    'routes'
 
-  'resources/nodeswork_resource'
+    'controllers/page_controller'
 
-  'directives/page_directives'
-], (
-  angular, angularRoute, angularResource, bootstrap, $, _, Case
+    'resources/nodeswork_resource'
 
-  routes
+    'directives/page_directives'
+  ], (
+    angular, angularRoute, angularResource, bootstrap, $, _, Case
 
-  PageController
+    routes
 
-  NodesworkResource
+    PageController
 
-  PageDirectives
-) ->
+    NodesworkResource
 
-  app = angular.module 'nodesworkWeb', [
-    'ngRoute', 'ngResource'
-  ]
+    PageDirectives
+  ) ->
 
-  app.config routes
+    app = angular.module 'nodesworkWeb', [
+      'ngRoute', 'ngResource'
+    ]
 
-  app.factory '_', () -> _
-  app.factory '$', () -> $
-  app.factory 'Case', () -> Case
+    app.config routes
 
-  app.filter 'numKeys', () ->
-    (json) -> Object.keys(json).length
+    app.factory '_', () -> _
+    app.factory '$', () -> $
+    app.factory 'Case', () -> Case
 
-  NodesworkResource.export app
-  PageController.export    app
-  PageDirectives.export    app
+    app.filter 'numKeys', () ->
+      (json) -> Object.keys(json).length
 
-  angular.bootstrap document, ['nodesworkWeb']
+    NodesworkResource.export app
+    PageController.export    app
+    PageDirectives.export    app
+
+    angular.bootstrap document, ['nodesworkWeb']

@@ -64,7 +64,7 @@ define ['controllers/controller'], (Controller) -> new Controller {
   UsersAppletsController: ($scope, UserAppletResource) ->
     console.log 'applets', $scope.applets = UserAppletResource.query()
 
-  UserAppletController: (_, $scope, $routeParams, $location, $document
+  UserAppletController: (_, $, $scope, $routeParams, $location, $document
     UserAppletResource, DeviceResource, ExecutionResource, TimezoneResource
   ) ->
     _.extend $scope, {
