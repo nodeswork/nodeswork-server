@@ -24,7 +24,10 @@ exports.AccountCategorySchema = AccountCategorySchema = mongoose.Schema {
     type:      Boolean
     default:   false
 
-  implements:  [@]
+  implements:  [
+    type:      mongoose.Schema.ObjectId
+    ref:       'AccountCategory'
+  ]
 
 }, collection: 'account_categories'
 

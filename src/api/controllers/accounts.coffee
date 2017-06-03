@@ -7,7 +7,10 @@ KoaRouter              = require 'koa-router'
   overrideUserToQuery
   overrideUserToDoc
 }                      = require './middlewares'
-{ Account }            = require '../models'
+{
+  Account
+  AccountCategory
+}                      = require '../models'
 errors                 = require '../errors'
 
 
@@ -21,6 +24,12 @@ accountRouter
   .get '/', overrideUserToQuery(), Account.findMiddleware()
 
   .post '/', overrideUserToDoc(), Account.createMiddleware()
+
+  .get('/categories'
+    AccountCategory.findMiddleware {
+    }
+    (ctx) -> {}
+  )
 
   .get '/:accountId', Account.getMiddleware field: 'accountId'
 

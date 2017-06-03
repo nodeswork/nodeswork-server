@@ -55,14 +55,26 @@ exports.AppletSchema = AppletSchema = mongoose.Schema {
 
   requiredAccounts:  [
 
-    virtualAccountType:
-      type:     String
-      enum:     [ "FifaFutAccount" ]
-      required: true
+    accountCategory:
+      type:           mongoose.Schema.ObjectId
+      ref:            'AccountCategory'
+      required:       true
 
-    number:
-      type:     String
-      enum:     [ '1', '*', '1+' ]
+    optional:
+      type:           Boolean
+      default:        false
+
+    multiple:
+      type:           Boolean
+      default:        false
+
+    permission:
+      type:           String
+      enum:           ['READ', 'MANAGE', 'WRITE']
+
+    usage:
+      type:           String
+      max:            [140, "Usage can't exceed 140 charactors."]
   ]
 
   status:

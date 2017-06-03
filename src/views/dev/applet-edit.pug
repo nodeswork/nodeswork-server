@@ -53,7 +53,27 @@ div.row.md-padding
       div.form-group
         label.col-sm-4.control-label(for="require-accounts") Require Accounts
         div.col-sm-8
-          input#require-accounts.form-control(type="text", ng-model="devApplet.requiredAccountsNN")
+          div
+            ul.list-unstyled
+              li(ng-repeat="account in devApplet.requiredAccounts")
+                ul.list-inline
+                  li
+                    select.form-control(ng-model="account.accountCategory")
+                      option(ng-repeat="category in accountCategories", ng-value="category._id") {{category.name}}
+                  li
+                    label
+                      input.form-control(type="checkbox", ng-model="account.optional")
+                      | Optional
+                  li
+                    label
+                      input.form-control(type="checkbox", ng-model="account.multiple")
+                      | Multiple
+                  li
+                    select.form-control(ng-model="account.permission")
+                      option(value="READ") Permission Read
+                      option(value="MANAGE") Permission Manage
+                      option(value="WRITE") Permission Write
+              li #[a(href="#", ng-click="addAccount()") +]
       div.form-group
         label.col-sm-4.control-label(for="dev-token") Developer Token
         div.col-sm-8

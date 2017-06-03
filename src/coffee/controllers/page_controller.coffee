@@ -197,15 +197,27 @@ define ['controllers/controller'], (Controller) -> new Controller {
       devApplets: DevAppletResource.query()
     }
 
-  DevAppletEditController: ($scope, $routeParams, DevAppletResource) ->
+  DevAppletEditController: ($scope, $routeParams, DevAppletResource
+    AccountCategoryResource
+  ) ->
     _.extend $scope, {
       devApplet: DevAppletResource.get(appletId: $routeParams.appletId)
+
+      accountCategories: AccountCategoryResource.query()
 
       save: () ->
         $scope.devApplet.$save()
 
       editImage: () ->
         $scope.showImageEditor = !$scope.showImageEditor
+
+      addAccount: () ->
+        $scope.devApplet.requiredAccounts.push {
+          optional:    false
+          multiple:    false
+          permission:  'READ'
+          usage:       ''
+        }
     }
 
   PreferencesController: (_, $scope, TimezoneResource) ->

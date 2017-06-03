@@ -36,6 +36,9 @@ define ['resources/resource'], (Resource) ->
           method:  'POST'
       }
 
+    @AccountCategoryResource: ($resource) ->
+      AccountCategoryResource = $resource '/api/v1/accounts/categories'
+
     @UserAppletResource: ($resource) ->
       UserAppletResource = $resource '/api/v1/my-applets/:relationId', {
         relationId:  '@_id'
