@@ -17,6 +17,11 @@ exports.AccountSchema = AccountSchema = mongoose.Schema {
     required:   true
     index:      true
 
+  categories:   [
+    type:       mongoose.Schema.ObjectId
+    ref:        'AccountCategory'
+  ]
+
   status:
     enum:       ["ACTIVE", "ERROR", "INACTIVE", "UNVERIFIED"]
     type:       String

@@ -1,0 +1,22 @@
+[
+  {
+    "name": "Fifa FUT Account",
+    "description": "",
+    "isVirtual": false,
+    "implements": []
+  },
+  {
+    "name": "Social Media",
+    "description": "",
+    "isVirtual": false,
+    "implements": []
+  },
+  {
+    "name": "Twitter",
+    "description": "",
+    "isVirtual": false,
+    "implements": [
+      "Social Media"
+    ]
+  }
+]
