@@ -117,9 +117,17 @@ define ['directives/directive'], (Directive) -> new Directive {
         true
       )
 
-  messageDirective: () ->
+  messageDirective: (_) ->
     restrict:     'E'
     templateUrl:  '/views/messages/message-directive.html'
     scope:
       message:    '=ngModel'
+      onChange:   '&onChange'
+    link: (scope, element) ->
+      _.extend scope, {
+        view: () ->
+          scope.message.$view () ->
+            console.log 'viewed'
+            scope.onChange()
+      }
 }

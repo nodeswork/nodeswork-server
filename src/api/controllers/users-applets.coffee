@@ -11,7 +11,7 @@ KoaRouter                   = require 'koa-router'
   Device
   UserApplet
 }                           = require '../models'
-params                      = require './params'
+{params, rules}             = require './params'
 {ParameterValidationError}  = require '../errors'
 {deviceRpcClient}           = require '../sockets'
 
@@ -93,11 +93,11 @@ usersAppletsRouter
   .post('/'
     params.body(
       applet: [
-        params.isRequired
-        params.populateFromModel Applet
+        rules.isRequired
+        rules.populateFromModel Applet
       ]
       device: [
-        params.populateFromModel Device
+        rules.populateFromModel Device
       ]
     )
     overrideUserToDoc()

@@ -7,6 +7,7 @@ mongoose  = require 'mongoose'
   overrideUserToDoc
 }                      = require './middlewares'
 { Message }            = require '../models'
+{params, rules}        = require './params'
 
 exports.messageRouter = messageRouter = new KoaRouter prefix: '/messages'
 
@@ -15,7 +16,6 @@ messageRouter
 
   .use requireLogin
 
-  # TODO: enable pagination.
   .get('/'
     overrideUserToQuery('receiver')
     Message.findMiddleware {
@@ -29,4 +29,19 @@ messageRouter
           path: 'sender'
           select: 'name imageUrl'
         }
+  )
+
+  .post('/:messageId/view'
+    overrideUserToQuery 'receiver'
+    Message.getMiddleware {
+      field: 'messageId'
+      target: 'message'
+    }
+    (ctx) ->
+      ctx.message.views++
+      await ctx.message.save()
+      await ctx.message.constructor.populate ctx.message, {
+        path: 'sender'
+        select: 'name imageUrl'
+      }
   )

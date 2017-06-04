@@ -77,6 +77,10 @@ define ['resources/resource'], (Resource) ->
     @MessageResource: ($resource) ->
       MessageResource = $resource '/api/v1/messages/:messageId', {
         messageId: '@_id'
+      }, {
+        view:
+          url:     '/api/v1/messages/:messageId/view'
+          method:  'POST'
       }
 
     @ExecutionResource: ($resource) ->

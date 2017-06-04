@@ -1,4 +1,4 @@
-div.media.sm-padding
+div.media.md-padding.bs-callout-info(ng-class="{'bs-callout': !message.views}")
   div.media-left
     a(ng-href="/my-applets/{{message.via}}")
       img.md-img.img-rounded(ng-src="{{message.sender.imageUrl}}")
@@ -11,4 +11,6 @@ div.media.sm-padding
         small.pull-right {{message.createdAt | date:'medium'}}
     p {{message.message}}
     ul.list-inline.pull-right
-      li #[span.glyphicon.glyphicon-plus]
+      li
+        a(href="#", ng-click="view()")
+          span.glyphicon.glyphicon-plus

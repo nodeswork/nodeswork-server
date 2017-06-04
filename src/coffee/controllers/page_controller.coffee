@@ -156,17 +156,23 @@ define ['controllers/controller'], (Controller) -> new Controller {
         _.filter runningApplets, (applet) -> applet.status == 'online'
     }
 
-  MessagesController: ($scope, MessageResource, $routeParams, $location) ->
+  MessagesController: (_, $scope, MessageResource, $routeParams, $location) ->
     _.extend $scope, {
 
       loadMessage: (page) ->
         $scope.current = page
         $scope.messages = MessageResource.query page: page, (resp, headers) ->
           $scope.totalPage = headers 'total_page'
+          $scope.refreshCounters()
 
       changePage: (page) ->
         $location.search page: page
         $scope.loadMessage page
+
+      refreshCounters: () ->
+        $scope.unread = (
+          _.countBy $scope.messages, (message) -> message.views
+        )[0] ? 0
     }
 
     $scope.loadMessage parseInt $routeParams.page ? '0'
