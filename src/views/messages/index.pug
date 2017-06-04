@@ -1,5 +1,16 @@
 h2 Message Box
 
+nav
+  ul.pagination
+    li
+      a(href='#', ng-click="changePage(current - 1)")
+        span &laquo;
+    li(ng-repeat="page in _.range(totalPage)", ng-class='{active: page==current}', ng-click="changePage(page)")
+      a(href='#') {{page + 1}}
+    li
+      a(href='#', ng-click="changePage(current + 1)")
+        span &raquo;
+
 ul.col-md-6.list-group
   li.list-group-item(ng-repeat="message in messages")
     message(ng-model="message")

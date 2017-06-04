@@ -1,6 +1,6 @@
 define ['controllers/controller'], (Controller) -> new Controller {
 
-  HeaderController: ($rootScope, $document) ->
+  HeaderController: ($rootScope, $document, _) ->
     titleElement = $document.find('title')[0]
     themeElement = $document[0].getElementById('theme-link')
     bodyElement  = $document.find('body')
@@ -22,6 +22,8 @@ define ['controllers/controller'], (Controller) -> new Controller {
           themeElement.href = themeLinks[mode]
           bodyElement.removeClass 'hide'
           $rootScope.pageMode = mode
+
+      _
     }
 
   MenuController: ($rootScope, $scope, $route, $location, UserResource) ->
@@ -154,8 +156,20 @@ define ['controllers/controller'], (Controller) -> new Controller {
         _.filter runningApplets, (applet) -> applet.status == 'online'
     }
 
-  MessagesController: ($scope, MessageResource) ->
-    $scope.messages = MessageResource.query()
+  MessagesController: ($scope, MessageResource, $routeParams, $location) ->
+    _.extend $scope, {
+
+      loadMessage: (page) ->
+        $scope.current = page
+        $scope.messages = MessageResource.query page: page, (resp, headers) ->
+          $scope.totalPage = headers 'total_page'
+
+      changePage: (page) ->
+        $location.search page: page
+        $scope.loadMessage page
+    }
+
+    $scope.loadMessage parseInt $routeParams.page ? '0'
 
   ExploreAppletController: ($scope, AppletResource) ->
     console.log 'applets', $scope.applets = AppletResource.explore()

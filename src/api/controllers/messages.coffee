@@ -19,8 +19,9 @@ messageRouter
   .get('/'
     overrideUserToQuery('receiver')
     Message.findMiddleware {
-      target: 'messages'
-      sort:   '-createdAt'
+      target:      'messages'
+      sort:        '-createdAt'
+      pagination:  20
     }
     (ctx) ->
       for message in ctx.messages

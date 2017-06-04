@@ -43,7 +43,7 @@ KoaMiddlewares = (schema, options={}) ->
   } = options
 
   # Wrap middlewars to patch global options.
-  wrap = (fn) -> (opts) ->
+  wrap = (fn) -> (opts={}) ->
     opts.omits        = _.union options.omits, opts.omits
     opts.populate     = _.union options.populate, opts.populate
     opts.transform    = opts.transform ? options.transform
@@ -93,13 +93,13 @@ createMiddleware = (options={}) ->
     omits       = []
     triggerNext = true
     transform   = _.identity
-  } = opts
+  } = options
 
   (ctx, next) =>
     doc   = _.extend {}, ctx.request.body, ctx.overrides?.doc
 
     model =
-      if fromExtend and (discriminatorKey = schema.options.discriminatorKey)
+      if fromExtend and (discriminatorKey = @schema.options.discriminatorKey)
         NodesworkError.required doc, discriminatorKey
 
         try
@@ -107,7 +107,7 @@ createMiddleware = (options={}) ->
         catch
           NodesworkError.unkownValue key: discriminatorKey, value: modelType
 
-        if model.schema.options.discriminatorKey != key
+        if model.schema.options.discriminatorKey != discriminatorKey
           NodesworkError.unkownValue key: discriminatorKey, value: modelType
         model
       else @
@@ -124,7 +124,6 @@ createMiddleware = (options={}) ->
     await model.populate ctx[target], populate.join(' ') if populate.length
 
     ctx.body = await transform ctx[target] if writeToBody
-
 
 
 # Provide Koa Get middleware to retrieve model instance.
@@ -150,8 +149,8 @@ getMiddleware = (options={}) ->
     populate            = []
     target              = 'object'
     triggerNext         = true
-    transform           = null
-  } = opts
+    transform           = _.identity
+  } = options
 
   (ctx, next) =>
     query        = ctx.overrides?.query ? {}
@@ -177,7 +176,8 @@ getMiddleware = (options={}) ->
 #   responding model instance.
 # @option options {String} sort=null specifies the sort parameters to be
 #   passed to mongoose.
-# @option options {Boolean} pagination=false specifies if to enable pagination.
+# @option options {Number} pagination=0 specifies if to enable pagination,
+#   possible integer means the page size, 0 means not enabled.
 # @option options {Array<String>} allowedQueryFields=null specifies which fields
 #   will be allowed for retrieving the target objects, default will be no guard.
 #
@@ -188,21 +188,29 @@ findMiddleware = (options={}) ->
     populate            = []
     target              = 'object'
     triggerNext         = true
-    transform           = null
+    transform           = _.identity
     sort                = null
     pagination          = false
     allowedQueryFields  = null
-  } = opts
+  } = options
 
   (ctx, next) =>
     query        = NodesworkError.parseJSON ctx.request.query.query
+    page         = NodesworkError.parseNumber ctx.request.query.page ? '0'
     query        = _.pick query, allowedQueryFields if allowedQueryFields?
     _.extend query, ctx.overrides?.query
-    qp           = @findOne query
+    qp           = @find query
+    qp           = qp.limit pagination if pagination
+    qp           = qp.skip page * pagination if pagination and page
     qp           = qp.populate populate.join(' ') if populate.length
     qp           = qp.sort sort if sort?
     ctx[target]  = await qp
     await next() if triggerNext
+
+    if pagination
+      totalPage = (await @find(query).count() - 1) // pagination + 1
+      ctx.response.set 'total_page', totalPage
+
 
     for i in [0...ctx[target].length]
       ctx[target][i] = await transform ctx[target][i]
@@ -233,8 +241,8 @@ updateMiddleware = (options={}) ->
     omits               = []
     target              = 'object'
     triggerNext         = true
-    transform           = null
-  } = opts
+    transform           = _.identity
+  } = options
 
   (ctx, next) =>
     query        = ctx.overrides?.query ? {}
@@ -266,10 +274,10 @@ deleteMiddleware = (options={}) ->
     writeToBody         = true
     target              = 'object'
     triggerNext         = true
-    transform           = null
-  } = opts
+    transform           = _.identity
+  } = options
 
-  (ctx, next) => {}
+  (ctx, next) =>
     query        = ctx.overrides?.query ? {}
     query._id    = ctx.params[field]
     ctx[target]  = await @findOne query

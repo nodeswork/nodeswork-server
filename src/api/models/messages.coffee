@@ -2,8 +2,8 @@ mongoose  = require 'mongoose'
 
 {
   TimestampModelPlugin
-  KoaMiddlewares
 }                       = require './utils'
+{KoaMiddlewares}        = require './plugins/koa-middlewares'
 
 
 exports.MessageSchema = MessageSchema = mongoose.Schema {
@@ -34,7 +34,9 @@ exports.MessageSchema = MessageSchema = mongoose.Schema {
 }, collection: 'messages', discriminatorKey: 'messageType'
 
   .plugin TimestampModelPlugin
-  .plugin KoaMiddlewares
+  .plugin KoaMiddlewares, {
+    omits: ['_id', 'createdAt', 'lastUpdateTime']
+  }
 
 
 exports.AppletMessageSchema = AppletMessageSchema = MessageSchema.extend {

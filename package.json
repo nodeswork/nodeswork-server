@@ -8,7 +8,8 @@
     "url": "git@github.com:nodeswork/nodeswork-server.git"
   },
   "scripts": {
-    "start": "node --trace-warnings index.js"
+    "start": "node --trace-warnings index.js",
+    "docs": "codo"
   },
   "engines": {
     "node": ">= 7.0"

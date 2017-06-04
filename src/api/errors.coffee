@@ -26,3 +26,9 @@ NodesworkError.parseJSON = (jsonStr) ->
     JSON.parse jsonStr ? '{}'
   catch e
     throw new NodesworkError "JSON parse failed for #{jsonStr}"
+
+NodesworkError.parseNumber = (numStr) ->
+  try
+    parseInt numStr
+  catch e
+    throw new NodesworkError "Number parse failed for #{numStr}"

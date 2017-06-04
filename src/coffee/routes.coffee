@@ -140,11 +140,12 @@ define [], () ->
       }
 
       .when '/messages', {
-        name:         'Messages'
-        menu:         menus.userMenu
-        item:         'Messages'
-        controller:   'MessagesController'
-        templateUrl:  '/views/messages/index.html'
+        name:            'Messages'
+        menu:            menus.userMenu
+        item:            'Messages'
+        controller:      'MessagesController'
+        templateUrl:     '/views/messages/index.html'
+        reloadOnSearch:  false
       }
 
       .when '/explore', {
