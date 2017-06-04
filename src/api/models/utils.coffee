@@ -44,6 +44,11 @@ exports.ExcludeFieldsToJSON = ExcludeFieldsToJSON = (schema, {
     @
 
 
+###
+Get middleware for current model.
+
+@option options [String] field the field from context params.
+###
 exports.KoaMiddlewares = KoaMiddlewares = (schema) ->
   schema.statics.getMiddleware = (opts={}) ->
     {
@@ -64,6 +69,7 @@ exports.KoaMiddlewares = KoaMiddlewares = (schema) ->
 
   schema.statics.findMiddleware = (opts={}) ->
     {
+      pagination=false
       writeToBody=true
       populate=[]
       target='object'
