@@ -1,6 +1,6 @@
 h2 My Devices
 
-div.row.md-padding-top
+div.row
   ul.list-group.col-md-3
     li.list-group-item(ng-repeat="device in devices", ng-class="{active: device == activeDevice}")
       h4 {{device.name}}
