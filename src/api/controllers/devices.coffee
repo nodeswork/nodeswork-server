@@ -39,7 +39,7 @@ fetchDevice = (ctx, next) ->
   else ctx.response.status = 401
 
 expandDevice = (device) ->
-  rpc    = deviceRpcClient.getRpc device.deviceToken
+  rpc    = deviceRpcClient.rpc device.deviceToken
   _.extend device.toJSON(), {
     online: !!rpc
     runningApplets: _.sortBy(

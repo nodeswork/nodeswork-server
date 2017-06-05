@@ -1,10 +1,7 @@
-{
-  logger
-  RpcClient
-}              = require '../../utils'
-{
-  Device
-}              = require '../models'
+{logger}       = require 'nodeswork-logger'
+
+{RpcCaller}    = require '../../utils/rpc'
+{Device}       = require '../models'
 
 
 exports.deviceSocket = deviceSocket = (io) ->
@@ -29,11 +26,12 @@ exports.deviceSocket = deviceSocket = (io) ->
         await socket.deviceRpc.deploy device.user
 
 
-
-exports.deviceRpcClient = deviceRpcClient = new RpcClient {
-  timeout: 60000
-  funcs: ['run', 'runningApplets', 'deploy']
+exports.deviceRpcClient = deviceRpcClient = new RpcCaller {
+  timeout:    60000
+  funcs:      ['run', 'runningApplets', 'deploy']
+  socketKey:  (socket) -> socket.handshake.query.token
 }
+
 
 authorization = (socket, next) ->
   token = socket.handshake.query.token

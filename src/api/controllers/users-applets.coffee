@@ -68,7 +68,7 @@ usersAppletsRouter
         throw new ParameterValidationError "Applet is not running on device."
 
 
-      rpc = deviceRpcClient.getRpc ctx.userApplet.device.deviceToken
+      rpc = deviceRpcClient.rpc ctx.userApplet.device.deviceToken
 
       unless rpc?
         throw new ParameterValidationError "Applet is not running on active device."
