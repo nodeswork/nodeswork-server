@@ -43,9 +43,9 @@ html
             button.btn.btn-default(type="submit") Login
           ul.nav.navbar-nav.navbar-right(ng-show="user._id")
             li
-              a(href="/messages", ng-class="{unread: messageState.unread}")
+              a(href="/messages", ng-class="{unread: state.message.unread}")
                 span.glyphicon.glyphicon-envelope
-                strong.small.badge.unread-message-counter {{messageState.unread}}
+                strong.small.badge.unread-message-counter {{state.message.unread}}
             li.dropdown
               a.dropdown-toggle(data-toggle="dropdown")
                 span.glyphicon.glyphicon-user

@@ -87,3 +87,6 @@ define ['resources/resource'], (Resource) ->
       ExecutionResource = $resource '/api/v1/executions/:executionId', {
         executionId: '@_id'
       }
+
+    @StateResource: ($resource) ->
+      StateResource = $resource '/api/v1/users/state', {}

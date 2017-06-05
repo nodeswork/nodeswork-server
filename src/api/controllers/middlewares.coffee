@@ -78,16 +78,23 @@ exports.updateState = (ctx, next) ->
 
   {io}      = require '../sockets'
   roomName  = "state::#{ctx.user._id}"
+  state     = await fetchState ctx.user
 
+  io.of(MESSAGE_ROOM_SOCKET).to(roomName).emit STATE_CHANGE_TOPIC, state
+
+
+exports.getState = (ctx, next) ->
+  ctx.state = await fetchState ctx.user
+  await next()
+
+
+fetchState = (user) ->
   unread    = await Message.find({
-    receiver: ctx.user
+    receiver: user
     views:    0
     priority:
       '$in':  [1, 2]
   }).count()
 
-
-  io.of(MESSAGE_ROOM_SOCKET).to(roomName).emit STATE_CHANGE_TOPIC, {
-    messageState:
-      unread: unread
-  }
+  message:
+    unread: unread

@@ -3,7 +3,10 @@ KoaRouter         = require 'koa-router'
 momentTimezones   = require 'moment-timezone'
 
 {EmailUser, User} = require '../models'
-{requireLogin}    = require './middlewares'
+{
+  requireLogin
+  getState
+}                 = require './middlewares'
 
 
 exports.userRouter = userRouter = new KoaRouter prefix: '/users'
@@ -44,3 +47,9 @@ userRouter
       'timezone'
     ]
     ctx.body = await ctx.user.save()
+
+  .get('/state'
+    requireLogin
+    getState
+    (ctx) -> ctx.body = ctx.state
+  )

@@ -2,7 +2,9 @@ define [
   'controllers/controller'
 ], (Controller) -> new Controller {
 
-  HeaderController: ($rootScope, $document, _, messageSocket) ->
+  HeaderController: (
+    $rootScope, $scope, $document, _, messageSocket, StateResource
+  ) ->
     titleElement = $document.find('title')[0]
     themeElement = $document[0].getElementById('theme-link')
     bodyElement  = $document.find('body')
@@ -17,7 +19,8 @@ define [
 
     messageSocket.on 'state::change', (state) ->
       console.log 'changeMessageState', state
-      $rootScope.messageState = state.messageState
+      $rootScope.state = state
+      $scope.$apply()
 
     _.extend $rootScope, {
       changePageTitle: (title) ->
@@ -31,8 +34,7 @@ define [
 
       _
 
-      messageState:
-        unread: 10
+      state: StateResource.get()
     }
 
   MenuController: ($rootScope, $scope, $route, $location, UserResource) ->
