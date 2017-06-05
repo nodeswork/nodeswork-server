@@ -18,6 +18,7 @@
     "bcrypt": "^1.0.2",
     "coffeescript": "^2.0.0-beta1",
     "connect-coffee-script": "^0.2.1",
+    "cookie": "^0.3.1",
     "cron": "^1.2.1",
     "fut-api": "https://github.com/nodeswork/fut-api.git",
     "koa": "2.2.0",

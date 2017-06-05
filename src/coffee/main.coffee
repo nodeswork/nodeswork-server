@@ -57,7 +57,7 @@ requirejs ['jquery'], ($) ->
 
     messageSocket = io '/message'
 
-    socket.on 'connect', () ->
+    messageSocket.on 'connect', () ->
       console.log 'message socket is connected.'
 
     app = angular.module 'nodesworkWeb', [

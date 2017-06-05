@@ -28,7 +28,7 @@ class RpcCaller
   #   get back the Rpc instance. Default is socket.id.
   constructor: (options) ->
     {
-      @timeout
+      @timeout     = 0
       @bufferSize  = 100
       @funcs       = []
       @socketKey   = defaultSocketKey

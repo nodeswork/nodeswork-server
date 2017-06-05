@@ -1,4 +1,6 @@
-define ['controllers/controller'], (Controller) -> new Controller {
+define [
+  'controllers/controller'
+], (Controller) -> new Controller {
 
   HeaderController: ($rootScope, $document, _, messageSocket) ->
     titleElement = $document.find('title')[0]
