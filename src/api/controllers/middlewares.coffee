@@ -2,7 +2,15 @@ _                                  = require 'underscore'
 LRU                                = require 'lru-cache'
 futapi                             = require 'fut-api'
 
-{Account, FifaFutAccount}          = require '../models'
+{
+  Account
+  FifaFutAccount
+  Message
+}                                  = require '../models'
+{
+  MESSAGE_ROOM_SOCKET
+  STATE_CHANGE_TOPIC
+}                                  = require '../constants'
 
 exports.requireLogin = (ctx, next) ->
   unless ctx.user?._id? then ctx.response.status = 401
@@ -63,3 +71,23 @@ exports.overrideUserToQuery = overrideUserToQuery = (fieldName='user') ->
     ctx.overrides.query ?= {}
     ctx.overrides.query[fieldName] = ctx.user
     await next()
+
+
+exports.updateState = (ctx, next) ->
+  await next()
+
+  {io}      = require '../sockets'
+  roomName  = "state::#{ctx.user._id}"
+
+  unread    = await Message.find({
+    receiver: ctx.user
+    views:    0
+    priority:
+      '$in':  [1, 2]
+  }).count()
+
+
+  io.of(MESSAGE_ROOM_SOCKET).to(roomName).emit STATE_CHANGE_TOPIC, {
+    messageState:
+      unread: unread
+  }

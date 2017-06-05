@@ -8,12 +8,11 @@
   messageSocket
 }                 = require './message'
 
-exports.attachIO = (io) ->
+attachIO = (io) ->
+  moduleExports.io = io
   deviceSocket  io
   messageSocket io
   rootSocket    io
-
-exports.deviceRpcClient = deviceRpcClient
 
 
 rootSocket = (io) ->
@@ -24,3 +23,8 @@ rootSocket = (io) ->
 
       socket.on 'disconnect', () ->
         logger.info 'Lost connection.', socket.handshake.query.token
+
+module.exports = moduleExports = {
+  attachIO: attachIO
+  deviceRpcClient
+}

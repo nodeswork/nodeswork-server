@@ -1,17 +1,21 @@
-_            = require 'underscore'
-cookie       = require 'cookie'
-mongoose     = require 'mongoose'
-{logger}     = require 'nodeswork-logger'
+_                     = require 'underscore'
+cookie                = require 'cookie'
+mongoose              = require 'mongoose'
+{logger}              = require 'nodeswork-logger'
+{
+  MESSAGE_ROOM_SOCKET
+}                     = require '../constants'
 
 messageSocket = (io) ->
   io
 
-    .of '/message'
+    .of MESSAGE_ROOM_SOCKET
 
     .use authorization
 
     .on 'connection', (socket) ->
       logger.info 'New message connection.', user: socket.userId
+      socket.join "state::#{socket.userId}"
 
 
 module.exports = {

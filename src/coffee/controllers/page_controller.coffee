@@ -15,6 +15,10 @@ define [
       normal: 'https://bootswatch.com/sandstone/bootstrap.min.css'
     }
 
+    messageSocket.on 'state::change', (state) ->
+      console.log 'changeMessageState', state
+      $rootScope.messageState = state.messageState
+
     _.extend $rootScope, {
       changePageTitle: (title) ->
         titleElement.innerHTML = title

@@ -5,6 +5,7 @@ mongoose  = require 'mongoose'
   requireLogin
   overrideUserToQuery
   overrideUserToDoc
+  updateState
 }                      = require './middlewares'
 { Message }            = require '../models'
 {params, rules}        = require './params'
@@ -32,6 +33,7 @@ messageRouter
   )
 
   .post('/:messageId/view'
+    updateState
     overrideUserToQuery 'receiver'
     Message.getMiddleware {
       field: 'messageId'
