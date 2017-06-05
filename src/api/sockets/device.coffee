@@ -12,6 +12,8 @@ exports.deviceSocket = deviceSocket = (io) ->
 
     .of '/device'
 
+    .use authorization
+
     .on 'connection', (socket) ->
       logger.info 'New device connection.'
 
@@ -32,3 +34,20 @@ exports.deviceRpcClient = deviceRpcClient = new RpcClient {
   timeout: 60000
   funcs: ['run', 'runningApplets', 'deploy']
 }
+
+authorization = (socket, next) ->
+  token = socket.handshake.query.token
+  logger.info "Autorization on socket", token: token
+  unless token
+    logger.error "Token is missing."
+    return next new Error "Token is invalid."
+
+  device = await Device.findOne {
+    deviceToken: token
+  }
+
+  unless device?
+    logger.error "Token is invalid, because Device is not found."
+    return next new Error "Token is invalid."
+
+  next()

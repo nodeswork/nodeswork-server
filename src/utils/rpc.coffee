@@ -1,7 +1,6 @@
 _         = require 'underscore'
 LRU       = require 'lru-cache'
-
-{logger}  = require './logger'
+{logger}  = require 'nodeswork-logger'
 
 exports.RpcClient = class RpcClient
 

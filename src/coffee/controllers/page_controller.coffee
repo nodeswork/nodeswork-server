@@ -1,6 +1,6 @@
 define ['controllers/controller'], (Controller) -> new Controller {
 
-  HeaderController: ($rootScope, $document, _) ->
+  HeaderController: ($rootScope, $document, _, messageSocket) ->
     titleElement = $document.find('title')[0]
     themeElement = $document[0].getElementById('theme-link')
     bodyElement  = $document.find('body')
@@ -24,6 +24,9 @@ define ['controllers/controller'], (Controller) -> new Controller {
           $rootScope.pageMode = mode
 
       _
+
+      messageState:
+        unread: 10
     }
 
   MenuController: ($rootScope, $scope, $route, $location, UserResource) ->

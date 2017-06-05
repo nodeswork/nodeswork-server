@@ -8,6 +8,7 @@ requirejs.config
     angularRoute:             '../bower_components/angular-route/angular-route'
     bootstrap:                '../bower_components/bootstrap/dist/js/bootstrap.min'
     case:                     '../bower_components/Case/dist/Case.min'
+    io:                       '../bower_components/socket.io-client/dist/socket.io'
     jquery:                   '../bower_components/jquery/dist/jquery.min'
     underscore:               '../bower_components/underscore/underscore-min'
   shim:
@@ -33,7 +34,7 @@ requirejs ['jquery'], ($) ->
 
   requirejs [
     'angular', 'angularRoute', 'angularResource', 'bootstrap', 'jquery'
-    'underscore', 'case'
+    'underscore', 'case', 'io'
 
     'routes'
 
@@ -43,7 +44,7 @@ requirejs ['jquery'], ($) ->
 
     'directives/page_directives'
   ], (
-    angular, angularRoute, angularResource, bootstrap, $, _, Case
+    angular, angularRoute, angularResource, bootstrap, $, _, Case, io
 
     routes
 
@@ -54,12 +55,18 @@ requirejs ['jquery'], ($) ->
     PageDirectives
   ) ->
 
+    messageSocket = io '/message'
+
+    socket.on 'connect', () ->
+      console.log 'message socket is connected.'
+
     app = angular.module 'nodesworkWeb', [
       'ngRoute', 'ngResource'
     ]
 
     app.config routes
 
+    app.factory 'messageSocket', () -> messageSocket
     app.factory '_', () -> _
     app.factory '$', () -> $
     app.factory 'Case', () -> Case
