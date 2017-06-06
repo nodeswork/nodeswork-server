@@ -60,9 +60,8 @@ define ['directives/directive'], (Directive) -> new Directive {
           unless scope.account._id
             scope.account = new AccountResource scope.account
           scope.account.$save(
-            () ->
-              $location.path "/accounts/#{scope.account._id}/edit#verify-account"
-
+            (account) ->
+              $location.path "/accounts/#{account._id}/edit#verify-account"
             (resp) ->
               scope.errors = resp.data
           )
@@ -108,6 +107,46 @@ define ['directives/directive'], (Directive) -> new Directive {
           scope.reason = "Your account needs to login on console first."
         if error.details?.code == "500"
           scope.reason = "Your account has been banned."
+
+      scope.$watch(
+        "account",
+        (newValue, oldValue) ->
+          unless JSON.stringify(oldValue) == JSON.stringify(newValue)
+            scope.formChanged = true
+        true
+      )
+
+  oauthAccountDirective: (_, $location, $window, AccountResource) ->
+    restrict:     'A'
+    templateUrl:  '/views/accounts/edit/oauth-account-directive.html'
+    scope:
+      account:    '=ngModel'
+      backUrl:    '='
+    link: (scope, element) ->
+      if $location.hash() == 'account-verify' and scope.account.$promise?
+        element.find('#account-form').removeClass 'active'
+        element.find('#account-verify').addClass 'active'
+        element.find('.nav-pills').find('a:last').tab 'show'
+
+      _.extend scope, {
+
+        saveAccount: () ->
+          unless scope.account._id
+            scope.account = new AccountResource scope.account
+          scope.account.$save(
+            (account) ->
+              $location.path "/accounts/#{account._id}/edit#verify-account"
+            (resp) ->
+              scope.errors = resp.data
+          )
+
+        verify: () ->
+          location = "#{scope.account.category.oAuth.authorizeUrl}?oauth_token=#{scope.account.oAuthToken}"
+          $window.open location, '_blank'
+
+        reset: () ->
+          scope.account.$reset()
+      }
 
       scope.$watch(
         "account",

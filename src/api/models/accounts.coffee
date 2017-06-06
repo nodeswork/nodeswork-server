@@ -6,8 +6,8 @@ LRU                     = require 'lru-cache'
 {
   TimestampModelPlugin
   ExcludeFieldsToJSON
-  KoaMiddlewares
 }                       = require './utils'
+{KoaMiddlewares}        = require './plugins/koa-middlewares'
 errors                  = require '../errors'
 {NodesworkError}        = require '../errors'
 
@@ -18,6 +18,12 @@ exports.AccountSchema = AccountSchema = mongoose.Schema {
     ref:        'User'
     required:   true
     index:      true
+
+  name:
+    type:       String
+    required:   true
+    max:        [140, 'Max length is 140']
+    min:        [2, 'Min length is 2']
 
   category:
     type:       mongoose.Schema.ObjectId
@@ -35,19 +41,6 @@ exports.AccountSchema = AccountSchema = mongoose.Schema {
 
   .plugin TimestampModelPlugin
   .plugin KoaMiddlewares
-
-
-AccountSchema.statics.register = (docs) ->
-  switch docs.accountType
-
-    when 'FifaFutAccount'
-      status:   'created'
-      account:  await mongoose.models.FifaFutAccount.create docs
-
-    when 'OAuthAccount'
-      mongoose.models.OAuthAccount.register docs
-
-    else NodesworkError.unkownValue 'accountType', docs.accountType
 
 
 exports.OAuthAccountSchema = OAuthAccountSchema = AccountSchema.extend {
@@ -72,6 +65,7 @@ OAuthAccountSchema.pre 'save', (next) ->
   return next new Error 'Not an oAuth account' unless @category.oAuth?.isOAuth
 
   unless @oAuthToken?
+    # TODO: Cache oAuth instances.
     oAuth = new OAuth(
       @category.oAuth.requestTokenUrl
       @category.oAuth.accessTokenUrl
@@ -87,6 +81,45 @@ OAuthAccountSchema.pre 'save', (next) ->
       if error? then next new Error 'Get OAuth request token failed.'
       else next()
   else next()
+
+
+OAuthAccountSchema.methods.verifyOAuth = (oAuthVerifier) ->
+  oAuth = new OAuth(
+    @category.oAuth.requestTokenUrl
+    @category.oAuth.accessTokenUrl
+    @category.oAuth.consumerKey
+    @category.oAuth.consumerSecret
+    '1.0'
+    @category.oAuth.callbackUrl
+    'HMAC-SHA1'
+  )
+  await new Promise (resolve, reject) =>
+    oAuth.getOAuthAccessToken(
+      @oAuthToken
+      @oAuthTokenSecret
+      oAuthVerifier
+      (error, @accessToken, @accessTokenSecret) =>
+        if error? then reject error else resolve @
+    )
+
+  await new Promise (resolve, reject) =>
+    oAuth.get(
+      @category.oAuth.verifyCredentialUrl
+      @accessToken
+      @accessTokenSecret
+      (error, twitterResponseData, result) =>
+        if error? then reject error else resolve @
+    )
+
+  @status = 'ACTIVE'
+  await @save()
+
+
+OAuthAccountSchema.methods.reset = () ->
+  @oAuthToken         = null
+  @oAuthTokenSecret   = null
+  @accessToken        = null
+  @accessTokenSecret  = null
 
 
 exports.FifaFutAccountSchema = FifaFutAccountSchema = AccountSchema.extend {

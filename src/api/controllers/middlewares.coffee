@@ -28,6 +28,7 @@ exports.fetchAccount = (ctx, next) ->
       _id:   ctx.params.accountId
       user:  ctx.user
     }
+      .populate 'category'
   catch
     ctx.response.status = 401
     return

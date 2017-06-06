@@ -4,8 +4,8 @@ mongoose                = require 'mongoose'
 {
   TimestampModelPlugin
   ExcludeFieldsToJSON
-  KoaMiddlewares
 }                       = require './utils'
+{KoaMiddlewares}        = require './plugins/koa-middlewares'
 
 exports.AccountCategorySchema = AccountCategorySchema = mongoose.Schema {
 
@@ -29,17 +29,21 @@ exports.AccountCategorySchema = AccountCategorySchema = mongoose.Schema {
     ref:       'AccountCategory'
   ]
 
+  imageUrl:    String
+
   oAuth:
-    isOAuth:         Boolean
-    requestTokenUrl: String
-    authorizeUrl:    String
-    accessTokenUrl:  String
-    callbackUrl:     String
-    consumerKey:     String
-    consumerSecret:  String
+    isOAuth:              Boolean
+    requestTokenUrl:      String
+    authorizeUrl:         String
+    accessTokenUrl:       String
+    verifyCredentialUrl:  String
+    callbackUrl:          String
+    consumerKey:          String
+    consumerSecret:       String
 
 }, collection: 'account_categories'
 
   .plugin TimestampModelPlugin
   .plugin KoaMiddlewares
+  # TODO: Explore why it's not working when retrieving accounts.
   .plugin ExcludeFieldsToJSON, fields: ['oAuth']

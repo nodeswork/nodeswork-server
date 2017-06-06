@@ -2,10 +2,9 @@ div.col-sm-6.col-md-3.md-padding
   div.panel(ng-class="{'panel-danger': account.status != 'ACTIVE'}")
     div.list-group-item
       div.row
-        img.center-block.md-img(
-          src="https://cdn-origin.fifa-gamers-pub.com/club_items/badges/1794.png")
+        img.center-block.md-img(ng-src="{{account.category.imageUrl}}")
       div.row
-        h4.text-center {{account.username}}
+        h4.text-center {{account.username || account.name}}
     div.list-group-item.active
       ul.list-inline.text-center.account-actions
         li.text-success(ng-show="account.status == 'ACTIVE'", title="Account is active")

@@ -34,10 +34,15 @@ define ['resources/resource'], (Resource) ->
         twoFactorAuthorize:
           url:     '/api/v1/accounts/:accountId/two-factor-authorize'
           method:  'POST'
+        reset:
+          url:     '/api/v1/accounts/:accountId/reset'
+          method:  'POST'
       }
 
     @AccountCategoryResource: ($resource) ->
-      AccountCategoryResource = $resource '/api/v1/accounts/categories'
+      AccountCategoryResource = $resource '/api/v1/accounts/categories/:categoryId', {
+        categoryId: '@_id'
+      }
 
     @UserAppletResource: ($resource) ->
       UserAppletResource = $resource '/api/v1/my-applets/:relationId', {

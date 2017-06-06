@@ -127,16 +127,25 @@ define [
       $('#FifaFutAccountModal').modal 'hide'
 
   AccountsEditController: ($scope, $routeParams, $document, $compile, Case,
-    AccountResource
+    AccountResource, AccountCategoryResource
   ) ->
-    {accountId, accountType} = $routeParams
+    {accountId, accountType, category} = $routeParams
 
     account = switch
       when accountId
-        AccountResource.get(accountId: accountId)
+        AccountResource.get(
+          accountId: accountId
+          (account) -> $scope.accountType = account.category.name
+        )
       when accountType == 'FifaFutAccount'
         platform:     'xone'
         accountType:  accountType
+      when accountType == 'OAuthAccount'
+        accountType:  accountType
+        category:     AccountCategoryResource.get(
+          categoryId: category
+          (category) -> $scope.accountType = category.name
+        )
 
     $editor = $document.find '#account-editor'
 
@@ -145,7 +154,7 @@ define [
     }
 
     updateEditor = () ->
-      $scope.accountType = Case.capital account.accountType
+      $scope.accountType ?= Case.capital account.accountType
       $editor.attr Case.kebab(account.accountType), ''
       $compile($editor) $scope
 

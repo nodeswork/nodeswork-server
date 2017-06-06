@@ -22,7 +22,9 @@ accountRouter
 
   .use requireLogin
 
-  .get '/', overrideUserToQuery(), Account.findMiddleware()
+  .get '/', overrideUserToQuery(), Account.findMiddleware {
+    populate: [ 'category' ]
+  }
 
   .post('/',
     params.body {
@@ -36,14 +38,38 @@ accountRouter
   )
 
   .get('/categories'
-    AccountCategory.findMiddleware {
-    }
-    (ctx) -> {}
+    AccountCategory.findMiddleware triggerNext: false, populate: ['implements']
   )
 
-  .get '/oauth/:provider/callback', (ctx) -> {}
+  .get('/categories/:categoryId'
+    AccountCategory.getMiddleware field: 'categoryId', triggerNext: false
+  )
 
-  .get '/:accountId', Account.getMiddleware field: 'accountId'
+  .get '/oauth/:provider/callback', (ctx) ->
+    category        = await AccountCategory.findOne name: ctx.params.provider
+    oAuthToken      = ctx.request.query.oauth_token
+    oAuthVerifier   = ctx.request.query.oauth_verifier
+
+    account         = await Account.findOne {
+      user:        ctx.user
+      oAuthToken:  oAuthToken
+    }
+      .populate 'category'
+
+    ctx.body        = await account.verifyOAuth oAuthVerifier
+
+
+  .get '/:accountId', Account.getMiddleware {
+    field: 'accountId'
+    populate: ['category']
+  }
+
+  .post('/:accountId/reset'
+    fetchAccount
+    (ctx) ->
+      await ctx.account.reset?()
+      ctx.body = await ctx.account.save()
+  )
 
   .post('/:accountId/authorize'
     fetchAccount

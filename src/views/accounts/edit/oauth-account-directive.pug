@@ -1,0 +1,37 @@
+div
+  div.col-md-3.no-padding
+    ul.nav.nav-pills.nav-stacked
+      li.active
+        a(href="#account-form", data-toggle="pill") Step 1 - {{account._id ? 'Edit' : 'Create'}} Account
+      li
+        a(ng-class="{disabled: !account._id}", data-toggle="{{account._id ? 'pill' : ''}}"
+          ng-href="{{account._id ? '#account-verify' : ''}}") Step 2 - Verify Account
+  div.col-md-7
+    div.tab-content.md-padding
+      div#account-form.tab-pane.active
+        form.form-horizontal
+          div.form-group
+            div.col-sm-9.col-offset-sm-3
+              img.center-block.md-img(ng-src="{{account.category.imageUrl}}")
+          div.form-group(ng-class="{'has-error': errors.username}")
+            label.col-sm-3.control-label Account Name
+            div.col-sm-9
+              input.form-control(type="text", placeholder="Account Name", ng-model="account.name")
+              small.help-block(ng-show="errors.name") {{errors.name.message}}
+          div.form-group
+            label.col-sm-3.control-label Account Status
+            div.col-sm-9
+              label.control-label {{account.status || 'UNKOWN'}}
+          div.form-group
+            div.col-sm-9.col-sm-offset-3
+              button.btn.btn-primary(ng-if="!account._id", ng-click="saveAccount()") Create
+              button.btn.btn-primary(ng-if="account._id", ng-click="saveAccount()", ng-class="{disabled: !formChanged}") Save
+              button.btn.btn-default(ng-click="cancel()") Cancel
+              button.btn.btn-danger.disabled(ng-if="account._id") Delete
+      div#account-verify.tab-pane
+        div.text-center.md-padding
+          button.btn.btn-success(ng-click="verify()") Start to Verify
+          button.btn.btn-danger(ng-click="reset()") Reset Account Linking
+
+div.clearfix
+pre {{account|json}}
