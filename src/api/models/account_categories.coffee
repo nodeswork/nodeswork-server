@@ -29,7 +29,17 @@ exports.AccountCategorySchema = AccountCategorySchema = mongoose.Schema {
     ref:       'AccountCategory'
   ]
 
+  oAuth:
+    isOAuth:         Boolean
+    requestTokenUrl: String
+    authorizeUrl:    String
+    accessTokenUrl:  String
+    callbackUrl:     String
+    consumerKey:     String
+    consumerSecret:  String
+
 }, collection: 'account_categories'
 
   .plugin TimestampModelPlugin
   .plugin KoaMiddlewares
+  .plugin ExcludeFieldsToJSON, fields: ['oAuth']

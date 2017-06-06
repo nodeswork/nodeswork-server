@@ -40,6 +40,7 @@
     "mongoose-type-email": "1.0.5",
     "nodeswork-logger": "0.0.2",
     "nodeswork-utils": "0.0.2",
+    "oauth": "^0.9.15",
     "rand-token": "^0.3.0",
     "socket.io": "^2.0.1",
     "underscore": "1.8.3",

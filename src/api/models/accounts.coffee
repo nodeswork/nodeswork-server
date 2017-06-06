@@ -1,6 +1,7 @@
 _                       = require 'underscore'
 mongoose                = require 'mongoose'
 LRU                     = require 'lru-cache'
+{OAuth}                 = require 'oauth'
 
 {
   TimestampModelPlugin
@@ -8,6 +9,7 @@ LRU                     = require 'lru-cache'
   KoaMiddlewares
 }                       = require './utils'
 errors                  = require '../errors'
+{NodesworkError}        = require '../errors'
 
 exports.AccountSchema = AccountSchema = mongoose.Schema {
 
@@ -17,10 +19,10 @@ exports.AccountSchema = AccountSchema = mongoose.Schema {
     required:   true
     index:      true
 
-  categories:   [
+  category:
     type:       mongoose.Schema.ObjectId
     ref:        'AccountCategory'
-  ]
+    required:   true
 
   status:
     enum:       ["ACTIVE", "ERROR", "INACTIVE", "UNVERIFIED"]
@@ -33,6 +35,58 @@ exports.AccountSchema = AccountSchema = mongoose.Schema {
 
   .plugin TimestampModelPlugin
   .plugin KoaMiddlewares
+
+
+AccountSchema.statics.register = (docs) ->
+  switch docs.accountType
+
+    when 'FifaFutAccount'
+      status:   'created'
+      account:  await mongoose.models.FifaFutAccount.create docs
+
+    when 'OAuthAccount'
+      mongoose.models.OAuthAccount.register docs
+
+    else NodesworkError.unkownValue 'accountType', docs.accountType
+
+
+exports.OAuthAccountSchema = OAuthAccountSchema = AccountSchema.extend {
+
+  oAuthToken:
+    type:             String
+
+  oAuthTokenSecret:
+    type:             String
+
+  accessToken:
+    type:             String
+
+  accessTokenSecret:
+    type:             String
+}
+
+  .plugin ExcludeFieldsToJSON, fields: ['oAuthTokenSecret', 'accessToken', 'accessTokenSecret']
+
+
+OAuthAccountSchema.pre 'save', (next) ->
+  return next new Error 'Not an oAuth account' unless @category.oAuth?.isOAuth
+
+  unless @oAuthToken?
+    oAuth = new OAuth(
+      @category.oAuth.requestTokenUrl
+      @category.oAuth.accessTokenUrl
+      @category.oAuth.consumerKey
+      @category.oAuth.consumerSecret
+      '1.0'
+      @category.oAuth.callbackUrl
+      'HMAC-SHA1'
+    )
+    return oAuth.getOAuthRequestToken (
+      error, @oAuthToken, @oAuthTokenSecret, results
+    ) =>
+      if error? then next new Error 'Get OAuth request token failed.'
+      else next()
+  else next()
 
 
 exports.FifaFutAccountSchema = FifaFutAccountSchema = AccountSchema.extend {

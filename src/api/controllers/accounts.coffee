@@ -12,6 +12,7 @@ KoaRouter              = require 'koa-router'
   AccountCategory
 }                      = require '../models'
 errors                 = require '../errors'
+{params, rules}        = require './params'
 
 
 exports.accountRouter = accountRouter = new KoaRouter prefix: '/accounts'
@@ -23,13 +24,24 @@ accountRouter
 
   .get '/', overrideUserToQuery(), Account.findMiddleware()
 
-  .post '/', overrideUserToDoc(), Account.createMiddleware()
+  .post('/',
+    params.body {
+      accountType:  rules.isRequired
+      category:     rules.populateFromModel AccountCategory
+    }
+    overrideUserToDoc()
+    Account.createMiddleware {
+      omits: ['oAuthToken', 'oAuthTokenSecret', 'accessToken', 'accessTokenSecret']
+    }
+  )
 
   .get('/categories'
     AccountCategory.findMiddleware {
     }
     (ctx) -> {}
   )
+
+  .get '/oauth/:provider/callback', (ctx) -> {}
 
   .get '/:accountId', Account.getMiddleware field: 'accountId'
 

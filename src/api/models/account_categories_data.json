@@ -17,6 +17,15 @@
     "isVirtual": false,
     "implements": [
       "Social Media"
-    ]
+    ],
+    "oAuth": {
+      "isOAuth": true,
+      "requestTokenUrl": "https://api.twitter.com/oauth/request_token",
+      "authorizeUrl": "https://api.twitter.com/oauth/authorize",
+      "accessTokenUrl": "https://api.twitter.com/oauth/access_token",
+      "callbackUrl": "http://127.0.0.1:3000/api/v1/accounts/oauth/twitter/callback",
+      "consumerKey": "1hBgQYeShVIVYEUmcVR1OFQIN",
+      "consumerSecret": "P40T5VL1LDPPFtqc7LVXpNUDEUxi6PoI8cy1gn9v1SoW2n6Qrk"
+    }
   }
 ]
