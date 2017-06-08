@@ -79,15 +79,27 @@ define [
 
   UserAppletController: (_, $, $scope, $routeParams, $location, $document
     UserAppletResource, DeviceResource, ExecutionResource, TimezoneResource
+    AccountResource
   ) ->
     _.extend $scope, {
       devices:    DeviceResource.query()
-      userApplet: UserAppletResource.get(relationId: $routeParams.relationId)
+      userApplet: UserAppletResource.get(
+        relationId: $routeParams.relationId
+        () -> AccountResource.query (accounts) ->
+          _.each accounts, (account) ->
+            account.selected = account._id in $scope.userApplet.accounts
+          $scope.accounts = accounts
+      )
       timezones:  TimezoneResource.query {}, (timezones) ->
         $scope.timezones = ['default'].concat timezones
-
       saveUserApplet: () ->
         $scope.userApplet.$save()
+      updateAccountSelect: () ->
+        $scope.userApplet.accounts =
+          _.chain $scope.accounts
+            .filter (account) -> account.selected
+            .map (account) -> account._id
+            .value()
     }
 
     onTabChanged = (tab) ->

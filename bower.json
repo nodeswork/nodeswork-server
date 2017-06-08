@@ -28,6 +28,7 @@
     "bootstrap": "^3.3.7",
     "angular-resource": "^1.6.4",
     "Case": "^1.5.2",
-    "socket.io-client": "^2.0.2"
+    "socket.io-client": "^2.0.2",
+    "angular-strap": "^2.3.12"
   }
 }

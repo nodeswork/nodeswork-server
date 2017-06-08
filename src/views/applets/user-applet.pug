@@ -32,7 +32,16 @@ div.md-padding-top
           div.form-group
             label.col-sm-3.control-label(for="require-accounts") Require Accounts
             div.col-sm-9
-              input#require-accounts.form-control(type="text", ng-model="userApplet.requiredAccountsNN")
+              ul#require-accounts.list-inline
+                li.col-md-6.sm-padding-bottom(ng-repeat="account in accounts")
+                  div
+                    ul.list-inline
+                      li
+                        input(type="checkbox", ng-model="account.selected", ng-change="updateAccountSelect()")
+                      li
+                        img.sm-img(ng-src="{{account.category.imageUrl}}")
+                      li {{account.name || account.username}}
+
           div.form-group
             label.col-sm-3.control-label(for="timezone") Timezone
             div.col-sm-9

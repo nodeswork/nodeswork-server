@@ -6,6 +6,8 @@ requirejs.config
     angularMaterial:          '../bower_components/angular-material/angular-material.min'
     angularResource:          '../bower_components/angular-resource/angular-resource.min'
     angularRoute:             '../bower_components/angular-route/angular-route'
+    angularStrap:             '../bower_components/angular-strap/dist/angular-strap.min'
+    angularStrapTpl:          '../bower_components/angular-strap/dist/angular-strap.tpl.min'
     bootstrap:                '../bower_components/bootstrap/dist/js/bootstrap.min'
     case:                     '../bower_components/Case/dist/Case.min'
     io:                       '../bower_components/socket.io-client/dist/socket.io'
@@ -21,6 +23,10 @@ requirejs.config
       deps:                   [ 'angular' ]
     angularRoute:
       deps:                   [ 'angular' ]
+    angularStrap:
+      deps:                   [ 'angular' ]
+    angularStrapTpl:
+      deps:                   [ 'angular', 'angularStrap' ]
     bootstrap:
       deps:                   [ 'angular', 'jquery' ]
     case:
@@ -34,7 +40,7 @@ requirejs ['jquery'], ($) ->
 
   requirejs [
     'angular', 'angularRoute', 'angularResource', 'bootstrap', 'jquery'
-    'underscore', 'case', 'io'
+    'underscore', 'case', 'io', 'angularStrapTpl'
 
     'routes'
 
@@ -45,6 +51,7 @@ requirejs ['jquery'], ($) ->
     'directives/page_directives'
   ], (
     angular, angularRoute, angularResource, bootstrap, $, _, Case, io
+    angularStrapTpl
 
     routes
 
@@ -61,7 +68,7 @@ requirejs ['jquery'], ($) ->
       console.log 'message socket is connected.'
 
     app = angular.module 'nodesworkWeb', [
-      'ngRoute', 'ngResource'
+      'ngRoute', 'ngResource', 'mgcrea.ngStrap'
     ]
 
     app.config routes
