@@ -188,7 +188,9 @@ define [
         _.filter runningApplets, (applet) -> applet.status == 'online'
     }
 
-  DeviceController: (_, $scope, $routeParams, $location, $document, DeviceResource) ->
+  DeviceController: (_, $scope, $routeParams, $location, $document,
+    DeviceResource, ExecutionResource
+  ) ->
     _.extend $scope, {
       device: DeviceResource.get(deviceId: $routeParams.deviceId)
 
@@ -196,6 +198,15 @@ define [
         $scope.device.$save()
     }
     onTabChanged = (tab) ->
+      switch tab
+        when 'deployments'
+          _.extend $scope, {
+            executions: ExecutionResource.query {
+              query:
+                applet: '592a1b01051dbd2b6ac4568e'
+            }
+            show: {}
+          }
 
     $document.find("a[href='##{$location.hash()}']").tab 'show'
     onTabChanged $location.hash()

@@ -19,6 +19,7 @@ executionRouter
   .use requireLogin
 
   .get '/', overrideUserToDoc(), AppletExecution.findMiddleware {
-    allowedQueryFields: ['applet']
-    sort: '-createdAt'
+    allowedQueryFields:  ['applet']
+    sort:                '-createdAt'
+    pagination:          20
   }
