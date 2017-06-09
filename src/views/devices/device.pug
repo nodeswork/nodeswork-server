@@ -32,6 +32,7 @@ div.row
     div#deployments.tab-pane
       div(ng-show="show.execution")
         div ID {{show.execution._id}}
+        div status {{show.execution.status}}
         pre {{show.execution.error.stack}}
       table.table.table-striped
         thead
@@ -43,7 +44,9 @@ div.row
             th Duration (ms)
             th Time
         tbody
-          tr(ng-repeat="execution in executions", ng-click="show.execution = execution")
+          tr(ng-repeat="execution in executions",
+            ng-click="show.execution = execution", ng-class="{success: show.execution == execution}"
+          )
             td {{execution._id}}
             td {{execution.device}}
             td {{execution.status}}
