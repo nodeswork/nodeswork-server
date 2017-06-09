@@ -5,6 +5,7 @@ div.row
     li.list-group-item(ng-repeat="device in devices", ng-class="{active: device == activeDevice}")
       h4 {{device.name}}
       small {{device.runningApplets.length}} applets {{onlineApplets(device.runningApplets).length}} online.
+      a(ng-href="/devices/{{device._id}}") Details
   div.col-md-9.panel.panel-default
     div.panel-body
       div.form.form-horizontal

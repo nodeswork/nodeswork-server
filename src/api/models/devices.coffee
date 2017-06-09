@@ -6,8 +6,8 @@ randtoken               = require 'rand-token'
 {
   ExcludeFieldsToJSON
   TimestampModelPlugin
-  KoaMiddlewares
 }                       = require './utils'
+{ KoaMiddlewares }      = require './plugins/koa-middlewares'
 errors                  = require '../errors'
 
 
@@ -52,13 +52,19 @@ exports.DeviceSchema = DeviceSchema = mongoose.Schema {
     type:       String
     default:    "ACTIVE"
 
+  dev:
+    type:       Boolean
+    default:    false
+
   errMsg:       String
 
 }, collection: 'devices', discriminatorKey: 'deviceType'
 
   .plugin TimestampModelPlugin
   .plugin ExcludeFieldsToJSON, fields: ['deviceToken']
-  .plugin KoaMiddlewares
+  .plugin KoaMiddlewares, {
+    omits: ['_id', 'createdAt', 'lastUpdateTime', 'user', 'status']
+  }
 
 
 DeviceSchema.index {

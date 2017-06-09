@@ -139,6 +139,14 @@ define [], () ->
         templateUrl:  '/views/devices/index.html'
       }
 
+      .when '/devices/:deviceId', {
+        name:         'Devices'
+        menu:         menus.userMenu
+        item:         'Devices'
+        controller:   'DeviceController'
+        templateUrl:  '/views/devices/device.html'
+      }
+
       .when '/messages', {
         name:            'Messages'
         menu:            menus.userMenu

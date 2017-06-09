@@ -7,8 +7,8 @@ randtoken               = require 'rand-token'
   CronValidator
   TimestampModelPlugin
   ExcludeFieldsToJSON
-  KoaMiddlewares
 }                       = require './utils'
+{KoaMiddlewares}        = require './plugins/koa-middlewares'
 errors                  = require '../errors'
 
 TOKEN_LEN               = 16
@@ -105,7 +105,9 @@ exports.AppletSchema = AppletSchema = mongoose.Schema {
 }, collection: 'applets', discriminatorKey: 'appletType'
 
   .plugin TimestampModelPlugin
-  .plugin KoaMiddlewares
+  .plugin KoaMiddlewares, {
+    omits: ['_id', 'createdAt', 'lastUpdateTime']
+  }
   .plugin ExcludeFieldsToJSON, fields: ['prodToken']
 
 

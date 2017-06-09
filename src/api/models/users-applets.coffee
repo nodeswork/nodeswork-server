@@ -4,9 +4,9 @@ momentTimezones         = require 'moment-timezone'
 
 {
   CronValidator
-  KoaMiddlewares
   TimestampModelPlugin
 }                       = require './utils'
+{KoaMiddlewares}        = require './plugins/koa-middlewares'
 errors                  = require '../errors'
 
 exports.UserAppletSchema = UserAppletSchema = mongoose.Schema {
@@ -60,7 +60,9 @@ exports.UserAppletSchema = UserAppletSchema = mongoose.Schema {
 }, collection: 'users.applets', discriminatorKey: 'appletType'
 
   .plugin TimestampModelPlugin
-  .plugin KoaMiddlewares
+  .plugin KoaMiddlewares, {
+    omits: ['_id', 'createdAt', 'lastUpdateTime']
+  }
 
 
 UserAppletSchema.methods.validateStatus = (prefetch={}) ->

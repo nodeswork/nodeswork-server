@@ -20,7 +20,9 @@ class EventSchema extends NodesworkMongooseSchema
   }
 
   @Plugin TimestampModelPlugin
-  @Plugin KoaMiddlewares
+  @Plugin KoaMiddlewares, {
+    omits: ['_id', 'createdAt', 'lastUpdateTime']
+  }
 
 
 # Schema of container execution event.

@@ -3,8 +3,8 @@ mongoose                = require 'mongoose'
 {
   TimestampModelPlugin
   ExcludeFieldsToJSON
-  KoaMiddlewares
 }                       = require './utils'
+{KoaMiddlewares}        = require './plugins/koa-middlewares'
 
 
 exports.AppletExecutionSchema = AppletExecutionSchema = mongoose.Schema {
@@ -42,7 +42,13 @@ exports.AppletExecutionSchema = AppletExecutionSchema = mongoose.Schema {
   params:
     type:       mongoose.Schema.Types.Mixed
 
+  error:
+    message:    String
+    stack:      String
+
 }, collection: 'applets.executions'
 
   .plugin TimestampModelPlugin
-  .plugin KoaMiddlewares
+  .plugin KoaMiddlewares, {
+    omits: ['_id', 'createdAt', 'lastUpdateTime']
+  }

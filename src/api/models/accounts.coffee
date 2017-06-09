@@ -40,7 +40,9 @@ exports.AccountSchema = AccountSchema = mongoose.Schema {
 }, collection: 'accounts', discriminatorKey: 'accountType'
 
   .plugin TimestampModelPlugin
-  .plugin KoaMiddlewares
+  .plugin KoaMiddlewares, {
+    omits: ['_id', 'createdAt', 'lastUpdateTime']
+  }
 
 
 exports.OAuthAccountSchema = OAuthAccountSchema = AccountSchema.extend {

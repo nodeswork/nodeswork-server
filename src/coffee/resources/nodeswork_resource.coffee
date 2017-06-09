@@ -71,6 +71,9 @@ define ['resources/resource'], (Resource) ->
           url:      '/api/v1/devices/:deviceId/applets'
           method:   'GET'
           isArray:  true
+        save:
+          url:      '/api/v1/devices'
+          method:   'POST'
       }
 
     @DevAppletResource: ($resource) ->

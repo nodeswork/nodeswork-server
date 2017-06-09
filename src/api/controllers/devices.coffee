@@ -72,6 +72,7 @@ deviceRouter
         deviceId:  ctx.request.body.deviceId
       }
       if device?
+        device.user = ctx.user
         ctx.device = _.extend device, _.omit ctx.request.body, [
           '_id', 'createdAt', 'lastUpdateTime', 'user', 'deviceToken'
         ]

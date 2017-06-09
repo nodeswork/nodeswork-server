@@ -6,8 +6,8 @@ momentTimezones        = require 'moment-timezone'
 {
   TimestampModelPlugin
   ExcludeFieldsToJSON
-  KoaMiddlewares
 }                      = require './utils'
+{KoaMiddlewares}       = require './plugins/koa-middlewares'
 
 
 SALT_WORK_FACTOR = 10
@@ -33,7 +33,9 @@ exports.UserSchema = UserSchema = mongoose.Schema {
 }, collection: 'users', discriminatorKey: 'userType'
 
   .plugin TimestampModelPlugin
-  .plugin KoaMiddlewares
+  .plugin KoaMiddlewares, {
+    omits: ['_id', 'createdAt', 'lastUpdateTime']
+  }
 
 
 exports.EmailUserSchema = EmailUserSchema = UserSchema.extend {

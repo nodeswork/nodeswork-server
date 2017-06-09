@@ -1,0 +1,33 @@
+h2 Device: {{device.name}}
+
+div.row
+  ul.col-md-3.nav.nav-pills.nav-stacked
+    li.active
+      a(data-toggle="pill", href="#device-status") Device Status
+    li
+      a(data-toggle="pill", href="#configurations") Configurations
+    li
+      a(data-toggle="pill", href="#deployments") Deployments
+
+  div.col-md-9.tab-content
+    div#device-status.panel.panel-default.active.tab-pane
+      div.panel-body
+        pre {{device|json}}
+    div#configurations.tab-pane
+      div.panel-body
+        form.form-horizontal(ng-submit="saveDevice()")
+          div.form-group
+            label.col-sm-3.control-label(for="name") Name
+            div.col-sm-9
+              input#name.form-control(type="text", ng-model="device.name")
+          div.form-group
+            label.col-sm-3.control-label(for="dev") Dev Mode
+            div.col-sm-9
+              input#dev.form-control(type="checkbox", ng-model="device.dev")
+          div.form-group
+            div.col-sm-offset-3.col-sm-9
+              ul.list-inline
+                li
+                  button.btn.btn-success(type="submit") Save
+    div#deployments.tab-pane
+      | deployments

@@ -188,6 +188,24 @@ define [
         _.filter runningApplets, (applet) -> applet.status == 'online'
     }
 
+  DeviceController: (_, $scope, $routeParams, $location, $document, DeviceResource) ->
+    _.extend $scope, {
+      device: DeviceResource.get(deviceId: $routeParams.deviceId)
+
+      saveDevice: () ->
+        $scope.device.$save()
+    }
+    onTabChanged = (tab) ->
+
+    $document.find("a[href='##{$location.hash()}']").tab 'show'
+    onTabChanged $location.hash()
+
+    $document.find('a[data-toggle="pill"]').on 'shown.bs.tab', (e) ->
+      hashStr = $(e.target).attr('href').substr(1)
+      $location.hash hashStr
+      onTabChanged hashStr
+      $scope.$apply()
+
   MessagesController: (_, $scope, MessageResource, $routeParams, $location) ->
     _.extend $scope, {
 

@@ -44,6 +44,8 @@ exports.AccountCategorySchema = AccountCategorySchema = mongoose.Schema {
 }, collection: 'account_categories'
 
   .plugin TimestampModelPlugin
-  .plugin KoaMiddlewares
+  .plugin KoaMiddlewares, {
+    omits: ['_id', 'createdAt', 'lastUpdateTime']
+  }
   # TODO: Explore why it's not working when retrieving accounts.
   .plugin ExcludeFieldsToJSON, fields: ['oAuth']

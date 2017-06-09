@@ -14,7 +14,6 @@ class NodesworkMongooseSchema
   # @nodoc
   @SetDefault = () ->
     unless '_Internals' in Object.getOwnPropertyNames @
-      console.log 'set @_Internals'
       @_Internals = {
         schema:          {}
         plugins:         []

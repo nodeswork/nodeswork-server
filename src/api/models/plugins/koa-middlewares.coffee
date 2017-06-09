@@ -227,6 +227,8 @@ findMiddleware = (options={}) ->
 #   result to koa.body.
 # @option options {String} target='object' specifies which field of the ctx is
 #   the target to store the document.
+# @option options {Array<String>} omits=[] specifies which fields from the
+#   ctx.request.body to be omitted before creating the document.
 # @option options {Boolean} triggerNext=true specifies if to trigger the next
 #   middleware.
 # @option options {Function} transform=null specifies transform function for the
