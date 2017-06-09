@@ -10,6 +10,7 @@ accounts                = require './accounts'
 accountCategories       = require './account_categories'
 applets                 = require './applets'
 devices                 = require './devices'
+events                  = require './events'
 appletsExecutions       = require './applets-executions'
 messages                = require './messages'
 users                   = require './users'
@@ -24,24 +25,28 @@ _.extend module.exports, users, utils
 exports.registerModels = (mongooseInstance = mongoose) ->
   registerModel = (modelName, modelSchema) ->
     logger.info 'Registering model:', name: modelName
+    if modelSchema.MongooseSchema?
+      modelSchema = modelSchema.MongooseSchema()
     exports[modelName] = mongooseInstance.model modelName, modelSchema
 
   registerModel modelName, modelSchema for [modelName, modelSchema] in [
-    ['User',               users.UserSchema]
-    ['EmailUser',          users.EmailUserSchema]
-    ['SystemUser',         users.SystemUserSchema]
-    ['AccountCategory',    accountCategories.AccountCategorySchema]
-    ['Account',            accounts.AccountSchema]
-    ['OAuthAccount',       accounts.OAuthAccountSchema]
-    ['FifaFutAccount',     accounts.FifaFutAccountSchema]
-    ['Applet',             applets.AppletSchema]
-    ['NpmApplet',          applets.NpmAppletSchema]
-    ['SystemApplet',       applets.SystemAppletSchema]
-    ['UserApplet',         usersApplets.UserAppletSchema]
-    ['Device',             devices.DeviceSchema]
-    ['Message',            messages.MessageSchema]
-    ['AppletMessage',      messages.AppletMessageSchema]
-    ['AppletExecution',    appletsExecutions.AppletExecutionSchema]
+    ['User',                     users.UserSchema]
+    ['EmailUser',                users.EmailUserSchema]
+    ['SystemUser',               users.SystemUserSchema]
+    ['AccountCategory',          accountCategories.AccountCategorySchema]
+    ['Account',                  accounts.AccountSchema]
+    ['OAuthAccount',             accounts.OAuthAccountSchema]
+    ['FifaFutAccount',           accounts.FifaFutAccountSchema]
+    ['Applet',                   applets.AppletSchema]
+    ['NpmApplet',                applets.NpmAppletSchema]
+    ['SystemApplet',             applets.SystemAppletSchema]
+    ['UserApplet',               usersApplets.UserAppletSchema]
+    ['Device',                   devices.DeviceSchema]
+    ['Message',                  messages.MessageSchema]
+    ['AppletMessage',            messages.AppletMessageSchema]
+    ['AppletExecution',          appletsExecutions.AppletExecutionSchema]
+    ['Event',                    events.EventSchema]
+    ['ContainerExecutionEvent',  events.ContainerExecutionEventSchema]
   ]
 
   containerAppletOwner = await mongoose.models.SystemUser.containerAppletOwner()

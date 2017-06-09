@@ -39,6 +39,9 @@ exports.AppletExecutionSchema = AppletExecutionSchema = mongoose.Schema {
   duration:
     type:       Number
 
+  params:
+    type:       mongoose.Schema.Types.Mixed
+
 }, collection: 'applets.executions'
 
   .plugin TimestampModelPlugin
