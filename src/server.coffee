@@ -15,7 +15,7 @@ mongoose              = require 'mongoose'
 mongooseStore         = require 'koa-session-mongoose'
 session               = require 'koa-generic-session'
 staticCache           = require 'koa-static-cache'
-{logger}              = require 'nodeswork-utils'
+{logger}              = require 'nodeswork-logger'
 
 {registerModels}      = require './api/models'
 

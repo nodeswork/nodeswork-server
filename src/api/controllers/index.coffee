@@ -1,6 +1,5 @@
 _                           = require 'underscore'
 KoaRouter                   = require 'koa-router'
-{logger}                    = require 'nodeswork-utils'
 
 {appletApiRouter}           = require './applet-api'
 {usersAppletsRouter}        = require './users-applets'
@@ -11,56 +10,17 @@ KoaRouter                   = require 'koa-router'
 {exploreRouter}             = require './explore'
 {messageRouter}             = require './messages'
 {userRouter}                = require './users'
+{handleRequest}             = require './middlewares/requests'
+{userRole, deviceRole}      = require './middlewares/roles'
 {systemRouter}              = require './systems'
-{User}                      = require '../models'
-{ParameterValidationError}  = require '../errors'
 
 exports.router = router = new KoaRouter prefix: '/api/v1'
 
 router
 
-  .use (ctx, next) ->
-    logger.info "Request:", _.pick ctx.request, 'method', 'url', 'headers'
-    try
-      await next()
-    catch e
-      console.log e
-      switch
-        when e instanceof ParameterValidationError
-          ctx.body = {
-            status: 'error'
-            message: e.message
-          }
-          ctx.response.status = e.errorCode
-        when e?.name == 'ValidationError'
-          errors = _.mapObject e.errors, (val, key) ->
-            switch
-              when val?.kind == "required"
-                kind:    'required'
-                message: "#{key} is required."
-              else val
-          ctx.body             = errors
-          ctx.response.status  = 422
-        when e?.details
-          ctx.body = {
-            message: e.message
-            details: e.details
-          }
-          ctx.response.status  = 422
-        when e?.name == 'CastError'
-          ctx.body = _.pick e, [
-            'message', 'name', 'stringValue', 'kind', 'value'
-          ]
-          ctx.response.status  = 422
-        else
-          throw e
-
-  .use (ctx, next) ->
-    ctx.user = (
-      if ctx.session.userId? then await User.findById ctx.session.userId
-      else {}
-    )
-    await next()
+  .use handleRequest
+  .use userRole
+  .use deviceRole
 
   .use devRouter.routes(), devRouter.allowedMethods()
   .use appletApiRouter.routes(), appletApiRouter.allowedMethods()

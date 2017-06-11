@@ -1,21 +1,22 @@
-KoaRouter = require 'koa-router'
-mongoose  = require 'mongoose'
+KoaRouter                    = require 'koa-router'
+mongoose                     = require 'mongoose'
 
 {
-  requireLogin
   overrideUserToQuery
   overrideUserToDoc
   updateState
-}                      = require './middlewares'
-{ Message }            = require '../models'
-{params, rules}        = require './params'
+}                            = require './middlewares'
+{ requireRoles, roles }      = require './middlewares/roles'
+
+{ Message }                  = require '../models'
+{params, rules}              = require './params'
 
 exports.messageRouter = messageRouter = new KoaRouter prefix: '/messages'
 
 
 messageRouter
 
-  .use requireLogin
+  .use requireRoles roles.USER
 
   .get('/'
     overrideUserToQuery('receiver')

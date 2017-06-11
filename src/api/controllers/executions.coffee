@@ -2,10 +2,10 @@ _                           = require 'underscore'
 KoaRouter                   = require 'koa-router'
 
 {
-  requireLogin
   overrideUserToQuery
   overrideUserToDoc
 }                           = require './middlewares'
+{ requireRoles, roles }     = require './middlewares/roles'
 {
   AppletExecution
 }                           = require '../models'
@@ -16,7 +16,7 @@ exports.executionRouter = executionRouter = new KoaRouter prefix: '/executions'
 
 executionRouter
 
-  .use requireLogin
+  .use requireRoles roles.USER
 
   .get '/', overrideUserToDoc(), AppletExecution.findMiddleware {
     allowedQueryFields:  ['applet']

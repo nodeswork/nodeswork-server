@@ -1,18 +1,18 @@
-_                      = require 'underscore'
-KoaRouter              = require 'koa-router'
+_                              = require 'underscore'
+KoaRouter                      = require 'koa-router'
 
 {
   fetchAccount
-  requireLogin
   overrideUserToQuery
   overrideUserToDoc
-}                      = require './middlewares'
+}                              = require './middlewares'
+{ requireRoles, roles }        = require './middlewares/roles'
 {
   Account
   AccountCategory
-}                      = require '../models'
-errors                 = require '../errors'
-{params, rules}        = require './params'
+}                              = require '../models'
+errors                         = require '../errors'
+{params, rules}                = require './params'
 
 
 exports.accountRouter = accountRouter = new KoaRouter prefix: '/accounts'
@@ -20,7 +20,7 @@ exports.accountRouter = accountRouter = new KoaRouter prefix: '/accounts'
 
 accountRouter
 
-  .use requireLogin
+  .use requireRoles roles.USER
 
   .get '/', overrideUserToQuery(), Account.findMiddleware {
     populate: [ 'category' ]

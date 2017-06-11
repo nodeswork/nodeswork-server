@@ -1,7 +1,6 @@
 _               = require 'underscore'
 KoaRouter       = require 'koa-router'
 
-{requireLogin}  = require './middlewares'
 {NpmApplet}     = require '../models'
 
 

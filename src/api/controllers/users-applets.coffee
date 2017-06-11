@@ -2,10 +2,10 @@ _                           = require 'underscore'
 KoaRouter                   = require 'koa-router'
 
 {
-  requireLogin
   overrideUserToQuery
   overrideUserToDoc
 }                           = require './middlewares'
+{ requireRoles, roles }     = require './middlewares/roles'
 {
   Applet
   Device
@@ -35,7 +35,7 @@ validateUserApplet = (ctx, next) ->
 
 usersAppletsRouter
 
-  .use requireLogin
+  .use requireRoles roles.USER
 
   .get('/', overrideUserToQuery(), UserApplet.findMiddleware {
     populate: ['applet', 'device']

@@ -2,6 +2,7 @@ _                           = require 'underscore'
 KoaRouter                   = require 'koa-router'
 
 {fetchAccount}              = require './middlewares'
+{requireRoles, roles}       = require './middlewares/roles'
 {
   Account
   Applet
@@ -16,20 +17,8 @@ KoaRouter                   = require 'koa-router'
 
 
 exports.appletApiRouter = appletApiRouter = new KoaRouter {
-  prefix: '/applet-api/:appletId'
+  prefix: '/applet-api/:appletId/users/:userId'
 }
-
-fetchDevice = (ctx, next) ->
-  deviceToken  = ctx.request.headers['device-token']
-  unless deviceToken?
-    throw new ParameterValidationError 'Device token is missing.'
-
-  ctx.device   = await Device.findOne deviceToken: deviceToken
-
-  unless ctx.device?
-    throw new ParameterValidationError 'Device is not available.'
-
-  await next()
 
 # Fetch applet and verify applet token.
 fetchApplet = (ctx, next) ->
@@ -51,6 +40,7 @@ fetchApplet = (ctx, next) ->
 
 # Fetch user and verify user's authorization.
 fetchUser = (ctx, next) ->
+  console.log 'fetching UUUUUUUUUUUUUUUUU'
   ctx.user    = await User.findById ctx.params.userId
 
   unless ctx.params.userId.toString() == ctx.device.user.toString()
@@ -91,25 +81,25 @@ fetchAccount = (ctx, next) ->
 
 appletApiRouter
 
-  .use fetchDevice
+  .use requireRoles roles.DEVICE
+
+  .all /./, fetchApplet, fetchUser
 
   # Returns include: 1) user; 2) user's applet relationship; 3) applet.
-  .get '/users/:userId', fetchApplet, fetchUser, (ctx) ->
+  .get '/', (ctx) ->
+    console.log 'FFFFFFFFFFFFFFFFFFFFF', ctx.user, ctx.userApplet, ctx.applet
     ctx.body = {
       user:        ctx.user
       userApplet:  ctx.userApplet
       applet:      ctx.applet
     }
 
-  .post('/users/:userId/accounts/:accountId/operate'
-    fetchApplet
-    fetchUser
+  .post('/accounts/:accountId/operate'
     fetchAccount
     (ctx) ->
   )
 
-  .post('/users/:userId/messages'
-    fetchApplet, fetchUser
+  .post('/messages'
     (ctx, next) ->
       ctx.overrides = {
         doc:
@@ -122,8 +112,7 @@ appletApiRouter
     Message.createMiddleware()
   )
 
-  .post('/users/:userId/executions'
-    fetchApplet, fetchUser
+  .post('/executions'
     (ctx, next) ->
       ctx.overrides = {
         doc:
@@ -134,8 +123,7 @@ appletApiRouter
     AppletExecution.createMiddleware fromExtend: false
   )
 
-  .post('/users/:userId/executions/:executionId'
-    fetchApplet, fetchUser
+  .post('/executions/:executionId'
     (ctx, next) ->
       ctx.overrides = {
         query:

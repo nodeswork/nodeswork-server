@@ -4,8 +4,8 @@ KoaRouter               = require 'koa-router'
 {
   overrideUserToDoc
   overrideUserToQuery
-  requireLogin
 }                       = require './middlewares'
+{ requireRoles, roles } = require './middlewares/roles'
 {Applet}                = require '../models'
 
 
@@ -13,7 +13,7 @@ exports.devRouter = devRouter = new KoaRouter prefix: '/dev/'
 
 devRouter
 
-  .use requireLogin
+  .use requireRoles roles.DEVELOPER
 
   .get 'applets', overrideUserToQuery('owner'), Applet.findMiddleware()
 

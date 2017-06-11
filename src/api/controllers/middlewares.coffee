@@ -12,11 +12,6 @@ futapi                             = require 'fut-api'
   STATE_CHANGE_TOPIC
 }                                  = require '../constants'
 
-exports.requireLogin = (ctx, next) ->
-  unless ctx.user?._id? then ctx.response.status = 401
-  else await next()
-
-
 FIFA_FUT_API_CLIENT = LRU {
   max: 100                      # max size
   maxAge: 1000 * 60 * 60 * 24   # 24 hours

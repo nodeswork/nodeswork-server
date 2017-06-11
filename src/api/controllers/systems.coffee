@@ -1,15 +1,17 @@
-_               = require 'underscore'
-KoaRouter       = require 'koa-router'
-{requireLogin}  = require './middlewares'
-{SystemApplet}  = require '../models'
+_                            = require 'underscore'
+KoaRouter                    = require 'koa-router'
+
+{ requireRoles, roles }      = require './middlewares/roles'
+{SystemApplet}               = require '../models'
 
 
 exports.systemRouter = systemRouter = new KoaRouter prefix: '/systems'
 
 
+# TODO: Change to resources.
 systemRouter
 
-  .use requireLogin
+  .use requireRoles roles.USER
 
   .get '/container-applet', (ctx) ->
     systemApplet = await SystemApplet.containerApplet()

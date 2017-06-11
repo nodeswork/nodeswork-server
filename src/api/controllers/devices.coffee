@@ -2,10 +2,10 @@ _                           = require 'underscore'
 KoaRouter                   = require 'koa-router'
 
 {
-  requireLogin
   overrideUserToQuery
   overrideUserToDoc
 }                           = require './middlewares'
+{ requireRoles, roles }     = require './middlewares/roles'
 {
   Device
   User
@@ -15,18 +15,6 @@ KoaRouter                   = require 'koa-router'
 
 
 exports.deviceRouter = deviceRouter = new KoaRouter prefix: '/devices'
-
-
-fetchDeviceFromToken = (ctx, next) ->
-  user         = ctx.request.headers.user
-  deviceToken  = ctx.request.headers['device-token']
-
-  if user? and deviceToken?
-    ctx.device  = await Device.findOne user: user, deviceToken: deviceToken
-
-    if ctx.device? then ctx.user = await User.findById user
-
-  await next()
 
 fetchDevice = (ctx, next) ->
   if ctx.device?
@@ -50,9 +38,7 @@ expandDevice = (device) ->
 
 deviceRouter
 
-  .use fetchDeviceFromToken
-
-  .use requireLogin
+  .use requireRoles roles.USER, roles.DEVICE
 
   .get('/', overrideUserToQuery()
     Device.findMiddleware target: 'devices'

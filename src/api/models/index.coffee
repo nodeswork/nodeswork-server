@@ -1,6 +1,6 @@
 # Patch mongoose schema extend
 _                       = require 'underscore'
-{logger}                = require 'nodeswork-utils'
+{logger}                = require 'nodeswork-logger'
 mongoose                = require 'mongoose'
 mongooseSchemaExtend    = require 'mongoose-schema-extend'
 mongooseTypeEmail       = require 'mongoose-type-email'
