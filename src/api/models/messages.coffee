@@ -1,53 +1,61 @@
-mongoose  = require 'mongoose'
+mongoose                      = require 'mongoose'
 
-{
-  TimestampModelPlugin
-}                       = require './utils'
-{KoaMiddlewares}        = require './plugins/koa-middlewares'
+{ NodesworkMongooseSchema }   = require './nodeswork-mongoose-schema'
+{ KoaMiddlewares }            = require './plugins/koa-middlewares'
 
 
-exports.MessageSchema = MessageSchema = mongoose.Schema {
+class MessageSchema extends NodesworkMongooseSchema
 
-  receiver:
-    type:       mongoose.Schema.ObjectId
-    ref:        'User'
-    required:   true
-    index:      true
+  @Config {
+    collection: 'messages'
+    discriminatorKey: 'messageType'
+  }
 
-  views:
-    type:       Number
-    default:    0
+  @Schema {
+    receiver:
+      type:       mongoose.Schema.ObjectId
+      ref:        'User'
+      required:   true
+      index:      true
 
-  message:
-    type:       String
-    required:   true
-    min:        [1, 'Message could not be empty.']
-    max:        [1400, 'Message could not be larger than 1400 chars.']
+    views:
+      type:       Number
+      default:    0
 
-  # redundant: 0, normal: 1, high priority: 2
-  priority:
-    type:       Number
-    default:    1
-    min:        0
-    max:        2
+    message:
+      type:       String
+      required:   true
+      min:        [1, 'Message could not be empty.']
+      max:        [1400, 'Message could not be larger than 1400 chars.']
 
-}, collection: 'messages', discriminatorKey: 'messageType'
+    # redundant: 0, normal: 1, high priority: 2
+    priority:
+      type:       Number
+      default:    1
+      min:        0
+      max:        2
 
-  .plugin TimestampModelPlugin
-  .plugin KoaMiddlewares, {
-    omits: ['_id', 'createdAt', 'lastUpdateTime']
+  }
+
+  @Plugin KoaMiddlewares
+
+
+class AppletMessageSchema extends MessageSchema
+
+  @Schema {
+    sender:
+      type:       mongoose.Schema.ObjectId
+      ref:        'Applet'
+      required:   true
+      index:      true
+
+    via:
+      type:       mongoose.Schema.ObjectId
+      ref:        'UserApplet'
   }
 
 
-exports.AppletMessageSchema = AppletMessageSchema = MessageSchema.extend {
-
-  sender:
-    type:       mongoose.Schema.ObjectId
-    ref:        'Applet'
-    required:   true
-    index:      true
-
-  via:
-    type:       mongoose.Schema.ObjectId
-    ref:        'UserApplet'
+module.exports = {
+  MessageSchema
+  AppletMessageSchema
 }

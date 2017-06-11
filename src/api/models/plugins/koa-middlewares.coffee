@@ -44,8 +44,12 @@ KoaMiddlewares = (schema, options={}) ->
 
   # Wrap middlewars to patch global options.
   wrap = (fn) -> (opts={}) ->
-    opts.omits        = _.union options.omits, opts.omits
-    opts.populate     = _.union options.populate, opts.populate
+    opts.omits        = _.union(
+      options.omits, opts.omits, KoaMiddlewares.defaults.omits
+    )
+    opts.populate     = _.union(
+      options.populate, opts.populate, KoaMiddlewares.defaults.populate
+    )
     opts.transform    = opts.transform ? options.transform
     opts.triggerNext  = opts.triggerNext ? options.triggerNext
     fn.call @, opts
@@ -56,6 +60,13 @@ KoaMiddlewares = (schema, options={}) ->
   statics.findMiddleware   = wrap findMiddleware   if 'find'   in middlewares
   statics.updateMiddleware = wrap updateMiddleware if 'update' in middlewares
   statics.deleteMiddleware = wrap deleteMiddleware if 'delete' in middlewares
+
+
+# The global configurations.
+KoaMiddlewares.defaults = {
+  omits:     []
+  populate:  []
+}
 
 
 # Provide Koa Create middleware to create model instance.

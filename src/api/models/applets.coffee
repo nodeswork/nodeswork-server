@@ -1,160 +1,169 @@
-_                       = require 'underscore'
-mongoose                = require 'mongoose'
-randtoken               = require 'rand-token'
+_                             = require 'underscore'
+mongoose                      = require 'mongoose'
+randtoken                     = require 'rand-token'
+
+{ NodesworkMongooseSchema }   = require './nodeswork-mongoose-schema'
+{ KoaMiddlewares }            = require './plugins/koa-middlewares'
+{ ExcludeFieldsToJSON }       = require './plugins/exclude-fields'
+{ CronValidator }             = require './validators/cron-jobs'
+
+TOKEN_LEN                     = 16
 
 
-{
-  CronValidator
-  TimestampModelPlugin
-  ExcludeFieldsToJSON
-}                       = require './utils'
-{KoaMiddlewares}        = require './plugins/koa-middlewares'
-errors                  = require '../errors'
+class AppletSchema extends NodesworkMongooseSchema
 
-TOKEN_LEN               = 16
+  @Config {
+    collection: 'applets'
+    discriminatorKey: 'appletType'
+  }
 
-exports.AppletSchema = AppletSchema = mongoose.Schema {
+  @Schema {
+    owner:
+      type:       mongoose.Schema.ObjectId
+      ref:        'User'
+      required:   true
+      index:      true
 
-  owner:
-    type:       mongoose.Schema.ObjectId
-    ref:        'User'
-    required:   true
-    index:      true
+    devToken:
+      type:       String
+      default:    () -> randtoken.generate TOKEN_LEN
 
-  devToken:
-    type:       String
-    default:    () -> randtoken.generate TOKEN_LEN
+    prodToken:
+      type:       String
+      default:    () -> randtoken.generate TOKEN_LEN
 
-  prodToken:
-    type:       String
-    default:    () -> randtoken.generate TOKEN_LEN
-
-  imageUrl:
-    type:       String
-    default:    'https://cdn1.iconfinder.com/data/icons/dotted-charts/512/links_diagram-256.png'
-
-  permission:
-    enum:       [ "PRIVATE", "PUBLIC", "LIMIT" ]
-    type:       String
-    default:    "PRIVATE"
-
-  limitedToUsers: [
-    type:       mongoose.Schema.ObjectId
-    ref:        'User'
-    required:   true
-  ]
-
-  containers:
-    userDevice:
-      type:     Boolean
-      default:  false
-
-    cloud:
-      type:     Boolean
-      default:  false
-
-  requiredAccounts:  [
-
-    accountCategory:
-      type:           mongoose.Schema.ObjectId
-      ref:            'AccountCategory'
-      required:       true
-
-    optional:
-      type:           Boolean
-      default:        false
-
-    multiple:
-      type:           Boolean
-      default:        false
+    imageUrl:
+      type:       String
+      default:    'https://cdn1.iconfinder.com/data/icons/dotted-charts/512/links_diagram-256.png'
 
     permission:
-      type:           String
-      enum:           ['READ', 'MANAGE', 'WRITE']
+      enum:       [ "PRIVATE", "PUBLIC", "LIMIT" ]
+      type:       String
+      default:    "PRIVATE"
 
-    usage:
-      type:           String
-      max:            [140, "Usage can't exceed 140 charactors."]
-  ]
+    limitedToUsers: [
+      type:       mongoose.Schema.ObjectId
+      ref:        'User'
+      required:   true
+    ]
 
-  status:
-    enum:       ["ACTIVE", "ERROR", "INACTIVE"]
-    type:       String
+    containers:
+      userDevice:
+        type:     Boolean
+        default:  false
 
-  errMsg:       String
+      cloud:
+        type:     Boolean
+        default:  false
 
-  name:
-    type:       String
-    required:   true
-    unique:     true
+    requiredAccounts:  [
 
-  description:
-    type:       String
-    max:        [1400, 'Short description should be at most 1400 charactors.']
+      accountCategory:
+        type:           mongoose.Schema.ObjectId
+        ref:            'AccountCategory'
+        required:       true
 
-  shortDescription:
-    type:       String
-    max:        [140, 'Short description should be at most 140 charactors.']
+      optional:
+        type:           Boolean
+        default:        false
 
-  defaultScheduler:
+      multiple:
+        type:           Boolean
+        default:        false
 
-    cron:
-      type:     String
-      validate: CronValidator
+      permission:
+        type:           String
+        enum:           ['READ', 'MANAGE', 'WRITE']
 
-}, collection: 'applets', discriminatorKey: 'appletType'
+      usage:
+        type:           String
+        max:            [140, "Usage can't exceed 140 charactors."]
+    ]
 
-  .plugin TimestampModelPlugin
-  .plugin KoaMiddlewares, {
-    omits: ['_id', 'createdAt', 'lastUpdateTime']
+    status:
+      enum:       ["ACTIVE", "ERROR", "INACTIVE"]
+      type:       String
+
+    errMsg:       String
+
+    name:
+      type:       String
+      required:   true
+      unique:     true
+
+    description:
+      type:       String
+      max:        [1400, 'Short description should be at most 1400 charactors.']
+
+    shortDescription:
+      type:       String
+      max:        [140, 'Short description should be at most 140 charactors.']
+
+    defaultScheduler:
+
+      cron:
+        type:     String
+        validate: CronValidator
+
   }
-  .plugin ExcludeFieldsToJSON, fields: ['prodToken']
 
+  @Plugin KoaMiddlewares
+  @Plugin ExcludeFieldsToJSON, fields: ['prodToken']
 
+  avaiableTo: (user) ->
+    switch @permission
+      when 'PRIVATE' then user._id.toString() == @owner.toString()
+      when 'PUBLIC' then true
+      when 'LIMIT' then _.any @limitedToUsers, (userId) ->
+        userId.toString() == user._id.toString()
+
+# TODO: Move it to Schema class.
 AppletSchema
+  .MongooseSchema()
   .virtual 'requireDevice'
   .get () -> @containers.userDevice and not @containers.cloud
 
 
-AppletSchema.methods.avaiableTo = (user) ->
-  switch @permission
-    when 'PRIVATE' then user._id.toString() == @owner.toString()
-    when 'PUBLIC' then true
-    when 'LIMIT' then _.any @limitedToUsers, (userId) ->
-      userId.toString() == user._id.toString()
+class NpmAppletSchema extends AppletSchema
 
+  @Schema {
+    packageName:
+      type:       String
+      required:   true
+      unique:     true
 
-exports.NpmAppletSchema = NpmAppletSchema = AppletSchema.extend {
-
-  packageName:
-    type:       String
-    required:   true
-    unique:     true
-
-  version:
-    type:       String
-    required:   true
-}
+    version:
+      type:       String
+      required:   true
+  }
   # TODO: support ExcludeFieldsToJSON with chained fields.
-  .plugin ExcludeFieldsToJSON, fields: ['prodToken', 'packageName_unique']
+  @Plugin ExcludeFieldsToJSON, fields: ['prodToken', 'packageName_unique']
 
 
-exports.SystemAppletSchema = SystemAppletSchema = AppletSchema.extend {
+class SystemAppletSchema extends AppletSchema
 
-  systemAppletType:
-    type:                 String
-    enum:                 ['CONTAINER']
+  @Schema {
+    systemAppletType:
+      type:                 String
+      enum:                 ['CONTAINER']
+  }
+
+  @containerApplet = () ->
+    unless @_containerApplet?
+      @_containerApplet = await @findOne systemAppletType: 'CONTAINER'
+
+    unless @_containerApplet?
+      owner = await @db.model('SystemUser').containerAppletOwner()
+      @_containerApplet = await @create {
+        owner:            owner
+        name:             'System Container Applet'
+        systemAppletType: 'CONTAINER'
+      }
+    return @_containerApplet
+
+
+module.exports = {
+  AppletSchema
+  NpmAppletSchema
+  SystemAppletSchema
 }
-
-SystemAppletSchema.statics.containerApplet = () ->
-  unless @_containerApplet?
-    @_containerApplet = await @findOne systemAppletType: 'CONTAINER'
-
-  unless @_containerApplet?
-    owner = await @db.model('SystemUser').containerAppletOwner()
-    @_containerApplet = await @create {
-      owner:            owner
-      name:             'System Container Applet'
-      systemAppletType: 'CONTAINER'
-    }
-  return @_containerApplet

@@ -1,24 +1,33 @@
 # Patch mongoose schema extend
-_                       = require 'underscore'
-{logger}                = require 'nodeswork-logger'
-mongoose                = require 'mongoose'
-mongooseSchemaExtend    = require 'mongoose-schema-extend'
-mongooseTypeEmail       = require 'mongoose-type-email'
+_                           = require 'underscore'
+{logger}                    = require 'nodeswork-logger'
+mongoose                    = require 'mongoose'
+mongooseSchemaExtend        = require 'mongoose-schema-extend'
+mongooseTypeEmail           = require 'mongoose-type-email'
 
 
-accounts                = require './accounts'
-accountCategories       = require './account_categories'
-applets                 = require './applets'
-devices                 = require './devices'
-events                  = require './events'
-appletsExecutions       = require './applets-executions'
-messages                = require './messages'
-users                   = require './users'
-usersApplets            = require './users-applets'
-utils                   = require './utils'
+accounts                    = require './accounts'
+accountCategories           = require './account_categories'
+applets                     = require './applets'
+devices                     = require './devices'
+events                      = require './events'
+appletsExecutions           = require './applets-executions'
+messages                    = require './messages'
+users                       = require './users'
+usersApplets                = require './users-applets'
+
+{ KoaMiddlewares }          = require './plugins/koa-middlewares'
+{ TimestampModelPlugin }    = require './plugins/timestamps'
 
 
-_.extend module.exports, users, utils
+KoaMiddlewares.defaults.omits = [
+  '_id', 'createdAt', 'lastUpdateTime'
+]
+
+mongoose.plugin TimestampModelPlugin
+
+
+_.extend module.exports, users
 
 
 # Register models after mongoose connections and other setups ready.

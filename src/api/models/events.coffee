@@ -1,28 +1,20 @@
-mongoose                     = require 'mongoose'
+mongoose                    = require 'mongoose'
 
-{NodesworkMongooseSchema}    = require './nodeswork-mongoose-schema'
-{
-  TimestampModelPlugin
-  ExcludeFieldsToJSON
-}                            = require './utils'
-{ KoaMiddlewares }           = require './plugins/koa-middlewares'
+{ NodesworkMongooseSchema } = require './nodeswork-mongoose-schema'
+{ KoaMiddlewares }          = require './plugins/koa-middlewares'
 
 
 # Schema of events.
 class EventSchema extends NodesworkMongooseSchema
 
   @Config {
-    collection: 'events'
-    discriminatorKey: 'eventType'
+    collection:        'events'
+    discriminatorKey:  'eventType'
   }
 
-  @Schema {
-  }
+  @Schema {}
 
-  @Plugin TimestampModelPlugin
-  @Plugin KoaMiddlewares, {
-    omits: ['_id', 'createdAt', 'lastUpdateTime']
-  }
+  @Plugin KoaMiddlewares
 
 
 # Schema of container execution event.

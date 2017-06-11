@@ -1,13 +1,10 @@
-_                      = require 'underscore'
-bcrypt                 = require 'bcrypt'
-mongoose               = require 'mongoose'
-momentTimezones        = require 'moment-timezone'
+_                         = require 'underscore'
+bcrypt                    = require 'bcrypt'
+mongoose                  = require 'mongoose'
+momentTimezones           = require 'moment-timezone'
 
-{
-  TimestampModelPlugin
-  ExcludeFieldsToJSON
-}                      = require './utils'
-{KoaMiddlewares}       = require './plugins/koa-middlewares'
+{ ExcludeFieldsToJSON }   = require './plugins/exclude-fields'
+{ KoaMiddlewares }        = require './plugins/koa-middlewares'
 
 
 SALT_WORK_FACTOR = 10
@@ -32,7 +29,6 @@ exports.UserSchema = UserSchema = mongoose.Schema {
 
 }, collection: 'users', discriminatorKey: 'userType'
 
-  .plugin TimestampModelPlugin
   .plugin KoaMiddlewares, {
     omits: ['_id', 'createdAt', 'lastUpdateTime']
   }

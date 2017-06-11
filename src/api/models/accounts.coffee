@@ -1,15 +1,11 @@
-_                       = require 'underscore'
-mongoose                = require 'mongoose'
-LRU                     = require 'lru-cache'
-{OAuth}                 = require 'oauth'
+_                          = require 'underscore'
+mongoose                   = require 'mongoose'
+LRU                        = require 'lru-cache'
+{ OAuth }                  = require 'oauth'
 
-{
-  TimestampModelPlugin
-  ExcludeFieldsToJSON
-}                       = require './utils'
-{KoaMiddlewares}        = require './plugins/koa-middlewares'
-errors                  = require '../errors'
-{NodesworkError}        = require '../errors'
+{ ExcludeFieldsToJSON }    = require './plugins/exclude-fields'
+{ KoaMiddlewares }         = require './plugins/koa-middlewares'
+errors                     = require '../errors'
 
 exports.AccountSchema = AccountSchema = mongoose.Schema {
 
@@ -39,7 +35,6 @@ exports.AccountSchema = AccountSchema = mongoose.Schema {
 
 }, collection: 'accounts', discriminatorKey: 'accountType'
 
-  .plugin TimestampModelPlugin
   .plugin KoaMiddlewares, {
     omits: ['_id', 'createdAt', 'lastUpdateTime']
   }
