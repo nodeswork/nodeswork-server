@@ -10,7 +10,7 @@ handleRequest = (ctx, next) ->
 
   try
     await next()
-    logger.info 'Request successed'
+    logger.info 'Request successed', code: ctx.response.status
   catch e
     logger.error 'Request failed:', e
     err                  = NodesworkError.fromError e

@@ -16,10 +16,6 @@ KoaRouter                   = require 'koa-router'
 {ParameterValidationError}  = require '../errors'
 
 
-exports.appletApiRouter = appletApiRouter = new KoaRouter {
-  prefix: '/applet-api/:appletId/users/:userId'
-}
-
 # Fetch applet and verify applet token.
 fetchApplet = (ctx, next) ->
   ctx.applet   = await Applet.findById ctx.params.appletId
@@ -40,7 +36,6 @@ fetchApplet = (ctx, next) ->
 
 # Fetch user and verify user's authorization.
 fetchUser = (ctx, next) ->
-  console.log 'fetching UUUUUUUUUUUUUUUUU'
   ctx.user    = await User.findById ctx.params.userId
 
   unless ctx.params.userId.toString() == ctx.device.user.toString()
@@ -79,15 +74,24 @@ fetchAccount = (ctx, next) ->
   await next()
 
 
-appletApiRouter
+appletApiRouter = new KoaRouter {
+  prefix: '/applet-api/:appletId/users/:userId'
+}
 
   .use requireRoles roles.DEVICE
 
-  .all /./, fetchApplet, fetchUser
+  .use [
+    # TODO: Remove these routes till
+    # https://github.com/alexmingoia/koa-router/issues/347 fixed.
+    '/'
+    '/accounts/:accountId/operate'
+    '/messages'
+    '/executions'
+    '/executions/:executionId'
+  ], fetchApplet, fetchUser
 
   # Returns include: 1) user; 2) user's applet relationship; 3) applet.
   .get '/', (ctx) ->
-    console.log 'FFFFFFFFFFFFFFFFFFFFF', ctx.user, ctx.userApplet, ctx.applet
     ctx.body = {
       user:        ctx.user
       userApplet:  ctx.userApplet
@@ -120,7 +124,7 @@ appletApiRouter
           device:       ctx.device?._id
       }
       await next()
-    AppletExecution.createMiddleware fromExtend: false
+    AppletExecution.createMiddleware fromExtend: false, triggerNext: false
   )
 
   .post('/executions/:executionId'
@@ -133,7 +137,13 @@ appletApiRouter
       }
       await next()
     AppletExecution.updateMiddleware {
-      field: 'executionId'
-      omits: ['user', 'applet', 'device']
+      field:        'executionId'
+      omits:        ['user', 'applet', 'device']
+      triggerNext:  false
     }
   )
+
+
+module.exports = {
+  appletApiRouter
+}

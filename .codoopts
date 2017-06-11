@@ -1,6 +1,6 @@
---name       "Codo"
+--name       "Nodeswork Server"
 --readme     README.md
---title      "Codo Documentation"
+--title      "Nodeswork Server Documentation"
 --private
 --quiet
 --extension  coffee

@@ -11,10 +11,9 @@ KoaRouter                   = require 'koa-router'
 }                           = require '../models'
 
 
-exports.executionRouter = executionRouter = new KoaRouter prefix: '/executions'
+executionRouter = new KoaRouter()
 
-
-executionRouter
+  .prefix '/executions'
 
   .use requireRoles roles.USER
 
@@ -23,3 +22,8 @@ executionRouter
     sort:                '-createdAt'
     pagination:          20
   }
+
+
+module.exports = {
+  executionRouter
+}

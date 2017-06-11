@@ -80,7 +80,7 @@ deviceRouter
 
   .get '/:deviceId/applets', fetchDevice, (ctx) ->
       ctx.response.body = await UserApplet.find {
-        user:    ctx.user
+        user:    ctx.user?._id ? ctx.device?.user
         device:  ctx.device
         status:  "ON"
       }

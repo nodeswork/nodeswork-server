@@ -18,7 +18,6 @@ define [
     }
 
     messageSocket.on 'state::change', (state) ->
-      console.log 'changeMessageState', state
       $rootScope.state = state
       $scope.$apply()
 

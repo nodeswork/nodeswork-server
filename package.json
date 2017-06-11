@@ -29,7 +29,7 @@
     "koa-error": "^3.0.0",
     "koa-generic-session": "^1.11.5",
     "koa-pug": "^3.0.0-2",
-    "koa-router": "^7.0.0",
+    "koa-router": "^7.2.0",
     "koa-session-mongoose": "^1.0.0",
     "koa-static-cache": "^5.0.1",
     "less-middleware": "^2.2.0",

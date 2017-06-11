@@ -1,4 +1,8 @@
-{validator}       = require 'nodeswork-utils'
+_                 = require 'underscore'
+{
+  NodesworkError
+  validator
+}                 = require 'nodeswork-utils'
 
 {Device, User}    = require '../../models'
 
@@ -8,6 +12,9 @@ roles = {
   DEVICE:    'device'
   USER:      'user'
 }
+
+# @nodoc
+roleValues = _.values roles
 
 
 # @private
@@ -49,13 +56,15 @@ deviceRole = (ctx, next) ->
   await next()
 
 
-# Require any of the roles to be appeared.
+# Require any of the roles appear.
 requireRoles = (roles...) ->
   (ctx, next) ->
     for role in roles
       validator.isRequired role
+      validator.isIn role, roleValues
       return await next() if ctx.roles[role]
     ctx.response.status = 401
+    throw new NodesworkError 'Unauthorized', details: roles: roles
 
 
 module.exports = {
