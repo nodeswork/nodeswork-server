@@ -15,7 +15,9 @@ mongoose              = require 'mongoose'
 mongooseStore         = require 'koa-session-mongoose'
 session               = require 'koa-generic-session'
 staticCache           = require 'koa-static-cache'
-{logger}              = require 'nodeswork-logger'
+nwLogger              = require 'nodeswork-logger'
+{MongoDB}             = require 'winston-mongodb'
+winston               = require 'winston'
 
 {registerModels}      = require './api/models'
 
@@ -25,6 +27,20 @@ do () ->
   dbURI            = 'localhost:27017/nodeswork-dev'
 
   await mongoose.connect dbURI
+
+  db               = mongoose.connections[0].db
+  logCollection    = 'logs'
+  nwLogger.transports.push nwLogger.transport winston.transports.MongoDB, {
+    db:          db
+    collection:  logCollection
+  }
+  Log              = nwLogger.registerMongooseModel {
+    collections: logCollection
+    mongoose:    mongoose
+    modelName:   'Log'
+  }
+
+  logger           = nwLogger.logger
 
   await registerModels mongoose
 
