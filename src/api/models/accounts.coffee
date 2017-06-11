@@ -1,64 +1,110 @@
-_                          = require 'underscore'
-mongoose                   = require 'mongoose'
-LRU                        = require 'lru-cache'
-{ OAuth }                  = require 'oauth'
+_                            = require 'underscore'
+mongoose                     = require 'mongoose'
+LRU                          = require 'lru-cache'
+{ OAuth }                    = require 'oauth'
 
-{ ExcludeFieldsToJSON }    = require './plugins/exclude-fields'
-{ KoaMiddlewares }         = require './plugins/koa-middlewares'
-errors                     = require '../errors'
+{ NodesworkMongooseSchema }  = require './nodeswork-mongoose-schema'
+{ ExcludeFieldsToJSON }      = require './plugins/exclude-fields'
+{ KoaMiddlewares }           = require './plugins/koa-middlewares'
+errors                       = require '../errors'
 
-exports.AccountSchema = AccountSchema = mongoose.Schema {
 
-  user:
-    type:       mongoose.Schema.ObjectId
-    ref:        'User'
-    required:   true
-    index:      true
+class AccountSchema extends NodesworkMongooseSchema
 
-  name:
-    type:       String
-    required:   true
-    max:        [140, 'Max length is 140']
-    min:        [2, 'Min length is 2']
-
-  category:
-    type:       mongoose.Schema.ObjectId
-    ref:        'AccountCategory'
-    required:   true
-
-  status:
-    enum:       ["ACTIVE", "ERROR", "INACTIVE", "UNVERIFIED"]
-    type:       String
-    default:    "UNVERIFIED"
-
-  errMsg:       String
-
-}, collection: 'accounts', discriminatorKey: 'accountType'
-
-  .plugin KoaMiddlewares, {
-    omits: ['_id', 'createdAt', 'lastUpdateTime']
+  @Config {
+    collection: 'accounts'
+    discriminatorKey: 'accountType'
   }
 
+  @Schema {
+    user:
+      type:       mongoose.Schema.ObjectId
+      ref:        'User'
+      required:   true
+      index:      true
 
-exports.OAuthAccountSchema = OAuthAccountSchema = AccountSchema.extend {
+    name:
+      type:       String
+      required:   true
+      max:        [140, 'Max length is 140']
+      min:        [2, 'Min length is 2']
 
-  oAuthToken:
-    type:             String
+    category:
+      type:       mongoose.Schema.ObjectId
+      ref:        'AccountCategory'
+      required:   true
 
-  oAuthTokenSecret:
-    type:             String
+    status:
+      enum:       ["ACTIVE", "ERROR", "INACTIVE", "UNVERIFIED"]
+      type:       String
+      default:    "UNVERIFIED"
 
-  accessToken:
-    type:             String
+    errMsg:       String
 
-  accessTokenSecret:
-    type:             String
-}
+  }
 
-  .plugin ExcludeFieldsToJSON, fields: ['oAuthTokenSecret', 'accessToken', 'accessTokenSecret']
+  @Plugin KoaMiddlewares
 
 
-OAuthAccountSchema.pre 'save', (next) ->
+class OAuthAccountSchema extends AccountSchema
+
+  @Schema {
+    oAuthToken:
+      type:             String
+
+    oAuthTokenSecret:
+      type:             String
+
+    accessToken:
+      type:             String
+
+    accessTokenSecret:
+      type:             String
+  }
+
+  @Plugin ExcludeFieldsToJSON, {
+    fields: ['oAuthTokenSecret', 'accessToken', 'accessTokenSecret']
+  }
+
+  verifyOAuth: (oAuthVerifier) ->
+    oAuth = new OAuth(
+      @category.oAuth.requestTokenUrl
+      @category.oAuth.accessTokenUrl
+      @category.oAuth.consumerKey
+      @category.oAuth.consumerSecret
+      '1.0'
+      @category.oAuth.callbackUrl
+      'HMAC-SHA1'
+    )
+    await new Promise (resolve, reject) =>
+      oAuth.getOAuthAccessToken(
+        @oAuthToken
+        @oAuthTokenSecret
+        oAuthVerifier
+        (error, @accessToken, @accessTokenSecret) =>
+          if error? then reject error else resolve @
+      )
+
+    await new Promise (resolve, reject) =>
+      oAuth.get(
+        @category.oAuth.verifyCredentialUrl
+        @accessToken
+        @accessTokenSecret
+        (error, twitterResponseData, result) =>
+          if error? then reject error else resolve @
+      )
+
+    @status = 'ACTIVE'
+    await @save()
+
+  reset: () ->
+    @oAuthToken         = null
+    @oAuthTokenSecret   = null
+    @accessToken        = null
+    @accessTokenSecret  = null
+
+
+OAuthAccountSchema.MongooseSchema().pre 'save', (next) ->
   return next new Error 'Not an oAuth account' unless @category.oAuth?.isOAuth
 
   unless @oAuthToken?
@@ -80,134 +126,99 @@ OAuthAccountSchema.pre 'save', (next) ->
   else next()
 
 
-OAuthAccountSchema.methods.verifyOAuth = (oAuthVerifier) ->
-  oAuth = new OAuth(
-    @category.oAuth.requestTokenUrl
-    @category.oAuth.accessTokenUrl
-    @category.oAuth.consumerKey
-    @category.oAuth.consumerSecret
-    '1.0'
-    @category.oAuth.callbackUrl
-    'HMAC-SHA1'
-  )
-  await new Promise (resolve, reject) =>
-    oAuth.getOAuthAccessToken(
-      @oAuthToken
-      @oAuthTokenSecret
-      oAuthVerifier
-      (error, @accessToken, @accessTokenSecret) =>
-        if error? then reject error else resolve @
-    )
+class FifaFutAccountSchema extends AccountSchema
 
-  await new Promise (resolve, reject) =>
-    oAuth.get(
-      @category.oAuth.verifyCredentialUrl
-      @accessToken
-      @accessTokenSecret
-      (error, twitterResponseData, result) =>
-        if error? then reject error else resolve @
-    )
+  @Schema {
+    username:
+      type:       String
+      required:   true
 
-  @status = 'ACTIVE'
-  await @save()
+    platform:
+      enum:       ["ps3", "ps4", "pc", "x360", "xone"]
+      type:       String
+      required:   true
 
+    password:
+      type:       String
+      required:   true
 
-OAuthAccountSchema.methods.reset = () ->
-  @oAuthToken         = null
-  @oAuthTokenSecret   = null
-  @accessToken        = null
-  @accessTokenSecret  = null
+    secret:
+      type:       String
+      required:   true
 
+    cookieJar:
+      type:       String
+      default:    null
+  }
 
-exports.FifaFutAccountSchema = FifaFutAccountSchema = AccountSchema.extend {
+  @Plugin ExcludeFieldsToJSON, fields: ['cookieJar']
 
-  username:
-    type:       String
-    required:   true
+  setApiClient: (@apiClient) ->
 
-  platform:
-    enum:       ["ps3", "ps4", "pc", "x360", "xone"]
-    type:       String
-    required:   true
+  authorize: () ->
+    new Promise (resolve, reject) =>
+      twoFactorPromise = new Promise (resolve2, reject2) =>
+        @apiClient.login(
+          @username, @password, @secret, @platform,
+          (next) =>
+            FIFA_FUT_LOGIN_CACHE.set @_id.toString(), [next, twoFactorPromise]
+            reject errors.FUT_TWO_FACTOR_CODE_REQUIRED
+          (err, response) =>
+            unless err? then @status = 'ACTIVE'
+            if err?
+              if FIFA_FUT_LOGIN_CACHE.has @_id.toString() then reject2 err
+              else reject err
+            else
+              @apiClient.authorized = true
+              if FIFA_FUT_LOGIN_CACHE.has @_id.toString() then resolve2 response
+              else resolve response
+            FIFA_FUT_LOGIN_CACHE.del @_id.toString()
+        )
 
-  password:
-    type:       String
-    required:   true
+  twoFactorAuthorize: ({code}) ->
+    unless FIFA_FUT_LOGIN_CACHE.has @_id.toString()
+      throw errors.FUT_TWO_FACTOR_FUNCTION_NOT_FOUND
 
-  secret:
-    type:       String
-    required:   true
+    [next, twoFactorPromise] = FIFA_FUT_LOGIN_CACHE.get @_id.toString()
+    next code
+    twoFactorPromise
 
-  cookieJar:
-    type:       String
-    default:    null
-}
-  .plugin ExcludeFieldsToJSON, fields: ['cookieJar']
+  operate: (opts) ->
+    unless @apiClient.authorized
+      throw errors.FUT_API_CLIENT_IS_NOT_AUTHORIZED
 
+    # TODO: Validate opts for each method.
+    switch opts.method
+      when 'getCredits', 'getPilesize', 'getTradepile', 'relist', 'getWatchlist'
+        await forCb (cb) => @apiClient[opts.method] cb
+      when 'search'
+        await forCb (cb) => @apiClient.search _.omit(opts, 'method'), cb
+      when 'placeBid'
+        await forCb (cb) => @apiClient.placeBid opts.tradeId, opts.coins, cb
+      when 'listItem'
+        await forCb (cb) => @apiClient.listItem(
+          opts.itemDataId, opts.startingBid, opts.buyNowPrice, opts.duration, cb
+        )
+      when 'getStatus'
+        await forCb (cb) => @apiClient.getStatus opts.tradeIds, cb
+      when 'addToWatchlist', 'removeFromTradepile', 'removeFromWatchlist'
+        await forCb (cb) => @apiClient[opts.method] opts.tradeId, cb
+      when 'sendToTradepile', 'sendToClub', 'quickSell'
+        await forCb (cb) => @apiClient[opts.method] opts.itemDataId, cb
+      else
+        throw new TypeError "Unkown method."
 
 FIFA_FUT_LOGIN_CACHE = LRU {
   max: 100                  # max size
   maxAge: 1000 * 60 * 60    # 60 minutes
 }
 
-
-FifaFutAccountSchema.methods.setApiClient = (@apiClient) ->
-
-
-FifaFutAccountSchema.methods.authorize = () ->
-  new Promise (resolve, reject) =>
-    twoFactorPromise = new Promise (resolve2, reject2) =>
-      @apiClient.login(
-        @username, @password, @secret, @platform,
-        (next) =>
-          FIFA_FUT_LOGIN_CACHE.set @_id.toString(), [next, twoFactorPromise]
-          reject errors.FUT_TWO_FACTOR_CODE_REQUIRED
-        (err, response) =>
-          unless err? then @status = 'ACTIVE'
-          if err?
-            if FIFA_FUT_LOGIN_CACHE.has @_id.toString() then reject2 err
-            else reject err
-          else
-            @apiClient.authorized = true
-            if FIFA_FUT_LOGIN_CACHE.has @_id.toString() then resolve2 response
-            else resolve response
-          FIFA_FUT_LOGIN_CACHE.del @_id.toString()
-      )
-
-FifaFutAccountSchema.methods.twoFactorAuthorize = ({code}) ->
-  unless FIFA_FUT_LOGIN_CACHE.has @_id.toString()
-    throw errors.FUT_TWO_FACTOR_FUNCTION_NOT_FOUND
-
-  [next, twoFactorPromise] = FIFA_FUT_LOGIN_CACHE.get @_id.toString()
-  next code
-  twoFactorPromise
-
-
 forCb = (fn) -> new Promise (resolve, reject) -> fn (err, resp) ->
   if err? then reject err else resolve resp
 
 
-FifaFutAccountSchema.methods.operate = (opts) ->
-  unless @apiClient.authorized
-    throw errors.FUT_API_CLIENT_IS_NOT_AUTHORIZED
-
-  # TODO: Validate opts for each method.
-  switch opts.method
-    when 'getCredits', 'getPilesize', 'getTradepile', 'relist', 'getWatchlist'
-      await forCb (cb) => @apiClient[opts.method] cb
-    when 'search'
-      await forCb (cb) => @apiClient.search _.omit(opts, 'method'), cb
-    when 'placeBid'
-      await forCb (cb) => @apiClient.placeBid opts.tradeId, opts.coins, cb
-    when 'listItem'
-      await forCb (cb) => @apiClient.listItem(
-        opts.itemDataId, opts.startingBid, opts.buyNowPrice, opts.duration, cb
-      )
-    when 'getStatus'
-      await forCb (cb) => @apiClient.getStatus opts.tradeIds, cb
-    when 'addToWatchlist', 'removeFromTradepile', 'removeFromWatchlist'
-      await forCb (cb) => @apiClient[opts.method] opts.tradeId, cb
-    when 'sendToTradepile', 'sendToClub', 'quickSell'
-      await forCb (cb) => @apiClient[opts.method] opts.itemDataId, cb
-    else
-      throw new TypeError "Unkown method."
+module.exports = {
+  AccountSchema
+  OAuthAccountSchema
+  FifaFutAccountSchema
+}
