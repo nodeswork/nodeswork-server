@@ -19,13 +19,14 @@ roleValues = _.values roles
 
 # @private
 # Detect duplicate users.
-updateUserAndRole = (ctx, user, role) ->
+updateUserAndRole = (ctx, user) ->
   ctx.user = user unless ctx.user?._id?
 
   if user?._id?
     unless ctx.user._id.equals user._id
       throw new NodesworkError 'Duplicate users detected.'
-    ctx.roles[role] = true
+    ctx.roles[roles.USER] = true
+    ctx.roles[roles.DEVICE] = true if user?.attributes.developer
 
 
 # Check and extract user as user role.
@@ -36,7 +37,7 @@ userRole = (ctx, next) ->
     if ctx.session.userId? then await User.findById ctx.session.userId
     else {}
 
-  updateUserAndRole ctx, user, roles.USER
+  updateUserAndRole ctx, user
 
   if user?.attributes?.developer then ctx.roles.developer = true
 
@@ -57,14 +58,17 @@ deviceRole = (ctx, next) ->
 
 
 # Require any of the roles appear.
-requireRoles = (roles...) ->
+requireRoles = (requires...) ->
   (ctx, next) ->
-    for role in roles
+    for role in requires
       validator.isRequired role
       validator.isIn role, roleValues
       return await next() if ctx.roles[role]
     ctx.response.status = 401
-    throw new NodesworkError 'Unauthorized', details: roles: roles
+    throw new NodesworkError 'Unauthorized', details: {
+      roles:     ctx.roles
+      requires:  requires
+    }
 
 
 module.exports = {

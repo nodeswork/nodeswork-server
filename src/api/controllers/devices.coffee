@@ -14,44 +14,55 @@ KoaRouter                   = require 'koa-router'
 {deviceRpcClient}           = require '../sockets'
 
 
-exports.deviceRouter = deviceRouter = new KoaRouter prefix: '/devices'
+expandDevice = (user, device) ->
+  rpc           = deviceRpcClient.rpc device.deviceToken
+  appletsStats  = (await rpc?.runningApplets?()) ? []
+  appletsStats  = _.sortBy appletsStats, 'name'
 
-fetchDevice = (ctx, next) ->
-  if ctx.device?
-    if ctx.params.deviceId != ctx.device._id.toString()
-      ctx.device = null
-  else
-    ctx.device = await Device.findOne user: ctx.user, _id: ctx.params.deviceId
+  runningApplets = (
+    for stats in appletsStats
+      userApplet = await UserApplet.findOne {
+        user:    user
+        applet:  stats._id
+      }
+      userApplet: userApplet
+      stats:      stats
+  )
 
-  if ctx.device? then await next()
-  else ctx.response.status = 401
-
-expandDevice = (device) ->
-  rpc    = deviceRpcClient.rpc device.deviceToken
   _.extend device.toJSON(), {
-    online: !!rpc
-    runningApplets: _.sortBy(
-      _.values (await rpc?.runningApplets()) ? {}
-      'name'
-    )
+    online:          !!rpc
+    runningApplets:  runningApplets
   }
 
-deviceRouter
+deviceRouter = new KoaRouter()
 
-  .use requireRoles roles.USER, roles.DEVICE
+  .prefix '/devices'
 
-  .get('/', overrideUserToQuery()
-    Device.findMiddleware target: 'devices'
+  .get('/'
+    requireRoles roles.USER
+    overrideUserToQuery()
+    Device.findMiddleware target: 'devices', triggerNext: true
     (ctx) ->
       ctx.devices = (
         for device in ctx.devices
-          await expandDevice device
+          await expandDevice ctx.user, device
       )
   )
 
-  .get '/:deviceId', fetchDevice, (ctx) -> ctx.body = ctx.device
+  .get('/current'
+    requireRoles roles.DEVICE
+    (ctx) -> ctx.body = ctx.device ? {}
+  )
 
-  .post('/', overrideUserToDoc(),
+  .get('/:deviceId'
+    requireRoles roles.USER
+    overrideUserToQuery()
+    Device.getMiddleware field: 'deviceId'
+  )
+
+  .post('/'
+    requireRoles roles.USER
+    overrideUserToDoc(),
     (ctx, next) ->
       device = await Device.findOne {
         user:      ctx.user
@@ -70,18 +81,33 @@ deviceRouter
     Device.createMiddleware fromExtend: false, target: 'device'
   )
 
-  # .post('/:deviceId', overrideUserToQuery(),
-    # Device.updateMiddleware omits: ['user', 'deviceToken'], field: 'deviceId'
-    # (ctx) ->
-      # if ctx.params.deviceToken == null
-        # ctx.object.regenerateDeviceToken()
-        # ctx.object.withFieldsToJSON 'deviceToken'
-  # )
+  .post('/:deviceId'
+    requireRoles roles.USER
+    overrideUserToQuery(),
+    Device.updateMiddleware(
+      field: 'deviceId'
+      omits: ['user', 'deviceToken']
+      triggerNext: true
+    )
+    (ctx) ->
+      if ctx.params.deviceToken == null
+        ctx.object.regenerateDeviceToken()
+        ctx.object.withFieldsToJSON 'deviceToken'
+  )
 
-  .get '/:deviceId/applets', fetchDevice, (ctx) ->
-      ctx.response.body = await UserApplet.find {
-        user:    ctx.user?._id ? ctx.device?.user
+  .get('/:deviceId/applets'
+    requireRoles roles.DEVICE
+    (ctx) ->
+      userApplets = await UserApplet.find {
+        user:    ctx.device.user
         device:  ctx.device
         status:  "ON"
       }
         .populate 'applet'
+      ctx.body = _.map userApplets, _.property 'applet'
+  )
+
+
+module.exports = {
+  deviceRouter
+}

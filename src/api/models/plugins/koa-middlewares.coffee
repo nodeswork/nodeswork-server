@@ -29,7 +29,7 @@ _                 = require 'underscore'
 #   omitted, it will be added to each middleware's omits option.
 # @option options {Array<String>} populate=[] specifies which fields to
 #   populate, it will be added to each middleware's populate option.
-# @option options {Boolean} triggerNext=true specifies if to trigger the next
+# @option options {Boolean} triggerNext=false specifies if to trigger the next
 #   middleware, it will be set to default for each middleware's triggerNext
 #   option.
 # @option options {Function} transform=null specifies transform for the
@@ -85,7 +85,7 @@ KoaMiddlewares.defaults = {
 #   ctx.request.body to be omitted before creating the document.
 # @option options {Boolean} fromExtend=true specifies if the model is targeted
 #   for schemas created by mongoose extened schema.
-# @option options {Boolean} triggerNext=true specifies if to trigger the next
+# @option options {Boolean} triggerNext=false specifies if to trigger the next
 #   middleware.
 # @option options {Function} transform=null specifies transform function for the
 #   responding model instance.
@@ -102,7 +102,7 @@ createMiddleware = (options={}) ->
     populate    = []
     target      = 'object'
     omits       = []
-    triggerNext = true
+    triggerNext = false
     transform   = _.identity
   } = options
 
@@ -147,7 +147,7 @@ createMiddleware = (options={}) ->
 #   after getting the object.
 # @option options {String} target='object' specifies which field of the ctx is
 #   the target to store the documents.
-# @option options {Boolean} triggerNext=true specifies if to trigger the next
+# @option options {Boolean} triggerNext=false specifies if to trigger the next
 #   middleware.
 # @option options {Function} transform=null specifies transform function for the
 #   responding model instances.
@@ -159,7 +159,7 @@ getMiddleware = (options={}) ->
     writeToBody         = true
     populate            = []
     target              = 'object'
-    triggerNext         = true
+    triggerNext         = false
     transform           = _.identity
   } = options
 
@@ -181,7 +181,7 @@ getMiddleware = (options={}) ->
 #   after getting the objects.
 # @option options {String} target='object' specifies which field of the ctx is
 #   the target to store the document.
-# @option options {Boolean} triggerNext=true specifies if to trigger the next
+# @option options {Boolean} triggerNext=false specifies if to trigger the next
 #   middleware.
 # @option options {Function} transform=null specifies transform function for the
 #   responding model instance.
@@ -198,7 +198,7 @@ findMiddleware = (options={}) ->
     writeToBody         = true
     populate            = []
     target              = 'object'
-    triggerNext         = true
+    triggerNext         = false
     transform           = _.identity
     sort                = null
     pagination          = false
@@ -240,7 +240,7 @@ findMiddleware = (options={}) ->
 #   the target to store the document.
 # @option options {Array<String>} omits=[] specifies which fields from the
 #   ctx.request.body to be omitted before creating the document.
-# @option options {Boolean} triggerNext=true specifies if to trigger the next
+# @option options {Boolean} triggerNext=false specifies if to trigger the next
 #   middleware.
 # @option options {Function} transform=null specifies transform function for the
 #   responding model instance.
@@ -253,7 +253,7 @@ updateMiddleware = (options={}) ->
     populate            = []
     omits               = []
     target              = 'object'
-    triggerNext         = true
+    triggerNext         = false
     transform           = _.identity
   } = options
 
@@ -277,7 +277,7 @@ updateMiddleware = (options={}) ->
 #   the model id, it is a required field.
 # @option options {Boolean} writeToBody=true indicates wheather to write the
 #   result to koa.body.
-# @option options {Boolean} triggerNext=true specifies if to trigger the next
+# @option options {Boolean} triggerNext=false specifies if to trigger the next
 #   middleware.
 #
 # @return [KoaMiddleware] the delete Koa middleware.
@@ -286,7 +286,7 @@ deleteMiddleware = (options={}) ->
     field
     writeToBody         = true
     target              = 'object'
-    triggerNext         = true
+    triggerNext         = false
     transform           = _.identity
   } = options
 

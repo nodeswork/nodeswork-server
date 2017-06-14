@@ -40,7 +40,7 @@ define ['resources/resource'], (Resource) ->
       }
 
     @AccountCategoryResource: ($resource) ->
-      AccountCategoryResource = $resource '/api/v1/accounts/categories/:categoryId', {
+      AccountCategoryResource = $resource '/api/v1/resources/account-categories/:categoryId', {
         categoryId: '@_id'
       }
 

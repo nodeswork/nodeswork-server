@@ -2,7 +2,7 @@ _                            = require 'underscore'
 KoaRouter                    = require 'koa-router'
 
 { requireRoles, roles }      = require './middlewares/roles'
-{SystemApplet}               = require '../models'
+{ SystemApplet }             = require '../models'
 
 
 exports.systemRouter = systemRouter = new KoaRouter prefix: '/systems'

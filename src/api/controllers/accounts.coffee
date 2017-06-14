@@ -37,14 +37,6 @@ accountRouter
     }
   )
 
-  .get('/categories'
-    AccountCategory.findMiddleware triggerNext: false, populate: ['implements']
-  )
-
-  .get('/categories/:categoryId'
-    AccountCategory.getMiddleware field: 'categoryId', triggerNext: false
-  )
-
   .get '/oauth/:provider/callback', (ctx) ->
     category        = await AccountCategory.findOne name: ctx.params.provider
     oAuthToken      = ctx.request.query.oauth_token
