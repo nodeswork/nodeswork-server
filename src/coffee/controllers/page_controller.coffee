@@ -195,6 +195,13 @@ define [
 
       saveDevice: () ->
         $scope.device.$save()
+
+      restart: (userApplet) ->
+        $scope.device = DeviceResource.restartApplet {
+          _id: $routeParams.deviceId
+          applet: userApplet.stats._id
+          version:  userApplet.stats.version
+        }
     }
     onTabChanged = (tab) ->
       switch tab

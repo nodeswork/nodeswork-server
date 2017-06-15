@@ -66,14 +66,19 @@ define ['resources/resource'], (Resource) ->
     @DeviceResource: ($resource) ->
       DeviceResource = $resource '/api/v1/devices/:deviceId', {
         deviceId: '@_id'
+        appletId: '@applet'
+        version:  '@version'
       }, {
         applets:
-          url:      '/api/v1/devices/:deviceId/applets'
-          method:   'GET'
-          isArray:  true
+          url:          '/api/v1/devices/:deviceId/applets'
+          method:       'GET'
+          isArray:      true
         save:
-          url:      '/api/v1/devices'
-          method:   'POST'
+          url:          '/api/v1/devices'
+          method:       'POST'
+        restartApplet:
+          url:          '/api/v1/devices/:deviceId/applets/:appletId/:version/restart'
+          method:       'POST'
       }
 
     @DevAppletResource: ($resource) ->

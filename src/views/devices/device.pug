@@ -20,8 +20,9 @@ div.row
             | &nbsp;{{ userApplet.stats.name }} @ {{ userApplet.stats.version }}
         div.panel-body
           |
-          | {{ userApplet.stats.status }}
-          | {{ userApplet.stats.uptime }}
+          p Deivce is {{ userApplet.stats.status }}
+          p Start at {{ userApplet.stats.uptime | date:'medium' }}
+          button.btn.btn-success(ng-click="restart(userApplet)") Restart
       pre {{device|json}}
 
     div#configurations.tab-pane

@@ -1,5 +1,6 @@
 _                           = require 'underscore'
 KoaRouter                   = require 'koa-router'
+{ validator }               = require 'nodeswork-utils'
 
 {
   overrideUserToQuery
@@ -95,7 +96,7 @@ deviceRouter = new KoaRouter()
 
   .post('/:deviceId'
     requireRoles roles.USER
-    overrideUserToQuery(),
+    overrideUserToQuery()
     Device.updateMiddleware(
       field: 'deviceId'
       omits: ['user', 'deviceToken']
@@ -105,6 +106,27 @@ deviceRouter = new KoaRouter()
       if ctx.params.deviceToken == null
         ctx.object.regenerateDeviceToken()
         ctx.object.withFieldsToJSON 'deviceToken'
+  )
+
+  .post('/:deviceId/applets/:appletId/:version/restart'
+    requireRoles roles.USER
+    overrideUserToQuery()
+    Device.getMiddleware {
+      field:        'deviceId'
+      target:       'device'
+      triggerNext:  true
+      writeToBody:  false
+    }
+    (ctx) ->
+      rpc = ctx.device?.rpc
+      validator.isRequired rpc, details: {
+        path: 'ctx.device.online'
+      }
+      stats     = await rpc.restart {
+        applet:   ctx.params.appletId
+        version:  ctx.params.version
+      }
+      ctx.body = await expandDevice ctx.user, ctx.device
   )
 
   .get('/:deviceId/applets'

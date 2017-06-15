@@ -28,7 +28,7 @@ exports.deviceSocket = deviceSocket = (io) ->
 
 exports.deviceRpcClient = deviceRpcClient = new RpcCaller {
   timeout:    60000
-  funcs:      ['run', 'runningApplets', 'deploy']
+  funcs:      ['run', 'runningApplets', 'deploy', 'restart']
   socketKey:  (socket) -> socket.handshake.query.token
 }
 
