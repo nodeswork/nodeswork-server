@@ -1,129 +1,8 @@
 _                            = require 'underscore'
-mongoose                     = require 'mongoose'
 LRU                          = require 'lru-cache'
-{ OAuth }                    = require 'oauth'
 
-{ NodesworkMongooseSchema }  = require './nodeswork-mongoose-schema'
 { ExcludeFieldsToJSON }      = require './plugins/exclude-fields'
-{ KoaMiddlewares }           = require './plugins/koa-middlewares'
 errors                       = require '../errors'
-
-
-class AccountSchema extends NodesworkMongooseSchema
-
-  @Config {
-    collection: 'accounts'
-    discriminatorKey: 'accountType'
-  }
-
-  @Schema {
-    user:
-      type:       mongoose.Schema.ObjectId
-      ref:        'User'
-      required:   true
-      index:      true
-
-    name:
-      type:       String
-      required:   true
-      max:        [140, 'Max length is 140']
-      min:        [2, 'Min length is 2']
-
-    category:
-      type:       mongoose.Schema.ObjectId
-      ref:        'AccountCategory'
-      required:   true
-
-    status:
-      enum:       ["ACTIVE", "ERROR", "INACTIVE", "UNVERIFIED"]
-      type:       String
-      default:    "UNVERIFIED"
-
-    errMsg:       String
-
-  }
-
-  @Plugin KoaMiddlewares
-
-
-class OAuthAccountSchema extends AccountSchema
-
-  @Schema {
-    oAuthToken:
-      type:             String
-
-    oAuthTokenSecret:
-      type:             String
-
-    accessToken:
-      type:             String
-
-    accessTokenSecret:
-      type:             String
-  }
-
-  @Plugin ExcludeFieldsToJSON, {
-    fields: ['oAuthTokenSecret', 'accessToken', 'accessTokenSecret']
-  }
-
-  verifyOAuth: (oAuthVerifier) ->
-    oAuth = new OAuth(
-      @category.oAuth.requestTokenUrl
-      @category.oAuth.accessTokenUrl
-      @category.oAuth.consumerKey
-      @category.oAuth.consumerSecret
-      '1.0'
-      @category.oAuth.callbackUrl
-      'HMAC-SHA1'
-    )
-    await new Promise (resolve, reject) =>
-      oAuth.getOAuthAccessToken(
-        @oAuthToken
-        @oAuthTokenSecret
-        oAuthVerifier
-        (error, @accessToken, @accessTokenSecret) =>
-          if error? then reject error else resolve @
-      )
-
-    await new Promise (resolve, reject) =>
-      oAuth.get(
-        @category.oAuth.verifyCredentialUrl
-        @accessToken
-        @accessTokenSecret
-        (error, twitterResponseData, result) =>
-          if error? then reject error else resolve @
-      )
-
-    @status = 'ACTIVE'
-    await @save()
-
-  reset: () ->
-    @oAuthToken         = null
-    @oAuthTokenSecret   = null
-    @accessToken        = null
-    @accessTokenSecret  = null
-
-
-OAuthAccountSchema.MongooseSchema().pre 'save', (next) ->
-  return next new Error 'Not an oAuth account' unless @category.oAuth?.isOAuth
-
-  unless @oAuthToken?
-    # TODO: Cache oAuth instances.
-    oAuth = new OAuth(
-      @category.oAuth.requestTokenUrl
-      @category.oAuth.accessTokenUrl
-      @category.oAuth.consumerKey
-      @category.oAuth.consumerSecret
-      '1.0'
-      @category.oAuth.callbackUrl
-      'HMAC-SHA1'
-    )
-    return oAuth.getOAuthRequestToken (
-      error, @oAuthToken, @oAuthTokenSecret, results
-    ) =>
-      if error? then next new Error 'Get OAuth request token failed.'
-      else next()
-  else next()
 
 
 class FifaFutAccountSchema extends AccountSchema
@@ -218,7 +97,5 @@ forCb = (fn) -> new Promise (resolve, reject) -> fn (err, resp) ->
 
 
 module.exports = {
-  AccountSchema
-  OAuthAccountSchema
   FifaFutAccountSchema
 }
