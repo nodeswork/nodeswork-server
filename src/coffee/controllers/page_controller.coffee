@@ -183,8 +183,8 @@ define [
       $scope.activeDevice = $scope.devices[0]
 
     _.extend $scope, {
-      onlineApplets: (runningApplets) ->
-        _.filter runningApplets, (applet) -> applet.status == 'online'
+      onlineApplets: (userApplets) ->
+        _.filter userApplets, (userApplet) -> userApplet.stats.status == 'online'
     }
 
   DeviceController: (_, $scope, $routeParams, $location, $document,

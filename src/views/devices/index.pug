@@ -1,30 +1,21 @@
 h2 My Devices
 
-div.row
-  ul.list-group.col-md-3
-    li.list-group-item(ng-repeat="device in devices", ng-class="{active: device == activeDevice}")
-      h4 {{device.name}}
-      small {{device.runningApplets.length}} applets {{onlineApplets(device.runningApplets).length}} online.
-      a(ng-href="/devices/{{device._id}}") Details
-  div.col-md-9.panel.panel-default
-    div.panel-body
-      div.form.form-horizontal
-        div.form-group
-          label.col-md-2 Device Name
-          span.col-md-2 {{activeDevice.name}}
-          label.col-md-2 Status
-          span.col-md-2 {{activeDevice.status}}
-          label.col-md-2 Online
-          span.col-md-2 {{activeDevice.online}}
-        div.form-group
-          label.col-md-2 Device ID
-          span.col-md-10 {{activeDevice.deviceId}}
-        div.form-group
-          label.col-md-2 Running Applets
-          div.col-md-10
-            div(ng-if="!activeDevice.userApplets.length") There is no applets running.
-            ul.list-inline
-              li(ng-repeat="userApplet in activeDevice.userApplets")
-                a(ng-href="/my-applets/{{userApplet._id}}")
-                  img.center-block.md-img(ng-src="{{userApplet.applet.imageUrl}}")
-                  div.text-center {{userApplet.stats.status}}
+div
+  div.col-md-6.col-sm-12(ng-repeat="device in devices")
+    div.panel.panel-default
+      div.panel-heading
+        h4
+          a(href="/devices/{{device._id}}") {{device.name}}
+          | &nbsp;
+          small.text-primary(ng-show="device.online")
+            span.glyphicon.glyphicon-ok-sign
+            | &nbsp;
+            small {{device.userApplets.length}} applets {{onlineApplets(device.userApplets).length}} online
+          small.text-warning(ng-show="!device.online")
+            span.glyphicon.glyphicon-info-sign OFFLINE
+      div.panel-body
+        ul.list-inline
+          li(ng-repeat="userApplet in device.userApplets")
+            a(ng-href="/my-applets/{{userApplet._id}}")
+              img.center-block.md-img(ng-src="{{userApplet.applet.imageUrl}}")
+              div.text-center {{userApplet.stats.status}}

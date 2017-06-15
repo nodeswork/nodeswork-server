@@ -10,9 +10,20 @@ div.row
       a(data-toggle="pill", href="#deployments") Deployments
 
   div.col-md-9.tab-content
-    div#device-status.panel.panel-default.active.tab-pane
-      div.panel-body
-        pre {{device|json}}
+    div#device-status.active.tab-pane
+      div.jumbotron.text-center(ng-show="!device.online")
+        h1 Device is OFFLINE
+      div.panel.panel-default(ng-repeat="userApplet in device.userApplets")
+        div.panel-heading
+          h4
+            img.sm-img(ng-src="{{userApplet.applet.imageUrl}}")
+            | &nbsp;{{ userApplet.stats.name }} @ {{ userApplet.stats.version }}
+        div.panel-body
+          |
+          | {{ userApplet.stats.status }}
+          | {{ userApplet.stats.uptime }}
+      pre {{device|json}}
+
     div#configurations.tab-pane
       div.panel-body
         form.form-horizontal(ng-submit="saveDevice()")

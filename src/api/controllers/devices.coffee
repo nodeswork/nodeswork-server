@@ -64,7 +64,13 @@ deviceRouter = new KoaRouter()
   .get('/:deviceId'
     requireRoles roles.USER
     overrideUserToQuery()
-    Device.getMiddleware field: 'deviceId'
+    Device.getMiddleware {
+      field:        'deviceId'
+      target:       'device'
+      triggerNext:  true
+    }
+    (ctx) ->
+      ctx.device = await expandDevice ctx.user, ctx.device
   )
 
   .post('/'
