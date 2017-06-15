@@ -45,7 +45,11 @@ usersAppletsRouter
         select:
           $level: MINIMAL_DATA_LEVEL
       }
-      'device'
+      {
+        path: 'device'
+        select:
+          $level: MINIMAL_DATA_LEVEL
+      }
     ]
   })
 

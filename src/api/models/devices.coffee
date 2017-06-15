@@ -6,6 +6,7 @@ randtoken                     = require 'rand-token'
 { NodesworkMongooseSchema }   = require './nodeswork-mongoose-schema'
 { KoaMiddlewares }            = require './plugins/koa-middlewares'
 { ExcludeFieldsToJSON }       = require './plugins/exclude-fields'
+{ DataLevel }                 = require './plugins/data-levels'
 
 
 DEVICE_TOKEN_LEN        = 16
@@ -33,22 +34,27 @@ class DeviceSchema extends NodesworkMongooseSchema
       required:   true
       index:      true
       default:    () -> randtoken.generate DEVICE_TOKEN_LEN
+      dateLevel:  'TOKEN'
 
     platform:
       type:       String
       required:   true
+      dataLevel:  'DETAIL'
 
     osType:
       type:       String
       required:   true
+      dataLevel:  'DETAIL'
 
     release:
       type:       String
       required:   true
+      dataLevel:  'DETAIL'
 
     deviceId:
       type:       String
       required:   true
+      dataLevel:  'DETAIL'
 
     status:
       enum:       [ "ACTIVE", "DEACTIVE", "ERROR" ]
@@ -58,11 +64,10 @@ class DeviceSchema extends NodesworkMongooseSchema
     dev:
       type:       Boolean
       default:    false
-
-    errMsg:       String
-
+      dataLevel:  'DETAIL'
   }
 
+  @Plugin DataLevel, levels: [ 'DETAIL', 'TOKEN' ]
   @Plugin ExcludeFieldsToJSON, fields: ['deviceToken']
   @Plugin KoaMiddlewares
 

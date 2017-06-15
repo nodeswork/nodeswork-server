@@ -11,7 +11,8 @@ KoaRouter                   = require 'koa-router'
   User
   UserApplet
 }                           = require '../models'
-{deviceRpcClient}           = require '../sockets'
+{ deviceRpcClient }         = require '../sockets'
+{ MINIMAL_DATA_LEVEL }      = require '../constants'
 
 
 expandDevice = (user, device) ->
@@ -25,7 +26,11 @@ expandDevice = (user, device) ->
         user:    user
         applet:  stats._id
       }
-        .populate path: 'applet', select: 'name imageUrl'
+        .populate {
+          path: 'applet'
+          select:
+            $level: MINIMAL_DATA_LEVEL
+        }
       userApplet = userApplet?.toJSON()
       userApplet?.stats = stats
       userApplet

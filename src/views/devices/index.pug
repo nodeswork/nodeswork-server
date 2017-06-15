@@ -22,9 +22,9 @@ div.row
         div.form-group
           label.col-md-2 Running Applets
           div.col-md-10
-            div(ng-if="!activeDevice.runningApplets.length") There is no applets running.
+            div(ng-if="!activeDevice.userApplets.length") There is no applets running.
             ul.list-inline
-              li(ng-repeat="runningApplet in activeDevice.runningApplets")
-                a(ng-href="/my-applets/{{userAppletsDict[runningApplet.appletId]._id}}")
-                  img.center-block.md-img(ng-src="{{userAppletsDict[runningApplet.appletId].applet.imageUrl}}")
-                  div.text-center {{runningApplet.status}}
+              li(ng-repeat="userApplet in activeDevice.userApplets")
+                a(ng-href="/my-applets/{{userApplet._id}}")
+                  img.center-block.md-img(ng-src="{{userApplet.applet.imageUrl}}")
+                  div.text-center {{userApplet.stats.status}}
