@@ -14,6 +14,7 @@ KoaRouter                   = require 'koa-router'
 {params, rules}             = require './params'
 {ParameterValidationError}  = require '../errors'
 {deviceRpcClient}           = require '../sockets'
+{ MINIMAL_DATA_LEVEL }      = require '../constants'
 
 
 exports.usersAppletsRouter = usersAppletsRouter = new KoaRouter prefix: '/my-applets'
@@ -38,7 +39,14 @@ usersAppletsRouter
   .use requireRoles roles.USER
 
   .get('/', overrideUserToQuery(), UserApplet.findMiddleware {
-    populate: ['applet', 'device']
+    populate: [
+      {
+        path: 'applet'
+        select:
+          $level: MINIMAL_DATA_LEVEL
+      }
+      'device'
+    ]
   })
 
   .get('/:relationId', overrideUserToQuery(), UserApplet.getMiddleware {

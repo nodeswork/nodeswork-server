@@ -5,6 +5,7 @@ randtoken                     = require 'rand-token'
 { NodesworkMongooseSchema }   = require './nodeswork-mongoose-schema'
 { KoaMiddlewares }            = require './plugins/koa-middlewares'
 { ExcludeFieldsToJSON }       = require './plugins/exclude-fields'
+{ DataLevel }                 = require './plugins/data-levels'
 { CronValidator }             = require './validators/cron-jobs'
 
 TOKEN_LEN                     = 16
@@ -19,93 +20,109 @@ class AppletSchema extends NodesworkMongooseSchema
 
   @Schema {
     owner:
-      type:       mongoose.Schema.ObjectId
-      ref:        'User'
-      required:   true
-      index:      true
+      type:               mongoose.Schema.ObjectId
+      ref:                'User'
+      required:           true
+      index:              true
+      apiType:            'READONLY'
 
     devToken:
-      type:       String
-      default:    () -> randtoken.generate TOKEN_LEN
+      type:               String
+      default:            () -> randtoken.generate TOKEN_LEN
+      apiType:            'READONLY'
+      dataLevel:          'TOKEN'
 
     prodToken:
-      type:       String
-      default:    () -> randtoken.generate TOKEN_LEN
+      type:               String
+      default:            () -> randtoken.generate TOKEN_LEN
+      apiType:            'READONLY'
+      dataLevel:          'TOKEN'
 
     imageUrl:
-      type:       String
-      default:    'https://cdn1.iconfinder.com/data/icons/dotted-charts/512/links_diagram-256.png'
+      type:               String
+      default:            'https://cdn1.iconfinder.com/data/icons/dotted-charts/512/links_diagram-256.png'
 
     permission:
-      enum:       [ "PRIVATE", "PUBLIC", "LIMIT" ]
-      type:       String
-      default:    "PRIVATE"
+      enum:               [ "PRIVATE", "PUBLIC", "LIMIT" ]
+      type:               String
+      default:            "PRIVATE"
+      dataLevel:          'DETAIL'
 
-    limitedToUsers: [
-      type:       mongoose.Schema.ObjectId
-      ref:        'User'
-      required:   true
-    ]
+    limitedToUsers:
+      type:               [
+        type:             mongoose.Schema.ObjectId
+        ref:              'User'
+        required:         true
+      ]
+      dataLevel:          'DETAIL'
 
     containers:
-      userDevice:
-        type:     Boolean
-        default:  false
+      type:
+        userDevice:
+          type:           Boolean
+        default:          false
 
-      cloud:
-        type:     Boolean
-        default:  false
+        cloud:
+          type:           Boolean
+        default:          false
+      dataLevel:          'DETAIL'
 
-    requiredAccounts:  [
+    requiredAccounts:
+      type:               [
+        accountCategory:
+          type:           mongoose.Schema.ObjectId
+          ref:            'AccountCategory'
+          required:       true
 
-      accountCategory:
-        type:           mongoose.Schema.ObjectId
-        ref:            'AccountCategory'
-        required:       true
+        optional:
+          type:           Boolean
+          default:        false
 
-      optional:
-        type:           Boolean
-        default:        false
+        multiple:
+          type:           Boolean
+          default:        false
 
-      multiple:
-        type:           Boolean
-        default:        false
+        permission:
+          type:           String
+          enum:           ['READ', 'MANAGE', 'WRITE']
 
-      permission:
-        type:           String
-        enum:           ['READ', 'MANAGE', 'WRITE']
-
-      usage:
-        type:           String
-        max:            [140, "Usage can't exceed 140 charactors."]
-    ]
+        usage:
+          type:           String
+          max:            [140, "Usage can't exceed 140 charactors."]
+      ]
+      dataLevel:          'DETAIL'
 
     status:
-      enum:       ["ACTIVE", "ERROR", "INACTIVE"]
-      type:       String
-
-    errMsg:       String
+      enum:               ["ACTIVE", "ERROR", "INACTIVE"]
+      type:               String
+      apiType:            'READONLY'
 
     name:
-      type:       String
-      required:   true
-      unique:     true
+      type:               String
+      required:           true
+      unique:             true
 
     description:
-      type:       String
-      max:        [1400, 'Short description should be at most 1400 charactors.']
+      type:               String
+      max:                [1400, 'Short description should be at most 1400 charactors.']
+      dataLevel:          'DETAIL'
 
     shortDescription:
-      type:       String
-      max:        [140, 'Short description should be at most 140 charactors.']
+      type:               String
+      max:                [140, 'Short description should be at most 140 charactors.']
+      dataLevel:          'DETAIL'
 
     defaultScheduler:
 
-      cron:
-        type:     String
-        validate: CronValidator
+      type:
+        cron:
+          type:           String
+          validate:       CronValidator
+
+      dataLevel:          'DETAIL'
   }
 
+  @Plugin DataLevel, levels: [ 'DETAIL', 'TOKEN' ]
   @Plugin KoaMiddlewares
   @Plugin ExcludeFieldsToJSON, fields: ['prodToken']
 

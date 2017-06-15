@@ -132,7 +132,7 @@ createMiddleware = (options={}) ->
     catch e
       NodesworkError.mongooseError e
 
-    await model.populate ctx[target], populate.join(' ') if populate.length
+    await model.populate ctx[target], populate if populate.length
 
     ctx.body = await transform ctx[target] if writeToBody
 
@@ -167,7 +167,7 @@ getMiddleware = (options={}) ->
     query        = ctx.overrides?.query ? {}
     query._id    = ctx.params[field]
     qp           = @findOne query
-    qp           = qp.populate populate.join(' ') if populate.length
+    qp           = qp.populate populate if populate.length
     ctx[target]  = await qp
     await next() if triggerNext
     ctx.body     = await transform ctx[target] if writeToBody
@@ -213,7 +213,7 @@ findMiddleware = (options={}) ->
     qp           = @find query
     qp           = qp.limit pagination if pagination
     qp           = qp.skip page * pagination if pagination and page
-    qp           = qp.populate populate.join(' ') if populate.length
+    qp           = qp.populate populate if populate.length
     qp           = qp.sort sort if sort?
     ctx[target]  = await qp
     await next() if triggerNext
@@ -267,7 +267,7 @@ updateMiddleware = (options={}) ->
     await ctx[target].save()
 
     model        = ctx[target].constructor
-    await model.populate ctx[target], populate.join(' ') if populate.length
+    await model.populate ctx[target], populate if populate.length
     ctx.body     = transform ctx[target] if writeToBody
 
 
