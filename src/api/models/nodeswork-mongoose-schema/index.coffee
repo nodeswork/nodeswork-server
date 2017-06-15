@@ -18,6 +18,7 @@ class NodesworkMongooseSchema
         schema:          {}
         plugins:         []
         indexes:         []
+        virtuals:        []
         config:          {}
         mongooseSchema:  null
         nodesworkSchema: @
@@ -50,6 +51,14 @@ class NodesworkMongooseSchema
     @SetDefault()
     @_Internals.indexes.push indexArgs
 
+  @Virtual = (field, {get, set}) ->
+    @SetDefault()
+    @_Internals.virtuals.push {
+      field: field
+      get:   get
+      set:   set
+    }
+
   # Return the mongoose schema.
   # @nodoc
   @MongooseSchema = () ->
@@ -75,6 +84,10 @@ class NodesworkMongooseSchema
           @_Internals.mongooseSchema
           index
         )
+      for {field, get, set} in @_Internals.virtuals
+        virtual = @_Internals.mongooseSchema.virtual field
+        virtual.get get if get?
+        virtual.set set if set?
       for name in Object.getOwnPropertyNames @
         unless name in RESERVED_CLASS_NAMES
           mongooseSchema.statics[name] = @[name]

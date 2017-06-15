@@ -67,6 +67,12 @@ class DeviceSchema extends NodesworkMongooseSchema
       dataLevel:  'DETAIL'
   }
 
+  @Virtual 'rpc', {
+    get: () ->
+      { deviceRpcClient }         = require '../sockets'
+      deviceRpcClient.rpc @deviceToken
+  }
+
   @Plugin DataLevel, levels: [ 'DETAIL', 'TOKEN' ]
   @Plugin ExcludeFieldsToJSON, fields: ['deviceToken']
   @Plugin KoaMiddlewares

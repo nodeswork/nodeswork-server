@@ -11,12 +11,11 @@ KoaRouter                   = require 'koa-router'
   User
   UserApplet
 }                           = require '../models'
-{ deviceRpcClient }         = require '../sockets'
 { MINIMAL_DATA_LEVEL }      = require '../constants'
 
 
 expandDevice = (user, device) ->
-  rpc           = deviceRpcClient.rpc device.deviceToken
+  rpc           = device.rpc
   appletsStats  = (await rpc?.runningApplets?()) ? []
   appletsStats  = _.sortBy appletsStats, 'name'
 

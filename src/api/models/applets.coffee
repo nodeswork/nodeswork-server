@@ -126,18 +126,16 @@ class AppletSchema extends NodesworkMongooseSchema
   @Plugin KoaMiddlewares
   @Plugin ExcludeFieldsToJSON, fields: ['prodToken']
 
+  @Virtual 'requireDevice', {
+    get: () -> @containers.userDevice and not @containers.cloud
+  }
+
   avaiableTo: (user) ->
     switch @permission
       when 'PRIVATE' then user._id.toString() == @owner.toString()
       when 'PUBLIC' then true
       when 'LIMIT' then _.any @limitedToUsers, (userId) ->
         userId.toString() == user._id.toString()
-
-# TODO: Move it to Schema class.
-AppletSchema
-  .MongooseSchema()
-  .virtual 'requireDevice'
-  .get () -> @containers.userDevice and not @containers.cloud
 
 
 class NpmAppletSchema extends AppletSchema
