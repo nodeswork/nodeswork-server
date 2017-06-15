@@ -104,7 +104,6 @@ class AppletSchema extends NodesworkMongooseSchema
       cron:
         type:     String
         validate: CronValidator
-
   }
 
   @Plugin KoaMiddlewares

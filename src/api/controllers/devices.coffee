@@ -19,19 +19,21 @@ expandDevice = (user, device) ->
   appletsStats  = (await rpc?.runningApplets?()) ? []
   appletsStats  = _.sortBy appletsStats, 'name'
 
-  runningApplets = (
+  userApplets   = _.filter (
     for stats in appletsStats
       userApplet = await UserApplet.findOne {
         user:    user
         applet:  stats._id
       }
-      userApplet: userApplet
-      stats:      stats
+        .populate path: 'applet', select: 'name imageUrl'
+      userApplet = userApplet?.toJSON()
+      userApplet?.stats = stats
+      userApplet
   )
 
   _.extend device.toJSON(), {
-    online:          !!rpc
-    runningApplets:  runningApplets
+    online:       !!rpc
+    userApplets:  userApplets
   }
 
 deviceRouter = new KoaRouter()
