@@ -4,6 +4,7 @@ mongoose  = require 'mongoose'
 RESERVED_CLASS_NAMES = [
   '_Internals', 'Config', 'Schema', 'Plugin', 'Register', 'MongooseSchema'
   'Index', 'length', 'name', 'prototype', 'constructor'
+  'Virtual'
 ]
 
 # Nodeswork base mongoose schema class.

@@ -22,7 +22,11 @@ div.row
           |
           p Applet is {{ userApplet.stats.status }}
           p Start at {{ userApplet.stats.uptime | date:'medium' }}
-          button.btn.btn-success(ng-click="restart(userApplet)") Restart
+          ul.list-inline
+            li
+              button.btn.btn-success(ng-click="run(userApplet)") Run
+            li
+              button.btn.btn-success(ng-click="restart(userApplet)") Restart
       pre {{device|json}}
 
     div#configurations.tab-pane

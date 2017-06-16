@@ -24,6 +24,9 @@ fetchApplet = (ctx, next) ->
   unless ctx.applet?
     throw new ParameterValidationError 'Applet is not avaliable.'
 
+  console.log "APPPPPPPPPPPPPPPPP", appletToken
+  console.log ctx.applet
+
   switch
     when appletToken == ctx.applet.devToken
       ctx.appletDevMode = true

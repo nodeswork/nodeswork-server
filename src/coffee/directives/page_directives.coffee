@@ -103,9 +103,9 @@ define ['directives/directive'], (Directive) -> new Directive {
       }
 
       handleResponse = (error) ->
-        if error.details?.code == "403"
+        if error.meta?.code == "403"
           scope.reason = "Your account needs to login on console first."
-        if error.details?.code == "500"
+        if error.meta?.code == "500"
           scope.reason = "Your account has been banned."
 
       scope.$watch(

@@ -17,7 +17,7 @@ DataLevel = (schema, options={}) ->
 
     validator.isIn level, levels, {
       message:  "$level is not one of [#{levels.join ', '}]"
-      details:
+      meta:
         path:   '$level'
     }
 

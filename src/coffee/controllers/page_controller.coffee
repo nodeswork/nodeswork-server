@@ -196,6 +196,13 @@ define [
       saveDevice: () ->
         $scope.device.$save()
 
+      run: (userApplet) ->
+        DeviceResource.runApplet {
+          _id: $routeParams.deviceId
+          applet: userApplet.stats._id
+          version:  userApplet.stats.version
+        }
+
       restart: (userApplet) ->
         $scope.device = DeviceResource.restartApplet {
           _id: $routeParams.deviceId

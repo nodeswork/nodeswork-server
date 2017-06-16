@@ -15,7 +15,7 @@ handleRequest = (ctx, next) ->
     logger.error 'Request failed:', e
     err                  = NodesworkError.fromError e
     ctx.body             = err.toJSON()
-    ctx.response.status  = err.details?.responseCode ? 500
+    ctx.response.status  = err.meta?.responseCode ? 500
 
 
 module.exports = {

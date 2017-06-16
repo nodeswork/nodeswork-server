@@ -65,7 +65,7 @@ requireRoles = (requires...) ->
       validator.isIn role, roleValues
       return await next() if ctx.roles[role]
     ctx.response.status = 401
-    throw new NodesworkError 'Unauthorized', details: {
+    throw new NodesworkError 'Unauthorized', meta: {
       roles:     ctx.roles
       requires:  requires
     }

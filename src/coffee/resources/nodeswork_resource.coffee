@@ -76,6 +76,9 @@ define ['resources/resource'], (Resource) ->
         save:
           url:          '/api/v1/devices'
           method:       'POST'
+        runApplet:
+          url:          '/api/v1/devices/:deviceId/applets/:appletId/:version/process'
+          method:       'POST'
         restartApplet:
           url:          '/api/v1/devices/:deviceId/applets/:appletId/:version/restart'
           method:       'POST'
