@@ -1,8 +1,9 @@
 _                            = require 'underscore'
 LRU                          = require 'lru-cache'
 
-{ ExcludeFieldsToJSON }      = require './plugins/exclude-fields'
-errors                       = require '../errors'
+{ AccountSchema }            = require './accounts'
+{ ExcludeFieldsToJSON }      = require '../plugins/exclude-fields'
+errors                       = require '../../errors'
 
 
 class FifaFutAccountSchema extends AccountSchema

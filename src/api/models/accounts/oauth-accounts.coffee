@@ -1,6 +1,9 @@
-{ OAuth }         = require 'oauth'
+{ OAuth }                = require 'oauth'
 
-{ AccountSchema } = require './accounts'
+{ AccountSchema }        = require './accounts'
+{ DataLevel }            = require '../plugins/data-levels'
+{ ExcludeFieldsToJSON }  = require '../plugins/exclude-fields'
+
 
 class OAuthAccountSchema extends AccountSchema
 

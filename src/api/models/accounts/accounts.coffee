@@ -1,8 +1,8 @@
 mongoose                     = require 'mongoose'
 
 { NodesworkMongooseSchema }  = require '../nodeswork-mongoose-schema'
-{ KoaMiddlewares }           = require './plugins/koa-middlewares'
-{ DataLevel }                = require './plugins/data-levels'
+{ KoaMiddlewares }           = require '../plugins/koa-middlewares'
+{ DataLevel }                = require '../plugins/data-levels'
 
 
 # Account model schema, which holds third-parties' accounts for the user.
