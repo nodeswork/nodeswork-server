@@ -46,6 +46,7 @@ exports.registerModels = (mongooseInstance = mongoose) ->
     ['Account',                  accounts.AccountSchema]
     ['OAuthAccount',             accounts.OAuthAccountSchema]
     ['FifaFutAccount',           accounts.FifaFutAccountSchema]
+    ['TwitterAccount',           accounts.TwitterAccountSchema]
     ['Applet',                   applets.AppletSchema]
     ['NpmApplet',                applets.NpmAppletSchema]
     ['SystemApplet',             applets.SystemAppletSchema]

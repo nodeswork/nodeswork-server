@@ -3,7 +3,8 @@ KoaRouter                   = require 'koa-router'
 
 {appletApiRouter}           = require './applet-api'
 {usersAppletsRouter}        = require './users-applets'
-{accountRouter}             = require './accounts'
+{ accountRouter
+  flexiableAccountRouter }  = require './accounts'
 {devRouter}                 = require './devs'
 {deviceRouter}              = require './devices'
 {executionRouter}           = require './executions'
@@ -26,6 +27,7 @@ router
   .use devRouter.routes(), devRouter.allowedMethods()
   .use appletApiRouter.routes(), appletApiRouter.allowedMethods()
   .use accountRouter.routes(), accountRouter.allowedMethods()
+  .use flexiableAccountRouter.routes(), flexiableAccountRouter.allowedMethods()
   .use userRouter.routes(), userRouter.allowedMethods()
   .use exploreRouter.routes(), exploreRouter.allowedMethods()
 

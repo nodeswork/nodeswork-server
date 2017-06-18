@@ -2,9 +2,12 @@
 ###
 
 
-_                 = require 'underscore'
+_                   = require 'underscore'
+path                = require 'path'
 
-{NodesworkError}  = require '../../errors'
+{ logger }          = require 'nodeswork-logger'
+
+{ NodesworkError }  = require '../../errors'
 
 
 # Generate KOA middlewares for mongoose models.
@@ -60,6 +63,11 @@ KoaMiddlewares = (schema, options={}) ->
   statics.findMiddleware   = wrap findMiddleware   if 'find'   in middlewares
   statics.updateMiddleware = wrap updateMiddleware if 'update' in middlewares
   statics.deleteMiddleware = wrap deleteMiddleware if 'delete' in middlewares
+
+  statics.expose           = (router, options={}) ->
+    options.schema = schema
+    options.model  = @
+    expose router, options
 
 
 # The global configurations.
@@ -301,4 +309,182 @@ deleteMiddleware = (options={}) ->
     ctx.body     = null if writeToBody
 
 
-module.exports = { KoaMiddlewares }
+# Expose APIs to router.
+#
+# Explaination of Structure<Object>:
+#   {
+#     all:         object
+#     gets:        object
+#     posts:       object
+#     methods:     object
+#     statics:     object
+#     individual:  object
+#   }
+# Depends on the object type, an individual final object will be combind from
+#   [all, One of gets or posts, One of methods or statics, individual]
+#
+# @param {KoaRouter} router specifies the target router to expose the apis to.
+# @option options {Structure<String>} prefix specifies the prefix for binding
+#   the api.
+# @option options {String} idField specifies the field name in params which
+#   stores the model id when necessary.
+# @option options {Structure<Array<Middleware>>} pres specifies the pre
+#   middlewares before call the actual execution functions.
+# @option options {Structure<Array<Middleware>>} posts specifies the post
+#   middlewares after call the actual execution functions.
+# @option options {Structure<Object>} options specifies the options passed to
+#   the actual execution functions.
+# @option options {Array<String>} binds specifies the target function names to
+#   bind.
+# @option options {Boolean, Array<String>} cruds specifies if or which crud
+#   functions to bind.
+#
+# @return void
+expose = (router, options={}) ->
+  {
+    model
+    schema
+    prefix       = '/'
+    idField      = 'id'
+    pres         = null
+    posts        = null
+    options      = null
+    binds        = null
+    cruds        = null
+  }              = options
+
+  prefix         = new Structure prefix, _.last
+  pres           = new Structure pres, _.union
+  posts          = new Structure posts, _.union
+  options        = new Structure options, (l) ->
+    _.extend.apply _.extend, [{}].concat l
+
+  unless binds?
+    binds = []
+    for name, fn of schema.methods
+      if fn.method in [ 'GET', 'POST' ]
+        binds.push name
+    for name, fn of schema.statics
+      if fn.method in [ 'GET', 'POST' ]
+        binds.push name
+
+  if cruds and _.isBoolean cruds
+    cruds = [ 'create', 'get', 'find', 'update', 'delete' ]
+  cruds  ?= []
+
+  binds = _.union binds, cruds
+
+  bind = (name, pathname, fnType, mdType, middlewares...) ->
+    fullpath = path.join prefix.get(name, fnType, mdType), pathname
+    args     = _.filter _.flatten [
+      fullpath
+      pres.get name, fnType, mdType
+      middlewares
+      posts.get name, fnType, mdType
+    ]
+
+    logger.info 'Bind router', {
+      path:        fullpath
+      method:      mdType
+      fnType:      fnType
+      middlwares:  args.length - 1
+    }
+    fn       = switch mdType
+      when 'GET' then 'get'
+      when 'POST' then 'post'
+      when 'DELETE' then 'delete'
+      else throw new NodesworkError 'Unkown method', method: mdType
+    router[fn].apply router, _.flatten args
+
+  getMiddleware = (name, opts={}) ->
+    fnType = if name in ['get', 'update', 'delete'] then 'METHOD' else 'STATIC'
+    mdType = switch name
+      when 'get', 'find' then 'GET'
+      when 'update', 'create' then 'POST'
+      when 'delete' then 'DELETE'
+
+    model["#{name}Middleware"](
+      _.extend options.get(name, fnType, mdType), opts
+    )
+
+  idFieldName = ":#{idField}"
+
+  for name in binds
+    switch
+      when name == 'create' and model.createMiddleware?
+        bind 'create', '', 'STATIC', 'POST', getMiddleware 'create'
+      when name == 'get'    and model.getMiddleware?
+        bind(
+          'get', idFieldName, 'METHOD', 'GET'
+          getMiddleware 'get', field: idField
+        )
+      when name == 'find'   and model.findMiddleware?
+        bind 'find', '', 'STATIC', 'GET', getMiddleware 'find'
+      when name == 'update' and model.updateMiddleware?
+        bind(
+          'update', idFieldName, 'METHOD', 'POST'
+          getMiddleware 'update', field: idField
+        )
+      when name == 'delete' and model.deleteMiddleware?
+        bind(
+          'delete', idFieldName, 'METHOD', 'DELETE'
+          getMiddleware 'delete', field: idField
+        )
+      when method = schema.methods[name]?.method
+        bind(name, "#{idFieldName}/#{name}", 'METHOD', method
+          getMiddleware 'get', {
+            field: idField, triggerNext: true, writeToBody: false
+          }
+          (ctx, next) ->
+            ctx.body = await ctx.object[name] getOptionsFromCtx ctx, method
+            pms      = posts.get(name, 'METHOD', method) ? []
+            await next() if pms.length
+        )
+      when method = schema.statics[name]?.method
+        bind(name, name, 'STATIC', method
+          (ctx, next) ->
+            await model[name] getOptionsFromCtx ctx, method
+            pms = posts.get(name, 'STATIC', method) ? []
+            await next() if pms.length
+        )
+      else throw new NodesworkError 'Unable to bind function', name: name
+
+
+getOptionsFromCtx = (ctx, method) ->
+  if method == 'POST' then ctx.request.body
+  else ctx.request.query
+
+
+class Structure
+
+  constructor: (@options, @resolver) ->
+    unless (
+      _.isObject(@options) and
+      not _.isArray(@options) and
+      not _.isFunction(@options)
+    )
+      @options = { all: @options }
+
+  get: (fn, fnType='METHOD', mdType='GET') ->
+    @resolver _.filter _.flatten(
+      [
+        @options.all
+        @options[fnType.toLowerCase()]
+        @options[mdType.toLowerCase()]
+        @options[fn]
+      ]
+      true
+    )
+
+
+attachTags = (tags={}) ->
+  (fn) ->
+    _.extend fn, tags
+    fn
+
+
+module.exports = {
+  KoaMiddlewares
+  GET:   attachTags method:  'GET'
+  POST:  attachTags method:  'POST'
+}

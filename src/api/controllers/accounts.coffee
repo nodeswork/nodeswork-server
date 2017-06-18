@@ -10,15 +10,28 @@ KoaRouter                      = require 'koa-router'
 {
   Account
   AccountCategory
+  TwitterAccount
 }                              = require '../models'
 errors                         = require '../errors'
 {params, rules}                = require './params'
 
 
-exports.accountRouter = accountRouter = new KoaRouter prefix: '/accounts'
+flexiableAccountRouter = new KoaRouter()
+
+TwitterAccount.expose flexiableAccountRouter, {
+  prefix:   '/accounts'
+  idField:  'accountId'
+  pres:     {
+    all:    [ requireRoles roles.USER ]
+    method: [ overrideUserToQuery()   ]
+  }
+  posts:    { }
+}
 
 
-accountRouter
+accountRouter = new KoaRouter()
+
+  .prefix '/accounts'
 
   .use requireRoles roles.USER
 
@@ -102,3 +115,9 @@ accountRouter
         ctx.body = error: e.toString()
         ctx.response.status = 401
   )
+
+
+module.exports = {
+  accountRouter
+  flexiableAccountRouter
+}
