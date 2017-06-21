@@ -7,6 +7,7 @@ randtoken                     = require 'rand-token'
 { KoaMiddlewares }            = require './plugins/koa-middlewares'
 { ExcludeFieldsToJSON }       = require './plugins/exclude-fields'
 { DataLevel }                 = require './plugins/data-levels'
+{ MINIMAL_DATA_LEVEL }        = require '../constants'
 
 
 DEVICE_TOKEN_LEN        = 16
@@ -88,6 +89,33 @@ class DeviceSchema extends NodesworkMongooseSchema
 
   regenerateDeviceToken: () ->
     @deviceToken = randtoken.generate DEVICE_TOKEN_LEN
+
+  expandedInJSON: () ->
+    rpc           = @rpc
+    appletsStats  = (await rpc?.runningApplets?()) ? []
+    appletsStats  = _.sortBy appletsStats, 'name'
+
+    userApplets   = _.filter (
+      for stats in appletsStats
+        userApplet = await mongoose.models.UserApplet.findOne {
+          user:    @user
+          applet:  stats._id
+        }
+          .populate {
+            path: 'applet'
+            select:
+              $level: MINIMAL_DATA_LEVEL
+          }
+        userApplet = userApplet?.toJSON()
+        userApplet?.stats = stats
+        userApplet
+    )
+
+    _.extend @toJSON(), {
+      online:       !!rpc
+      userApplets:  userApplets
+    }
+
 
 module.exports = {
   DeviceSchema

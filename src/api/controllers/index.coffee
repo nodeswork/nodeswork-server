@@ -15,6 +15,7 @@ KoaRouter                   = require 'koa-router'
 {userRole, deviceRole}      = require './middlewares/roles'
 {systemRouter}              = require './systems'
 {resourceRouter}            = require './resources'
+{ userDeviceRouter }        = require './users-devices'
 
 exports.router = router = new KoaRouter prefix: '/api/v1'
 
@@ -40,3 +41,4 @@ router
   .use systemRouter.routes(), systemRouter.allowedMethods()
   .use executionRouter.routes(), executionRouter.allowedMethods()
   .use resourceRouter.routes(), resourceRouter.allowedMethods()
+  .use userDeviceRouter.routes(), userDeviceRouter.allowedMethods()

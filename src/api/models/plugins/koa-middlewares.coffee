@@ -403,8 +403,13 @@ expose = (router, options={}) ->
       when 'update', 'create' then 'POST'
       when 'delete' then 'DELETE'
 
+
     model["#{name}Middleware"](
-      _.extend options.get(name, fnType, mdType), opts
+      _.extend(
+        triggerNext: !!posts.get(name, fnType, mdType).length
+        options.get(name, fnType, mdType)
+        opts
+      )
     )
 
   idFieldName = ":#{idField}"
