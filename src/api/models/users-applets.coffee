@@ -1,9 +1,12 @@
 mongoose                      = require 'mongoose'
 momentTimezones               = require 'moment-timezone'
 
+{ NodesworkError }            = require 'nodeswork-utils'
+
 
 { NodesworkMongooseSchema }   = require './nodeswork-mongoose-schema'
-{ KoaMiddlewares }            = require './plugins/koa-middlewares'
+{ KoaMiddlewares
+  POST }                      = require './plugins/koa-middlewares'
 { CronValidator }             = require './validators/cron-jobs'
 
 class UserAppletSchema extends NodesworkMongooseSchema
@@ -73,8 +76,24 @@ class UserAppletSchema extends NodesworkMongooseSchema
     }
   )
 
-
   validateStatus: (prefetch={}) ->
+
+  run: POST (options) ->
+    device = await mongoose.models.Device.findOne {
+      _id: @device
+    }
+    unless device?
+      throw new NodesworkError 'Applet has not been configed for any device.'
+    unless rpc = device.rpc
+      throw new NodesworkError "Applet's device is not running."
+
+    await rpc.process {
+      applet:  @applet
+      user:    mongoose.Types.ObjectId @user
+    }
+    @lastExecution = new Date
+    await @save()
+    @
 
 
 module.exports = {

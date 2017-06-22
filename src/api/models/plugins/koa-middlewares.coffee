@@ -436,22 +436,27 @@ expose = (router, options={}) ->
           getMiddleware 'delete', field: idField
         )
       when method = schema.methods[name]?.method
-        bind(name, "#{idFieldName}/#{name}", 'METHOD', method
-          getMiddleware 'get', {
-            field: idField, triggerNext: true, writeToBody: false
-          }
-          NAMED name, (ctx, next) ->
-            ctx.body = await ctx.object[name] getOptionsFromCtx ctx, method
-            pms      = posts.get(name, 'METHOD', method) ? []
-            await next() if pms.length
-        )
+        do (name, method) ->
+          bind(name, "#{idFieldName}/#{name}", 'METHOD', method
+            getMiddleware 'get', {
+              field:        idField
+              triggerNext:  true
+              writeToBody:  false
+            }
+            NAMED name, (ctx, next) ->
+              o = getOptionsFromCtx ctx, method
+              ctx.body = await ctx.object[name] o
+              pms      = posts.get(name, 'METHOD', method) ? []
+              await next() if pms.length
+          )
       when method = schema.statics[name]?.method
-        bind(name, name, 'STATIC', method
-          NAMED name, (ctx, next) ->
-            await model[name] getOptionsFromCtx ctx, method
-            pms = posts.get(name, 'STATIC', method) ? []
-            await next() if pms.length
-        )
+        do (name, method) ->
+          bind(name, name, 'STATIC', method
+            NAMED name, (ctx, next) ->
+              await model[name] getOptionsFromCtx ctx, method
+              pms = posts.get(name, 'STATIC', method) ? []
+              await next() if pms.length
+          )
       else throw new NodesworkError 'Unable to bind function', name: name
 
 

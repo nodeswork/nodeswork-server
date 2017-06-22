@@ -17,7 +17,30 @@ KoaRouter                   = require 'koa-router'
 { MINIMAL_DATA_LEVEL }      = require '../constants'
 
 
-exports.usersAppletsRouter = usersAppletsRouter = new KoaRouter prefix: '/my-applets'
+usersAppletsRouter = new KoaRouter()
+
+  .use requireRoles roles.USER
+
+
+UserApplet.expose usersAppletsRouter, {
+  prefix:            '/my-applets'
+  idField:           'relationId'
+  cruds:             [ 'find', 'get' ]
+  options:
+    get:
+      populate:      [
+        {
+          path:      'applet'
+          select:
+            $level:  MINIMAL_DATA_LEVEL
+        }
+        {
+          path:      'device'
+          select:
+            $level:  MINIMAL_DATA_LEVEL
+        }
+      ]
+}
 
 
 validateUserApplet = (ctx, next) ->
@@ -34,31 +57,11 @@ validateUserApplet = (ctx, next) ->
 
   await next()
 
+
 usersAppletsRouter
 
-  .use requireRoles roles.USER
-
-  .get('/', overrideUserToQuery(), UserApplet.findMiddleware {
-    populate: [
-      {
-        path: 'applet'
-        select:
-          $level: MINIMAL_DATA_LEVEL
-      }
-      {
-        path: 'device'
-        select:
-          $level: MINIMAL_DATA_LEVEL
-      }
-    ]
-  })
-
-  .get('/:relationId', overrideUserToQuery(), UserApplet.getMiddleware {
-    field:    'relationId'
-    populate: ['applet', 'device']
-  })
-
-  .post('/:relationId', overrideUserToQuery(), overrideUserToDoc()
+  # TODO: Move to expose
+  .post('/my-applets/:relationId', overrideUserToQuery(), overrideUserToDoc()
     UserApplet.updateMiddleware {
       field:     'relationId'
       omits:     ['user', 'applet', 'errMsg']
@@ -68,17 +71,17 @@ usersAppletsRouter
     validateUserApplet
   )
 
-  .post('/:relationId/run', overrideUserToQuery()
+  .post('/my-applets/:relationId/run', overrideUserToQuery()
     UserApplet.getMiddleware {
       field:        'relationId'
       writeToBody:  false
       target:       'userApplet'
       populate:     ['device']
+      triggerNext:  true
     }
     (ctx) ->
       unless ctx.userApplet.device?
         throw new ParameterValidationError "Applet is not running on device."
-
 
       rpc = deviceRpcClient.rpc ctx.userApplet.device.deviceToken
 
@@ -102,7 +105,7 @@ usersAppletsRouter
   )
 
   # Load applet and verify the permission.
-  .post('/'
+  .post('/my-applets'
     params.body(
       applet: [
         rules.isRequired
@@ -120,3 +123,8 @@ usersAppletsRouter
     }
     validateUserApplet
   )
+
+
+module.exports = {
+  usersAppletsRouter
+}
