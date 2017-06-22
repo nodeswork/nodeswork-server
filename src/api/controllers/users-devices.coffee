@@ -7,6 +7,7 @@ KoaRouter                   = require 'koa-router'
 {
   overrideUserToQuery
   overrideUserToDoc
+  expandDevice
 }                           = require './middlewares'
 { requireRoles, roles }     = require './middlewares/roles'
 {
@@ -55,12 +56,6 @@ userDeviceRouter = new KoaRouter()
   )
 
 
-expandDevice = NAMED 'expandDevice', (ctx) ->
-  if _.isArray ctx.object
-    ctx.object = await _.map ctx.object, (device) -> device.expandedInJSON()
-  else ctx.object = await ctx.object.expandedInJSON()
-
-
 Device.expose userDeviceRouter, {
   idField: 'deviceId'
   prefix:  '/my-devices'
@@ -68,7 +63,7 @@ Device.expose userDeviceRouter, {
   pres:
     get:   [ overrideUserToQuery() ]
   posts:
-    get:   [ expandDevice ]
+    get:   [ expandDevice() ]
 }
 
 

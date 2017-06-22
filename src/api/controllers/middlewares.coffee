@@ -71,6 +71,13 @@ exports.overrideUserToQuery = overrideUserToQuery = (fieldName='user') ->
     await next()
 
 
+exports.expandDevice = (field='object') ->
+  NAMED 'expandDevice', (ctx) ->
+    if _.isArray ctx[field]
+      ctx[field] = await _.map ctx[field], (device) -> device.expandedInJSON()
+    else ctx[field] = await ctx[field].expandedInJSON()
+
+
 exports.updateState = (ctx, next) ->
   await next()
 
