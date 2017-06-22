@@ -6,6 +6,7 @@ _                   = require 'underscore'
 path                = require 'path'
 
 { logger }          = require 'nodeswork-logger'
+{ NAMED }           = require 'nodeswork-utils'
 
 { NodesworkError }  = require '../../errors'
 
@@ -114,7 +115,7 @@ createMiddleware = (options={}) ->
     transform   = _.identity
   } = options
 
-  (ctx, next) =>
+  NAMED 'createMiddleware', (ctx, next) =>
     doc   = _.extend {}, ctx.request.body, ctx.overrides?.doc
 
     model =
@@ -171,7 +172,7 @@ getMiddleware = (options={}) ->
     transform           = _.identity
   } = options
 
-  (ctx, next) =>
+  NAMED 'getMiddleware', (ctx, next) =>
     query        = ctx.overrides?.query ? {}
     query._id    = ctx.params[field]
     qp           = @findOne query
@@ -213,7 +214,7 @@ findMiddleware = (options={}) ->
     allowedQueryFields  = null
   } = options
 
-  (ctx, next) =>
+  NAMED 'findMiddleware', (ctx, next) =>
     query        = NodesworkError.parseJSON ctx.request.query.query
     page         = NodesworkError.parseNumber ctx.request.query.page ? '0'
     query        = _.pick query, allowedQueryFields if allowedQueryFields?
@@ -235,7 +236,6 @@ findMiddleware = (options={}) ->
       ctx[target][i] = await transform ctx[target][i]
 
     ctx.body     = ctx[target] if writeToBody
-
 
 
 # Provide Koa Update middleware to update an existing model instance.
@@ -298,7 +298,7 @@ deleteMiddleware = (options={}) ->
     transform           = _.identity
   } = options
 
-  (ctx, next) =>
+  NAMED 'deleteMiddleware', (ctx, next) =>
     query        = ctx.overrides?.query ? {}
     query._id    = ctx.params[field]
     ctx[target]  = await @findOne query
@@ -387,7 +387,7 @@ expose = (router, options={}) ->
       path:        fullpath
       method:      mdType
       fnType:      fnType
-      middlwares:  args.length - 1
+      middlwares:  (x.name || 'unkown' for x in args[1..])
     }
     fn       = switch mdType
       when 'GET' then 'get'
@@ -440,14 +440,14 @@ expose = (router, options={}) ->
           getMiddleware 'get', {
             field: idField, triggerNext: true, writeToBody: false
           }
-          (ctx, next) ->
+          NAMED name, (ctx, next) ->
             ctx.body = await ctx.object[name] getOptionsFromCtx ctx, method
             pms      = posts.get(name, 'METHOD', method) ? []
             await next() if pms.length
         )
       when method = schema.statics[name]?.method
         bind(name, name, 'STATIC', method
-          (ctx, next) ->
+          NAMED name, (ctx, next) ->
             await model[name] getOptionsFromCtx ctx, method
             pms = posts.get(name, 'STATIC', method) ? []
             await next() if pms.length

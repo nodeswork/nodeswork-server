@@ -2,9 +2,10 @@ _                 = require 'underscore'
 {
   NodesworkError
   validator
+  NAMED
 }                 = require 'nodeswork-utils'
 
-{Device, User}    = require '../../models'
+{ Device, User }  = require '../../models'
 
 
 roles = {
@@ -59,7 +60,7 @@ deviceRole = (ctx, next) ->
 
 # Require any of the roles appear.
 requireRoles = (requires...) ->
-  (ctx, next) ->
+  NAMED 'requireRoles', (ctx, next) ->
     for role in requires
       validator.isRequired role
       validator.isIn role, roleValues

@@ -2,6 +2,8 @@ _                                  = require 'underscore'
 LRU                                = require 'lru-cache'
 futapi                             = require 'fut-api'
 
+{ NAMED }                          = require 'nodeswork-utils'
+
 {
   Account
   FifaFutAccount
@@ -54,7 +56,7 @@ exports.fetchAccount = (ctx, next) ->
 
 
 exports.overrideUserToDoc = overrideUserToDoc = (fieldName='user') ->
-  (ctx, next) ->
+  NAMED 'overrideUserToDoc', (ctx, next) ->
     ctx.overrides ?= {}
     ctx.overrides.doc ?= {}
     ctx.overrides.doc[fieldName] = ctx.user
@@ -62,7 +64,7 @@ exports.overrideUserToDoc = overrideUserToDoc = (fieldName='user') ->
 
 
 exports.overrideUserToQuery = overrideUserToQuery = (fieldName='user') ->
-  (ctx, next) ->
+  NAMED 'overrideUserToQuery', (ctx, next) ->
     ctx.overrides ?= {}
     ctx.overrides.query ?= {}
     ctx.overrides.query[fieldName] = ctx.user

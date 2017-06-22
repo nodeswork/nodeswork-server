@@ -2,6 +2,8 @@
 _                           = require 'underscore'
 KoaRouter                   = require 'koa-router'
 
+{ NAMED }                   = require 'nodeswork-utils'
+
 {
   overrideUserToQuery
   overrideUserToDoc
@@ -55,7 +57,7 @@ userDeviceRouter = new KoaRouter()
   )
 
 
-expandDevice = (ctx) ->
+expandDevice = NAMED 'expandDevice', (ctx) ->
   if _.isArray ctx.object
     ctx.object = await _.map ctx.object, (device) -> device.expandedInJSON()
   else ctx.object = await ctx.object.expandedInJSON()
