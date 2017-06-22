@@ -22,7 +22,6 @@ userDeviceRouter = new KoaRouter()
 
   # TODO: consolidate with Device.expose()
   .post('/'
-    requireRoles roles.USER
     overrideUserToDoc(),
     (ctx, next) ->
       device = await Device.findOne {
@@ -43,7 +42,6 @@ userDeviceRouter = new KoaRouter()
   )
 
   .post('/:deviceId'
-    requireRoles roles.USER
     overrideUserToQuery()
     Device.updateMiddleware(
       field: 'deviceId'
@@ -64,6 +62,7 @@ expandDevice = NAMED 'expandDevice', (ctx) ->
 
 
 Device.expose userDeviceRouter, {
+  idField: 'deviceId'
   prefix:  '/my-devices'
   cruds:   [ 'find', 'get' ]
   pres:
