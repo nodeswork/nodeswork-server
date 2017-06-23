@@ -1,3 +1,4 @@
+_                             = require 'underscore'
 mongoose                      = require 'mongoose'
 momentTimezones               = require 'moment-timezone'
 
@@ -76,6 +77,23 @@ class UserAppletSchema extends NodesworkMongooseSchema
     }
   )
 
+  @Virtual 'stats', {
+    get: () ->
+      device =
+        if @populated 'device' then @device
+        else await mongoose.models.Device.findById @device
+
+      return null unless (rpc = device.rpc)?
+
+      # TODO: figure out if can reuse the populated one
+      applet = await mongoose.models.Applet.findById @applet
+
+      await rpc.appletStats applet: {
+        _id: applet._id.toString()
+        version: applet.version
+      }
+  }
+
   validateStatus: (prefetch={}) ->
 
   run: POST (options) ->
@@ -94,6 +112,12 @@ class UserAppletSchema extends NodesworkMongooseSchema
     @lastExecution = new Date
     await @save()
     @
+
+  expandedInJSON: () ->
+    _.extend(
+      @toJSON()
+      stats: await @stats
+    )
 
 
 module.exports = {

@@ -4,6 +4,7 @@ KoaRouter                      = require 'koa-router'
 {
   overrideUserToQuery
   overrideUserToDoc
+  expandedInJSON
 }                              = require './middlewares'
 { requireRoles, roles }        = require './middlewares/roles'
 {
@@ -39,6 +40,8 @@ UserApplet.expose usersAppletsRouter, {
             $level:  MINIMAL_DATA_LEVEL
         }
       ]
+  posts:
+    get:             [ expandedInJSON() ]
 }
 
 

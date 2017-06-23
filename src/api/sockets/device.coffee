@@ -31,7 +31,7 @@ exports.deviceSocket = deviceSocket = (io) ->
 
 exports.deviceRpcClient = deviceRpcClient = new RpcCaller {
   timeout:    60000
-  funcs:      ['process', 'runningApplets', 'deploy', 'restart']
+  funcs:      ['process', 'appletStats', 'runningApplets', 'deploy', 'restart']
   socketKey:  (socket) -> socket.device.toString()
 }
 

@@ -78,6 +78,13 @@ exports.expandDevice = (field='object') ->
     else ctx[field] = await ctx[field].expandedInJSON()
 
 
+exports.expandedInJSON = (field='object') ->
+  NAMED 'expandedInJSON', (ctx) ->
+    if _.isArray ctx[field]
+      ctx[field] = await _.map ctx[field], (obj) -> obj.expandedInJSON()
+    else ctx[field] = await ctx[field].expandedInJSON()
+
+
 exports.updateState = (ctx, next) ->
   await next()
 
