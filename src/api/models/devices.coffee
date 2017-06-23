@@ -70,8 +70,8 @@ class DeviceSchema extends NodesworkMongooseSchema
 
   @Virtual 'rpc', {
     get: () ->
-      { deviceRpcClient }         = require '../sockets'
-      deviceRpcClient.rpc @deviceToken
+      { deviceRpcClient } = require '../sockets'
+      deviceRpcClient.rpc @_id.toString()
   }
 
   @Plugin DataLevel, levels: [ 'DETAIL', 'TOKEN' ]

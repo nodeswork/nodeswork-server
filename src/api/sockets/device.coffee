@@ -14,22 +14,25 @@ exports.deviceSocket = deviceSocket = (io) ->
     .on 'connection', (socket) ->
       logger.info 'New device connection.'
 
-      socket.deviceRpc = deviceRpcClient.registerSocket socket
-
-      socket.on 'disconnect', () ->
-        logger.info 'Lost device connection.', socket.handshake.query
-        deviceRpcClient.unregisterSocket socket
-
-      token            = socket.handshake.query.token
+      token  = socket.handshake.query.token
       device = await Device.findOne deviceToken: token
       if device?
+        socket.device = device._id
+        socket.deviceRpc = deviceRpcClient.registerSocket socket
         await socket.deviceRpc.deploy device.user
+
+        socket.on 'disconnect', () ->
+          logger.info 'Lost device connection.', socket.handshake.query
+          deviceRpcClient.unregisterSocket socket
+      else
+        socket.disconnect true
+
 
 
 exports.deviceRpcClient = deviceRpcClient = new RpcCaller {
   timeout:    60000
   funcs:      ['process', 'runningApplets', 'deploy', 'restart']
-  socketKey:  (socket) -> socket.handshake.query.token
+  socketKey:  (socket) -> socket.device.toString()
 }
 
 
