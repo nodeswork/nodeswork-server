@@ -328,6 +328,8 @@ deleteMiddleware = (options={}) ->
 #   the api.
 # @option options {String} idField specifies the field name in params which
 #   stores the model id when necessary.
+# @option options {Function} instanceProvider fetch instance based on ctx, if
+#   not set, a getMiddleware will be applied.
 # @option options {Structure<Array<Middleware>>} pres specifies the pre
 #   middlewares before call the actual execution functions.
 # @option options {Structure<Array<Middleware>>} posts specifies the post
@@ -344,13 +346,14 @@ expose = (router, options={}) ->
   {
     model
     schema
-    prefix       = '/'
-    idField      = 'id'
-    pres         = null
-    posts        = null
-    options      = null
-    binds        = null
-    cruds        = null
+    prefix            = '/'
+    idField           = 'id'
+    instanceProvider  = null
+    pres              = null
+    posts             = null
+    options           = null
+    binds             = null
+    cruds             = null
   }              = options
 
   prefix         = new Structure prefix, _.last
@@ -435,20 +438,29 @@ expose = (router, options={}) ->
           'delete', idFieldName, 'METHOD', 'DELETE'
           getMiddleware 'delete', field: idField
         )
-      when method = schema.methods[name]?.method
-        do (name, method) ->
-          bind(name, "#{idFieldName}/#{name}", 'METHOD', method
+      when httpMethod = schema.methods[name]?.method
+        do (name, httpMethod) ->
+          args = _.filter [
+            name
+            if instanceProvider? then name else "#{idFieldName}/#{name}"
+            'METHOD'
+            httpMethod
             getMiddleware 'get', {
               field:        idField
               triggerNext:  true
               writeToBody:  false
-            }
+              target:       'instance'
+            } unless instanceProvider?
             NAMED name, (ctx, next) ->
-              o = getOptionsFromCtx ctx, method
-              ctx.body = await ctx.object[name] o
+              instance =
+                if instanceProvider? then await instanceProvider ctx
+                else ctx.instance
+              o        = getOptionsFromCtx ctx, method
+              ctx.body = await instance[name] o
               pms      = posts.get(name, 'METHOD', method) ? []
               await next() if pms.length
-          )
+          ]
+          bind.apply null, args
       when method = schema.statics[name]?.method
         do (name, method) ->
           bind(name, name, 'STATIC', method
@@ -479,8 +491,8 @@ class Structure
     @resolver _.filter _.flatten(
       [
         @options.all
-        @options[fnType.toLowerCase()]
-        @options[mdType.toLowerCase()]
+        @options["#{fnType.toLowerCase()}s"]
+        @options["#{mdType.toLowerCase()}s"]
         @options[fn]
       ]
       true

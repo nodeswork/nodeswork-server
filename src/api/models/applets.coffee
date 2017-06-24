@@ -145,6 +145,7 @@ class NpmAppletSchema extends AppletSchema
       type:       String
       required:   true
       unique:     true
+      dataLevel:  'DETAIL'
 
     version:
       type:       String
@@ -152,6 +153,7 @@ class NpmAppletSchema extends AppletSchema
   }
   # TODO: support ExcludeFieldsToJSON with chained fields.
   @Plugin ExcludeFieldsToJSON, fields: ['prodToken', 'packageName_unique']
+  @Plugin DataLevel
 
 
 class SystemAppletSchema extends AppletSchema
@@ -161,6 +163,8 @@ class SystemAppletSchema extends AppletSchema
       type:                 String
       enum:                 ['CONTAINER']
   }
+
+  @Plugin DataLevel
 
   @containerApplet = () ->
     unless @_containerApplet?

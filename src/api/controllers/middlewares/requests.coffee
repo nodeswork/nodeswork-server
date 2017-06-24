@@ -1,6 +1,6 @@
 _                            = require 'underscore'
-{logger}                     = require 'nodeswork-logger'
-{NodesworkError}             = require 'nodeswork-utils'
+{ logger }                   = require 'nodeswork-logger'
+{ NodesworkError }           = require 'nodeswork-utils'
 
 
 # Log request and errors.
@@ -14,7 +14,7 @@ handleRequest = (ctx, next) ->
   catch e
     logger.error 'Request failed:', e
     err                  = NodesworkError.fromError e
-    ctx.body             = err.toJSON()
+    ctx.body             = _.omit err.toJSON(), 'stack'
     ctx.response.status  = err.meta?.responseCode ? 500
 
 

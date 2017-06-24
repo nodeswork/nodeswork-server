@@ -18,6 +18,7 @@ usersApplets                = require './users-applets'
 
 { KoaMiddlewares }          = require './plugins/koa-middlewares'
 { TimestampModelPlugin }    = require './plugins/timestamps'
+{ DataLevel }               = require './plugins/data-levels'
 
 
 KoaMiddlewares.defaults.omits = [
@@ -25,6 +26,7 @@ KoaMiddlewares.defaults.omits = [
 ]
 
 mongoose.plugin TimestampModelPlugin
+mongoose.plugin DataLevel
 
 
 _.extend module.exports, users

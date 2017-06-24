@@ -4,7 +4,8 @@ randtoken                     = require 'rand-token'
 
 
 { NodesworkMongooseSchema }   = require './nodeswork-mongoose-schema'
-{ KoaMiddlewares }            = require './plugins/koa-middlewares'
+{ KoaMiddlewares
+  GET }                       = require './plugins/koa-middlewares'
 { ExcludeFieldsToJSON }       = require './plugins/exclude-fields'
 { DataLevel }                 = require './plugins/data-levels'
 { MINIMAL_DATA_LEVEL }        = require '../constants'
@@ -115,6 +116,21 @@ class DeviceSchema extends NodesworkMongooseSchema
       online:       !!rpc
       userApplets:  userApplets
     }
+
+  # Get applets which should run on current device.
+  applets: GET () ->
+    userApplets = await mongoose.models.UserApplet.find {
+      user:    @user
+      device:  @_id
+      status:  "ON"
+    }
+      .populate [
+        {
+          path: 'applet'
+          select:
+            $level: MINIMAL_DATA_LEVEL
+        }
+      ]
 
 
 module.exports = {

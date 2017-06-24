@@ -27,7 +27,7 @@ updateUserAndRole = (ctx, user) ->
     unless ctx.user._id.equals user._id
       throw new NodesworkError 'Duplicate users detected.'
     ctx.roles[roles.USER] = true
-    ctx.roles[roles.DEVICE] = true if user?.attributes.developer
+    ctx.roles[roles.DEVELOPER] = true if user?.attributes.developer
 
 
 # Check and extract user as user role.
@@ -39,8 +39,6 @@ userRole = (ctx, next) ->
     else {}
 
   updateUserAndRole ctx, user
-
-  if user?.attributes?.developer then ctx.roles.developer = true
 
   await next()
 
