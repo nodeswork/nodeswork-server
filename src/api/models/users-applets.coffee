@@ -97,6 +97,7 @@ class UserAppletSchema extends NodesworkMongooseSchema
   validateStatus: (prefetch={}) ->
 
   run: POST (options) ->
+    # TODO: figure out if can reuse the populated one
     device = await mongoose.models.Device.findOne {
       _id: @device
     }
@@ -111,6 +112,27 @@ class UserAppletSchema extends NodesworkMongooseSchema
     }
     @lastExecution = new Date
     await @save()
+    @
+
+  restart: POST (options) ->
+    # TODO: figure out if can reuse the populated one
+    device = await mongoose.models.Device.findOne {
+      _id: @device
+    }
+    unless device?
+      throw new NodesworkError 'Applet has not been configed for any device.'
+    unless rpc = device.rpc
+      throw new NodesworkError "Applet's device is not running."
+
+    applet = await mongoose.models.Applet.findById @applet
+    unless applet?
+      throw new NodesworkError 'Applet is not available.'
+
+    await rpc.restart {
+      applet:
+        _id: applet._id.toString()
+        version: applet.version
+    }
     @
 
   expandedInJSON: () ->

@@ -7,6 +7,7 @@ div.panel.panel-default.col-sm-12.col-md-4
       div.media-body
         h4 {{applet.applet.name}}
         p(ng-if="applet.cloud.mode != 'NO'") In Cloud: {{applet.cloud.mode}}
+        p Status: {{applet.stats.status}}
         p(ng-if="applet.device")
           | Run on: #[a(href="/devices") {{applet.device.name}}]
         p

@@ -27,53 +27,6 @@ deviceRouter = new KoaRouter()
     (ctx) -> ctx.body = ctx.device ? {}
   )
 
-  # TODO: move to userApplet.
-  .post('/:deviceId/applets/:appletId/:version/process'
-    requireRoles roles.USER
-    overrideUserToQuery()
-    Device.getMiddleware {
-      field:        'deviceId'
-      target:       'device'
-      triggerNext:  true
-      writeToBody:  false
-    }
-    (ctx) ->
-      rpc = ctx.device?.rpc
-      validator.isRequired rpc, meta: {
-        path: 'ctx.device.online'
-      }
-      stats     = await rpc.process {
-        applet:
-          _id:      ctx.params.appletId
-          version:  ctx.params.version
-        user:       ctx.user._id
-      }
-      ctx.body = await expandDevice ctx.user, ctx.device
-  )
-
-  # TODO: move to userApplet.
-  .post('/:deviceId/applets/:appletId/:version/restart'
-    requireRoles roles.USER
-    overrideUserToQuery()
-    Device.getMiddleware {
-      field:        'deviceId'
-      target:       'device'
-      triggerNext:  true
-      writeToBody:  false
-    }
-    (ctx) ->
-      rpc = ctx.device?.rpc
-      validator.isRequired rpc, meta: {
-        path: 'ctx.device.online'
-      }
-      stats     = await rpc.restart {
-        applet:
-          _id:      ctx.params.appletId
-          version:  ctx.params.version
-      }
-      ctx.body = await expandDevice ctx.user, ctx.device
-  )
-
   .get('/:deviceId/applets'
     requireRoles roles.DEVICE
     (ctx) ->
