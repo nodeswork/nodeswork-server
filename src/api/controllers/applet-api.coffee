@@ -116,32 +116,32 @@ appletApiRouter = new KoaRouter {
     Message.createMiddleware()
   )
 
-  .post('/executions'
-    (ctx, next) ->
-      ctx.overrides = {
-        doc:
-          user:         ctx.user._id
-          device:       ctx.device?._id
-      }
-      await next()
-    AppletExecution.createMiddleware fromExtend: false, triggerNext: false
-  )
+  # .post('/executions'
+    # (ctx, next) ->
+      # ctx.overrides = {
+        # doc:
+          # user:         ctx.user._id
+          # device:       ctx.device?._id
+      # }
+      # await next()
+    # AppletExecution.createMiddleware fromExtend: false, triggerNext: false
+  # )
 
-  .post('/executions/:executionId'
-    (ctx, next) ->
-      ctx.overrides = {
-        query:
-          _id:          ctx.params.executionId
-          user:         ctx.user._id
-          device:       ctx.device?._id
-      }
-      await next()
-    AppletExecution.updateMiddleware {
-      field:        'executionId'
-      omits:        ['user', 'applet', 'device']
-      triggerNext:  false
-    }
-  )
+  # .post('/executions/:executionId'
+    # (ctx, next) ->
+      # ctx.overrides = {
+        # query:
+          # _id:          ctx.params.executionId
+          # user:         ctx.user._id
+          # device:       ctx.device?._id
+      # }
+      # await next()
+    # AppletExecution.updateMiddleware {
+      # field:        'executionId'
+      # omits:        ['user', 'applet', 'device']
+      # triggerNext:  false
+    # }
+  # )
 
 
 module.exports = {

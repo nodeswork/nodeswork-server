@@ -17,11 +17,11 @@ executionRouter = new KoaRouter()
 
   .use requireRoles roles.USER
 
-  .get '/', overrideUserToDoc(), AppletExecution.findMiddleware {
-    allowedQueryFields:  ['applet']
-    sort:                '-createdAt'
-    pagination:          20
-  }
+  # .get '/', overrideUserToDoc(), AppletExecution.findMiddleware {
+    # allowedQueryFields:  ['applet']
+    # sort:                '-createdAt'
+    # pagination:          20
+  # }
 
 
 module.exports = {

@@ -7,7 +7,8 @@ randtoken                     = require 'rand-token'
 { KoaMiddlewares
   GET }                       = require './plugins/koa-middlewares'
 { ExcludeFieldsToJSON }       = require './plugins/exclude-fields'
-{ DataLevel }                 = require './plugins/data-levels'
+{ DataLevel
+  pop }                       = require './plugins/data-levels'
 { MINIMAL_DATA_LEVEL }        = require '../constants'
 
 
@@ -124,13 +125,10 @@ class DeviceSchema extends NodesworkMongooseSchema
       device:  @_id
       status:  "ON"
     }
-      .populate [
-        {
-          path: 'applet'
-          select:
-            $level: MINIMAL_DATA_LEVEL
-        }
-      ]
+      .populate pop 'applet', MINIMAL_DATA_LEVEL
+
+  current: GET () ->
+    @
 
 
 module.exports = {

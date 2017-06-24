@@ -455,26 +455,26 @@ expose = (router, options={}) ->
               instance =
                 if instanceProvider? then await instanceProvider ctx
                 else ctx.instance
-              o        = getOptionsFromCtx ctx, method
-              ctx.body = await instance[name] o
-              pms      = posts.get(name, 'METHOD', method) ? []
+              o        = getOptionsFromCtx ctx, httpMethod
+              ctx.body = await instance[name].apply instance, o
+              pms      = posts.get(name, 'METHOD', httpMethod) ? []
               await next() if pms.length
           ]
           bind.apply null, args
-      when method = schema.statics[name]?.method
-        do (name, method) ->
-          bind(name, name, 'STATIC', method
+      when httpMethod = schema.statics[name]?.method
+        do (name, httpMethod) ->
+          bind(name, name, 'STATIC', httpMethod
             NAMED name, (ctx, next) ->
-              await model[name] getOptionsFromCtx ctx, method
-              pms = posts.get(name, 'STATIC', method) ? []
+              await model[name].apply model, getOptionsFromCtx ctx, httpMethod
+              pms = posts.get(name, 'STATIC', httpMethod) ? []
               await next() if pms.length
           )
       else throw new NodesworkError 'Unable to bind function', name: name
 
 
 getOptionsFromCtx = (ctx, method) ->
-  if method == 'POST' then ctx.request.body
-  else ctx.request.query
+  if method == 'POST' then [ ctx.request.body, ctx.request.query, ctx ]
+  else [ ctx.request.query, ctx ]
 
 
 class Structure

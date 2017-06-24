@@ -8,7 +8,10 @@ momentTimezones               = require 'moment-timezone'
 { NodesworkMongooseSchema }   = require './nodeswork-mongoose-schema'
 { KoaMiddlewares
   POST }                      = require './plugins/koa-middlewares'
+{ pop }                       = require './plugins/data-levels'
 { CronValidator }             = require './validators/cron-jobs'
+{ MINIMAL_DATA_LEVEL }        = require '../constants'
+
 
 class UserAppletSchema extends NodesworkMongooseSchema
 
@@ -134,6 +137,25 @@ class UserAppletSchema extends NodesworkMongooseSchema
         version: applet.version
     }
     @
+
+  execute: POST (body={}, query={}, ctx={}) ->
+    { device } = ctx
+    { scheduled = false } = query
+
+    unless device?._id.equals @device
+      throw new NodesworkError 'Applet is not running on this device.'
+
+    await @populate(pop 'accounts', MINIMAL_DATA_LEVEL).execPopulate()
+
+    await mongoose.models.Execution.create {
+      applet:      @applet
+      user:        @user
+      userApplet:  @
+      device:      @device
+      status:      'IN_PROGRESS'
+      scheduled:   scheduled
+      params:      body
+    }
 
   expandedInJSON: () ->
     _.extend(

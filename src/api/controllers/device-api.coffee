@@ -22,23 +22,8 @@ deviceApiRouter = new KoaRouter()
 
   .use requireRoles roles.DEVICE
 
-  # .prefix '/device-api'
-
-  # # Returns the current device.
-  # .get '/current', (ctx) -> ctx.body = ctx.device ? {}
-
-  # # Fetch all applets which should run on current device.
-  # .get '/applets', (ctx) ->
-    # userApplets = await UserApplet.find {
-      # user:    ctx.device.user
-      # device:  ctx.device
-      # status:  "ON"
-    # }
-      # .populate 'applet'
-    # ctx.body = _.map userApplets, _.property 'applet'
-
   # # Start an execution.
-  # .post '/users/:userId/applet/:appletId/execute', (ctx) -> {}
+  # .post '/usersApplets/:relationId/execute', (ctx) -> {}
 
   # .post '/users/:userId/applet/:appletId/execute', (ctx) -> {}
 
@@ -49,7 +34,18 @@ Device.expose deviceApiRouter, {
 
   instanceProvider:  _.property 'device'
 
-  binds:             [ 'applets' ]
+  binds:             [ 'applets', 'current' ]
+}
+
+
+UserApplet.expose deviceApiRouter, {
+
+  prefix:            '/device-api/usersApplets'
+
+  idField:           'relationId'
+
+  binds:             [ 'execute' ]
+
 }
 
 

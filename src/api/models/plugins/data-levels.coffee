@@ -48,6 +48,13 @@ _addLevelMap = (schema, levelPaths) ->
     schema.levelMap[level] = _.union schema.levelMap[level], [path]
 
 
+pop = (path, level) ->
+  path:      path
+  select:
+    $level:  level
+
+
 module.exports = {
   DataLevel
+  pop
 }

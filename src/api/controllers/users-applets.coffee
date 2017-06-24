@@ -42,6 +42,7 @@ UserApplet.expose usersAppletsRouter, {
       ]
   posts:
     get:             [ expandedInJSON() ]
+  binds:             [ 'run', 'restart' ]
 }
 
 

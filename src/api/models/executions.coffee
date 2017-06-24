@@ -5,10 +5,10 @@ mongoose                     = require 'mongoose'
 { ExcludeFieldsToJSON }      = require './plugins/exclude-fields'
 
 
-class AppletExecutionSchema extends NodesworkMongooseSchema
+class ExecutionSchema extends NodesworkMongooseSchema
 
   @Config {
-    collection: 'applets.executions'
+    collection: 'executions'
   }
 
   @Schema {
@@ -24,25 +24,31 @@ class AppletExecutionSchema extends NodesworkMongooseSchema
       required:   true
       index:      true
 
-    status:
-      enum:       ["SUCCESS", "FAILED", "IN_PROGRESS"]
-      type:       String
+    userApplet:
+      type:       mongoose.Schema.ObjectId
+      ref:        'UserApplet'
       required:   true
-
-    trigger:
-      enum:       ["MANUAL", "SCHEDULER"]
-      type:       String
 
     device:
       type:       mongoose.Schema.ObjectId
       ref:        'Device'
+      required:   true
 
-    errMsg:       String
+    status:
+      enum:       [ "SUCCESS", "FAILED", "IN_PROGRESS", "EXPAIRED" ]
+      type:       String
+      required:   true
+
+    scheduled:
+      type:       Boolean
 
     duration:
       type:       Number
 
     params:
+      type:       mongoose.Schema.Types.Mixed
+
+    result:
       type:       mongoose.Schema.Types.Mixed
 
     error:
@@ -54,5 +60,5 @@ class AppletExecutionSchema extends NodesworkMongooseSchema
 
 
 module.exports = {
-  AppletExecutionSchema
+  ExecutionSchema
 }
