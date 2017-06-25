@@ -4,6 +4,7 @@
 
 _                   = require 'underscore'
 path                = require 'path'
+KoaRouter           = require 'koa-router'
 
 { logger }          = require 'nodeswork-logger'
 { NAMED }           = require 'nodeswork-utils'
@@ -13,6 +14,12 @@ path                = require 'path'
 
 READONLY = 'RO'
 AUTOGEN  = 'AG'
+
+
+# Patch KoaRouter
+KoaRouter::useModel = NAMED 'userModel', (model, options) ->
+  model.expose @, options
+  @
 
 
 # Generate KOA middlewares for mongoose models.

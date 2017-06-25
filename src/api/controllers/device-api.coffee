@@ -20,45 +20,38 @@ deviceApiRouter = new KoaRouter()
 
   .use requireRoles roles.DEVICE
 
-  # # Start an execution.
-  # .post '/usersApplets/:relationId/execute', (ctx) -> {}
-
   # .post '/users/:userId/applet/:appletId/execute', (ctx) -> {}
 
+  .useModel Device, {
 
-Device.expose deviceApiRouter, {
+    prefix:            '/device-api'
 
-  prefix:            '/device-api'
+    instanceProvider:  _.property 'device'
 
-  instanceProvider:  _.property 'device'
+    binds:             [ 'applets', 'current' ]
+  }
 
-  binds:             [ 'applets', 'current' ]
-}
+  .useModel UserApplet, {
 
+    prefix:            '/device-api/usersApplets'
 
-UserApplet.expose deviceApiRouter, {
+    idField:           'relationId'
 
-  prefix:            '/device-api/usersApplets'
+    binds:             [ 'execute' ]
+  }
 
-  idField:           'relationId'
+  .useModel Execution, {
 
-  binds:             [ 'execute' ]
+    prefix:            '/device-api/executions'
 
-}
+    idField:           'executionId'
 
+    cruds:             [ 'update' ]
 
-Execution.expose deviceApiRouter, {
+    pres:
 
-  prefix:            '/device-api/executions'
-
-  idField:           'executionId'
-
-  cruds:             [ 'update' ]
-
-  pres:
-
-    update:          [ overrideToQuery(src: 'device') ]
-}
+      update:          [ overrideToQuery(src: 'device') ]
+  }
 
 
 module.exports = {
