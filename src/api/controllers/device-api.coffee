@@ -6,15 +6,13 @@ KoaRouter                   = require 'koa-router'
 { requireRoles, roles }     = require './middlewares/roles'
 
 {
-  overrideUserToQuery
-  overrideUserToDoc
+  overrideToQuery
+  overrideToDoc
   expandDevice
 }                           = require './middlewares'
-{
-  Device
-  User
-  UserApplet
-}                           = require '../models'
+{ Device
+  Execution
+  UserApplet }              = require '../models'
 { MINIMAL_DATA_LEVEL }      = require '../constants'
 
 
@@ -46,6 +44,20 @@ UserApplet.expose deviceApiRouter, {
 
   binds:             [ 'execute' ]
 
+}
+
+
+Execution.expose deviceApiRouter, {
+
+  prefix:            '/device-api/executions'
+
+  idField:           'executionId'
+
+  cruds:             [ 'update' ]
+
+  pres:
+
+    update:          [ overrideToQuery(src: 'device') ]
 }
 
 

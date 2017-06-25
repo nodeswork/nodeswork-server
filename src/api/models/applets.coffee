@@ -24,18 +24,15 @@ class AppletSchema extends NodesworkMongooseSchema
       ref:                'User'
       required:           true
       index:              true
-      apiType:            'READONLY'
 
     devToken:
       type:               String
       default:            () -> randtoken.generate TOKEN_LEN
-      apiType:            'READONLY'
       dataLevel:          'TOKEN'
 
     prodToken:
       type:               String
       default:            () -> randtoken.generate TOKEN_LEN
-      apiType:            'READONLY'
       dataLevel:          'TOKEN'
 
     imageUrl:
@@ -95,7 +92,6 @@ class AppletSchema extends NodesworkMongooseSchema
     status:
       enum:               ["ACTIVE", "ERROR", "INACTIVE"]
       type:               String
-      apiType:            'READONLY'
 
     name:
       type:               String

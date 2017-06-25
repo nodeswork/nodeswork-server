@@ -27,6 +27,7 @@ KoaMiddlewares.defaults.omits = [
 
 mongoose.plugin TimestampModelPlugin
 mongoose.plugin DataLevel
+mongoose.plugin KoaMiddlewares, middlwares: []
 
 
 _.extend module.exports, users

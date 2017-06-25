@@ -1,3 +1,4 @@
+{ READONLY } = require './koa-middlewares'
 
 TimestampModelPlugin = (schema, {
   createdAtIndex,
@@ -7,8 +8,15 @@ TimestampModelPlugin = (schema, {
   lastUpdateTimeIndex ?= true
 
   schema.add {
-    createdAt:      type: Date, default: Date.now, index: createdAtIndex
-    lastUpdateTime: type: Date, index: lastUpdateTimeIndex
+    createdAt:
+      type:          Date
+      default:       Date.now
+      index:         createdAtIndex
+      api:           READONLY
+    lastUpdateTime:
+      type:          Date
+      index:         lastUpdateTimeIndex
+      api:           READONLY
   }
 
   # Before save the document, update last update time.

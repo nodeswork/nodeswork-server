@@ -19,7 +19,7 @@ FIFA_FUT_API_CLIENT = LRU {
   maxAge: 1000 * 60 * 60 * 24   # 24 hours
 }
 
-exports.fetchAccount = (ctx, next) ->
+fetchAccount = (ctx, next) ->
   try
     ctx.account = await Account.findOne {
       _id:   ctx.params.accountId
@@ -55,7 +55,27 @@ exports.fetchAccount = (ctx, next) ->
           await ctx.account.save()
 
 
-exports.overrideUserToDoc = overrideUserToDoc = (fieldName='user') ->
+overrideToQuery = (options={}) ->
+  { src, dst } = options
+  dst         ?= src
+  NAMED "overrideToQuery(#{src}->#{dst})", (ctx, next) ->
+    ctx.overrides ?= {}
+    ctx.overrides.query ?= {}
+    ctx.overrides.query[dst] = ctx[src]
+    await next()
+
+
+overrideToDoc = (options={}) ->
+  { src, dst } = options
+  dst         ?= src
+  NAMED "overrideToDoc(#{src}->#{dst})", (ctx, next) ->
+    ctx.overrides ?= {}
+    ctx.overrides.doc ?= {}
+    ctx.overrides.doc[dst] = ctx[src]
+    await next()
+
+
+overrideUserToDoc = (fieldName='user') ->
   NAMED 'overrideUserToDoc', (ctx, next) ->
     ctx.overrides ?= {}
     ctx.overrides.doc ?= {}
@@ -63,7 +83,7 @@ exports.overrideUserToDoc = overrideUserToDoc = (fieldName='user') ->
     await next()
 
 
-exports.overrideUserToQuery = overrideUserToQuery = (fieldName='user') ->
+overrideUserToQuery = overrideUserToQuery = (fieldName='user') ->
   NAMED 'overrideUserToQuery', (ctx, next) ->
     ctx.overrides ?= {}
     ctx.overrides.query ?= {}
@@ -71,21 +91,21 @@ exports.overrideUserToQuery = overrideUserToQuery = (fieldName='user') ->
     await next()
 
 
-exports.expandDevice = (field='object') ->
+expandDevice = (field='object') ->
   NAMED 'expandDevice', (ctx) ->
     if _.isArray ctx[field]
       ctx[field] = await _.map ctx[field], (device) -> device.expandedInJSON()
     else ctx[field] = await ctx[field].expandedInJSON()
 
 
-exports.expandedInJSON = (field='object') ->
+expandedInJSON = (field='object') ->
   NAMED 'expandedInJSON', (ctx) ->
     if _.isArray ctx[field]
       ctx[field] = await _.map ctx[field], (obj) -> obj.expandedInJSON()
     else ctx[field] = await ctx[field].expandedInJSON()
 
 
-exports.updateState = (ctx, next) ->
+updateState = (ctx, next) ->
   await next()
 
   {io}      = require '../sockets'
@@ -95,7 +115,7 @@ exports.updateState = (ctx, next) ->
   io.of(MESSAGE_ROOM_SOCKET).to(roomName).emit STATE_CHANGE_TOPIC, state
 
 
-exports.getState = (ctx, next) ->
+getState = (ctx, next) ->
   ctx.state = await fetchState ctx.user
   await next()
 
@@ -110,3 +130,16 @@ fetchState = (user) ->
 
   message:
     unread: unread
+
+
+module.exports = {
+  expandDevice
+  expandedInJSON
+  fetchAccount
+  getState
+  overrideUserToDoc
+  overrideUserToQuery
+  overrideToQuery
+  overrideToDoc
+  updateState
+}

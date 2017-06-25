@@ -11,6 +11,10 @@ path                = require 'path'
 { NodesworkError }  = require '../../errors'
 
 
+READONLY = 'RO'
+AUTOGEN  = 'AG'
+
+
 # Generate KOA middlewares for mongoose models.
 #
 # @example
@@ -46,6 +50,17 @@ KoaMiddlewares = (schema, options={}) ->
     populate    = []
   } = options
 
+  schema.api   ?= "#{READONLY}": [], "#{AUTOGEN}": []
+  schema.eachPath (pathname, schemaType) ->
+    return unless schemaType.options.api in [ READONLY, AUTOGEN ]
+    do (schema) ->
+      while schema?
+        schema.api[schemaType.options.api] = _.union(
+          schema.api[schemaType.options.api]
+          [ pathname ]
+        )
+        schema = schema.parentSchema
+
   # Wrap middlewars to patch global options.
   wrap = (fn) -> (opts={}) ->
     opts.omits        = _.union(
@@ -65,7 +80,7 @@ KoaMiddlewares = (schema, options={}) ->
   statics.updateMiddleware = wrap updateMiddleware if 'update' in middlewares
   statics.deleteMiddleware = wrap deleteMiddleware if 'delete' in middlewares
 
-  statics.expose           = (router, options={}) ->
+  statics.expose          ?= (router, options={}) ->
     options.schema = schema
     options.model  = @
     expose router, options
@@ -131,6 +146,8 @@ createMiddleware = (options={}) ->
           NodesworkError.unkownValue key: discriminatorKey, value: modelType
         model
       else @
+
+    omits       = _.union omits, @schema.api?[AUTOGEN]
 
     ctx[target] = _.omit doc, omits
 
@@ -265,10 +282,11 @@ updateMiddleware = (options={}) ->
     transform           = _.identity
   } = options
 
-  (ctx, next) =>
+  NAMED 'updateMiddleware', (ctx, next) =>
     query        = ctx.overrides?.query ? {}
     query._id    = ctx.params[field]
     ctx[target]  = await @findOne query
+    omits        = _.union omits, @schema.api?[READONLY], @schema.api?[AUTOGEN]
 
     _.extend ctx[target], _.omit ctx.request.body, omits
     await next() if triggerNext
@@ -507,6 +525,8 @@ attachTags = (tags={}) ->
 
 module.exports = {
   KoaMiddlewares
-  GET:   attachTags method:  'GET'
-  POST:  attachTags method:  'POST'
+  GET:       attachTags method:  'GET'
+  POST:      attachTags method:  'POST'
+  READONLY
+  AUTOGEN
 }
