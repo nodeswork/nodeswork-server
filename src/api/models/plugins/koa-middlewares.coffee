@@ -7,9 +7,10 @@ path                = require 'path'
 KoaRouter           = require 'koa-router'
 
 { logger }          = require 'nodeswork-logger'
-{ NAMED }           = require 'nodeswork-utils'
+{ NAMED
+  validator
+  NodesworkError }  = require 'nodeswork-utils'
 
-{ NodesworkError }  = require '../../errors'
 
 
 READONLY = 'RO'
@@ -142,15 +143,20 @@ createMiddleware = (options={}) ->
 
     model =
       if fromExtend and (discriminatorKey = @schema.options.discriminatorKey)
-        NodesworkError.required doc, discriminatorKey
+        modelType = doc[discriminatorKey]
+        validator.isRequired modelType, meta: path: discriminatorKey
 
         try
-          model = @db.model modelType = doc[discriminatorKey]
+          model = @db.model modelType
         catch
-          NodesworkError.unkownValue key: discriminatorKey, value: modelType
+          validator.isRequired model, {
+            message: "Model doesn't exist"
+          }
 
         if model.schema.options.discriminatorKey != discriminatorKey
-          NodesworkError.unkownValue key: discriminatorKey, value: modelType
+          validator.isRequired null, {
+            message: "Model doesn't exist"
+          }
         model
       else @
 
@@ -163,7 +169,7 @@ createMiddleware = (options={}) ->
     try
       ctx[target] = await model.create ctx[target]
     catch e
-      NodesworkError.mongooseError e
+      throw NodesworkError.fromError e
 
     await model.populate ctx[target], populate if populate.length
 

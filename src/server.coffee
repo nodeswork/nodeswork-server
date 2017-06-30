@@ -20,6 +20,10 @@ nwLogger              = require 'nodeswork-logger'
 winston               = require 'winston'
 
 config                = require '../config'
+
+if config.env == 'test'
+  nwLogger.transports = []
+
 { registerModels }    = require './api/models'
 
 
@@ -32,6 +36,7 @@ do () ->
 
   db               = mongoose.connections[0].db
   logCollection    = 'logs'
+
   nwLogger.transports.push nwLogger.transport winston.transports.MongoDB, {
     db:          db
     collection:  logCollection
