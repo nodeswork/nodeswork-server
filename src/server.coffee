@@ -22,6 +22,7 @@ winston               = require 'winston'
 config                = require '../config'
 
 if config.env == 'test'
+  # mongoose.set 'debug', true
   nwLogger.transports = []
 
 { registerModels }    = require './api/models'
