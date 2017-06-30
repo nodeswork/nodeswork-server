@@ -9,7 +9,8 @@
   },
   "scripts": {
     "start": "node --trace-warnings index.js",
-    "docs": "codo"
+    "docs": "codo",
+    "test": "NODE_ENV=test mocha --timeout=10000"
   },
   "engines": {
     "node": ">= 7.0"
@@ -51,7 +52,8 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "mocha": "^3.3.0",
-    "should": "^11.2.1"
+    "should": "^11.2.1",
+    "supertest": "^3.0.0"
   },
   "keywords": [
     "nodeswork",

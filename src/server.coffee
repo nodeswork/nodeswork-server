@@ -16,17 +16,19 @@ mongooseStore         = require 'koa-session-mongoose'
 session               = require 'koa-generic-session'
 staticCache           = require 'koa-static-cache'
 nwLogger              = require 'nodeswork-logger'
-{MongoDB}             = require 'winston-mongodb'
+{ MongoDB }           = require 'winston-mongodb'
 winston               = require 'winston'
 
-{registerModels}      = require './api/models'
+config                = require '../config'
+{ registerModels }    = require './api/models'
 
+
+app = new Koa
 
 do () ->
   mongoose.Promise = global.Promise
-  dbURI            = 'localhost:27017/nodeswork-dev'
 
-  await mongoose.connect dbURI
+  await mongoose.connect config.db
 
   db               = mongoose.connections[0].db
   logCollection    = 'logs'
@@ -45,7 +47,6 @@ do () ->
   await registerModels mongoose
 
   api        = require './api'
-  app        = new Koa
 
   app.keys   = ['my keys']
 
@@ -103,5 +104,23 @@ do () ->
   server = http.Server app.callback()
   api.attachIO IO server
 
-  server.listen 3000, ->
-    logger.info "server is started at http://localhost:#{3000}."
+  server.listen config.port, ->
+    logger.info "server is started at http://localhost:#{config.port}."
+    app._ready = true
+    app.server = server
+
+
+app.isReady = () ->
+  return app if app._ready
+
+  new Promise (resolve, reject) ->
+    check = () ->
+      if app._ready
+        clearInterval interval
+        resolve app
+    interval = setInterval check, 0
+
+
+module.exports = {
+  app: app
+}
