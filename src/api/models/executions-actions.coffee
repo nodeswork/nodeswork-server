@@ -2,28 +2,39 @@ mongoose                     = require 'mongoose'
 
 { NodesworkMongooseSchema }  = require './nodeswork-mongoose-schema'
 { KoaMiddlewares
+  AUTOGEN
   READONLY }                 = require './plugins/koa-middlewares'
 
 
-class ExecutionSchema extends NodesworkMongooseSchema
+class ExecutionActionSchema extends NodesworkMongooseSchema
 
   @Config {
-    collection: 'executions'
+    collection: 'executions.actions'
   }
 
   @Schema {
-    applet:
+    execution:
       type:       mongoose.Schema.ObjectId
-      ref:        'Applet'
+      ref:        'Execution'
       required:   true
-      index:      true
+      api:        READONLY
+
+    account:
+      type:       mongoose.Schema.ObjectId
+      ref:        'Account'
+      required:   true
       api:        READONLY
 
     user:
       type:       mongoose.Schema.ObjectId
       ref:        'User'
       required:   true
-      index:      true
+      api:        READONLY
+
+    applet:
+      type:       mongoose.Schema.ObjectId
+      ref:        'Applet'
+      required:   true
       api:        READONLY
 
     userApplet:
@@ -43,12 +54,14 @@ class ExecutionSchema extends NodesworkMongooseSchema
       type:       String
       required:   true
 
-    scheduled:
-      type:       Boolean
-      api:        READONLY
-
     duration:
       type:       Number
+
+    apiLevel:
+      enum:       [ 'READ', 'MANAGE', 'WRITE' ]
+      type:       String
+      required:   true
+      api:        AUTOGEN
 
     params:
       type:       mongoose.Schema.Types.Mixed
@@ -64,7 +77,15 @@ class ExecutionSchema extends NodesworkMongooseSchema
 
   @Plugin KoaMiddlewares
 
+  @Index  {
+    execution: 1
+    account:   1
+  }
+
+  hasAccount: (account) ->
+    _.find @accounts, (x) -> false
+
 
 module.exports = {
-  ExecutionSchema
+  ExecutionActionSchema
 }

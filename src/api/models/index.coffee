@@ -12,6 +12,7 @@ applets                     = require './applets'
 devices                     = require './devices'
 events                      = require './events'
 executions                  = require './executions'
+executionsActions           = require './executions-actions'
 messages                    = require './messages'
 users                       = require './users'
 usersApplets                = require './users-applets'
@@ -58,6 +59,7 @@ exports.registerModels = (mongooseInstance = mongoose) ->
     ['Message',                  messages.MessageSchema]
     ['AppletMessage',            messages.AppletMessageSchema]
     ['Execution',                executions.ExecutionSchema]
+    ['ExecutionAction',          executionsActions.ExecutionActionSchema]
     ['Event',                    events.EventSchema]
     ['ContainerExecutionEvent',  events.ContainerExecutionEventSchema]
   ]

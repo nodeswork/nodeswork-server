@@ -137,7 +137,7 @@ createMiddleware = (options={}) ->
     transform   = _.identity
   } = options
 
-  NAMED 'createMiddleware', (ctx, next) =>
+  NAMED "#{@modelName}.createMiddleware", (ctx, next) =>
     doc   = _.extend {}, ctx.request.body, ctx.overrides?.doc
 
     model =
@@ -196,7 +196,7 @@ getMiddleware = (options={}) ->
     transform           = _.identity
   } = options
 
-  NAMED 'getMiddleware', (ctx, next) =>
+  NAMED "#{@modelName}.getMiddleware", (ctx, next) =>
     query        = ctx.overrides?.query ? {}
     query._id    = ctx.params[field]
     qp           = @findOne query
@@ -238,7 +238,7 @@ findMiddleware = (options={}) ->
     allowedQueryFields  = null
   } = options
 
-  NAMED 'findMiddleware', (ctx, next) =>
+  NAMED "#{@modelName}.findMiddleware", (ctx, next) =>
     query        = NodesworkError.parseJSON ctx.request.query.query
     page         = NodesworkError.parseNumber ctx.request.query.page ? '0'
     query        = _.pick query, allowedQueryFields if allowedQueryFields?
@@ -289,7 +289,7 @@ updateMiddleware = (options={}) ->
     transform           = _.identity
   } = options
 
-  NAMED 'updateMiddleware', (ctx, next) =>
+  NAMED "#{@modelName}.updateMiddleware", (ctx, next) =>
     query        = ctx.overrides?.query ? {}
     query._id    = ctx.params[field]
     ctx[target]  = await @findOne query
@@ -323,7 +323,7 @@ deleteMiddleware = (options={}) ->
     transform           = _.identity
   } = options
 
-  NAMED 'deleteMiddleware', (ctx, next) =>
+  NAMED "#{@modelName}.deleteMiddleware", (ctx, next) =>
     query        = ctx.overrides?.query ? {}
     query._id    = ctx.params[field]
     ctx[target]  = await @findOne query

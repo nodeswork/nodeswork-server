@@ -91,6 +91,20 @@ overrideUserToQuery = overrideUserToQuery = (fieldName='user') ->
     await next()
 
 
+clearOverrideQuery = () ->
+  NAMED 'clearOverrideQuery', (ctx, next) ->
+    ctx.overrides ?= {}
+    ctx.overrides.query = {}
+    await next()
+
+
+clearOverrideDoc = () ->
+  NAMED 'clearOverrideDoc', (ctx, next) ->
+    ctx.overrides ?= {}
+    ctx.overrides.doc = {}
+    await next()
+
+
 expandDevice = (field='object') ->
   NAMED 'expandDevice', (ctx) ->
     if _.isArray ctx[field]
@@ -133,13 +147,15 @@ fetchState = (user) ->
 
 
 module.exports = {
+  clearOverrideDoc
+  clearOverrideQuery
   expandDevice
   expandedInJSON
   fetchAccount
   getState
+  overrideToDoc
+  overrideToQuery
   overrideUserToDoc
   overrideUserToQuery
-  overrideToQuery
-  overrideToDoc
   updateState
 }
