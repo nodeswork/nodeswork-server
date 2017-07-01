@@ -68,10 +68,12 @@ createApplet = (agent, options={}) ->
   res.body
 
 
-createUserApplet = (agent, user, applet) ->
+createUserApplet = (agent, user, applet, device) ->
   res = await agent
     .post '/api/v1/my-applets'
     .send {
+      applet: applet._id
+      device: device._id
     }
     .expect {}
     .expect 500

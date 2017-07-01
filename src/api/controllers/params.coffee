@@ -1,8 +1,10 @@
 # Parameter validations.
-_                = require 'underscore'
-mongoose         = require 'mongoose'
+_                   = require 'underscore'
+mongoose            = require 'mongoose'
 
-{NodesworkError} = require '../errors'
+{ validator
+  NAMED
+  NodesworkError }  = require 'nodeswork-utils'
 
 
 # Generate parameters validation Koa middlewares.
@@ -11,14 +13,14 @@ mongoose         = require 'mongoose'
 #
 # @return [KoaMiddleware] the parameter validation middleware.
 params = (rules) ->
-  (ctx, next) ->
+  NAMED 'validateParams', (ctx, next) ->
     await validate ctx, rules, ctx.request, []
     await next()
 
 
 # Rules - Validate if the value does exist.
 isRequired = (ctx, val, path) ->
-  NodesworkError.required "#{path}": val, path
+  validator.isRequired val, meta: path: path
   return
 
 
@@ -27,21 +29,42 @@ isRequired = (ctx, val, path) ->
 # @throw [NodesworkError] error when is is invalid or value doesn't exist.
 #
 # @return [Model, Array<Model>] the populated model(s).
-populateFromModel = (model) ->
+populateFromModel = (model, query={}) ->
+  prepareQuery = (ctx, ids) ->
+    dbQuery = _.mapObject query, (val, key) ->
+      switch
+        when val.startsWith '@' then ctx[val.substring(1)]
+        else val
+    if _.isArray ids
+      model.find _.extend dbQuery, _id: '$in': ids
+    else model.findOne _.extend dbQuery, _id: ids
+
+
   (ctx, val, path) ->
     switch
       when val? and _.isArray val
         ids     = _.map val, (id) -> mongoose.Types.ObjectId id
-        objects = await model.find _id: '$in': ids
+        objects = await prepareQuery ctx, ids
         objects = _.object _.map objects, (object) ->
           [object._id.toString(), object]
         for id in val
+          validator.isRequired objects[id], {
+            meta:
+              path: path
+              id:   id
+            message: 'id is invalid'
+          }
           NodesworkError.unkownValue key: path, value: id unless objects[id]?
           objects[id]
 
       when val?
-        object = await model.findById val
-        NodesworkError.unkownValue key: path, value: val unless object?
+        object = await prepareQuery ctx, val
+        validator.isRequired object, {
+          meta:
+            path: path
+            id:   val
+          message: 'id is invalid'
+        }
         object
 
       else val

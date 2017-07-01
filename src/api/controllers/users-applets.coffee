@@ -44,7 +44,7 @@ usersAppletsRouter = new KoaRouter()
 
     idField:           'relationId'
 
-    cruds:             [ 'find', 'get' ]
+    cruds:             [ 'find', 'get', 'create' ]
 
     options:
 
@@ -63,9 +63,47 @@ usersAppletsRouter = new KoaRouter()
           }
         ]
 
+      create:
+
+        fromExtend:  false
+
+        populate:      [
+          {
+            path:      'applet'
+            select:
+              $level:  MINIMAL_DATA_LEVEL
+          }
+          {
+            path:      'device'
+            select:
+              $level:  MINIMAL_DATA_LEVEL
+          }
+        ]
+
+        target:      'userApplet'
+
+    pres:
+
+      create:          [
+        params.body(
+          applet: [
+            rules.isRequired
+            rules.populateFromModel Applet
+          ]
+          device: [
+            rules.isRequired
+            rules.populateFromModel Device, user: '@user'
+          ]
+        )
+
+        overrideUserToDoc()
+      ]
+
     posts:
 
       get:             [ expandedInJSON() ]
+
+      create:          [ validateUserApplet ]
 
     binds:             [ 'run', 'restart' ]
   }
@@ -77,26 +115,6 @@ usersAppletsRouter = new KoaRouter()
       omits:     ['user', 'applet', 'errMsg']
       target:    'userApplet'
       populate:  ['applet', 'device']
-    }
-    validateUserApplet
-  )
-
-  # Load applet and verify the permission.
-  .post('/'
-    params.body(
-      applet: [
-        rules.isRequired
-        rules.populateFromModel Applet
-      ]
-      device: [
-        rules.populateFromModel Device
-      ]
-    )
-    overrideUserToDoc()
-    UserApplet.createMiddleware {
-      fromExtend:  false
-      populate:    ['applet']
-      target:      'userApplet'
     }
     validateUserApplet
   )

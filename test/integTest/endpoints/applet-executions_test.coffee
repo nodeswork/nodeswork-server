@@ -22,6 +22,7 @@ describe 'applet execution flow', ->
     user        = await createUser agent, developer: true
     user        = await loginUser agent, user
     applet      = await createApplet agent
+    console.log applet
     userApplet  = await createUserApplet agent, user, applet
 
   it 'should have proper user', ->
