@@ -1,9 +1,9 @@
 _          = require 'underscore'
 
-# { app }    = require '../src/server'
+{ app }    = require '../src/server'
 
-# before ->
-  # await app.isReady()
+before ->
+  await app.isReady()
 
 module.exports = {
 }

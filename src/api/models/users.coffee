@@ -1,13 +1,14 @@
-_                         = require 'underscore'
-bcrypt                    = require 'bcrypt'
-mongoose                  = require 'mongoose'
-momentTimezones           = require 'moment-timezone'
+_                            = require 'underscore'
+bcrypt                       = require 'bcrypt'
+mongoose                     = require 'mongoose'
+momentTimezones              = require 'moment-timezone'
 
-{ ExcludeFieldsToJSON }   = require './plugins/exclude-fields'
+{ ExcludeFieldsToJSON }      = require './plugins/exclude-fields'
 { KoaMiddlewares
   AUTOGEN
-  READONLY }              = require './plugins/koa-middlewares'
-{ USER_STATUS }           = require '../constants'
+  READONLY }                 = require './plugins/koa-middlewares'
+{ USER_STATUS }              = require '../constants'
+{ NodesworkMongooseSchema }  = require './nodeswork-mongoose-schema'
 
 
 SALT_WORK_FACTOR = 10
@@ -16,93 +17,99 @@ SALT_WORK_FACTOR = 10
 AttributesSchema = new mongoose.Schema {
   developer:
     type:       Boolean
-    default:    true
-}
+    default:    false
+}, noGlobalPlugins: true, _id: false
 
-# console.log AttributesSchema
 
-UserSchema = mongoose.Schema {
+class UserSchema extends NodesworkMongooseSchema
 
-  attributes:
-    type:           AttributesSchema
-    api:            AUTOGEN
-    default:        {}
+  @Config {
+    collection:        'users'
+    discriminatorKey:  'userType'
+  }
 
-  status:
-    enum:           _.values USER_STATUS
-    type:           String
-    default:        USER_STATUS.UNVERIFIED
-    api:            AUTOGEN
+  @Schema {
 
-  timezone:
-    type:           String
-    default:        'America/Los_Angeles'
-    enum:           momentTimezones.tz.names()
+    attributes:
+      type:           AttributesSchema
+      api:            AUTOGEN
+      default:        {}
 
-}, collection: 'users', discriminatorKey: 'userType'
+    status:
+      enum:           _.values USER_STATUS
+      type:           String
+      default:        USER_STATUS.UNVERIFIED
+      api:            AUTOGEN
 
-  .plugin KoaMiddlewares, {
-    omits: ['_id', 'createdAt', 'lastUpdateTime']
+    timezone:
+      type:           String
+      default:        'America/Los_Angeles'
+      enum:           momentTimezones.tz.names()
   }
 
 
-EmailUserSchema = UserSchema.extend {
-  email:
-    type:       mongoose.SchemaTypes.Email
-    required:   true
-    unique:     true
-    trim:       true
-    api:        READONLY
+class EmailUserSchema extends UserSchema
 
-  password:
-    type:       String
-    required:   true
-    min:        [6,  'Password should be at least 6 charactors.']
-    max:        [80, 'Password should be at most 80 charactors.']
-}
+  @Schema {
 
-  .plugin ExcludeFieldsToJSON, fields: ['password', 'email_unique']
+    email:
+      type:       mongoose.SchemaTypes.Email
+      required:   true
+      unique:     true
+      trim:       true
+      api:        READONLY
 
-
-EmailUserSchema.statics.register = ({email, password}) ->
-  await @create {
-    email: email
-    password: password
+    password:
+      type:       String
+      required:   true
+      min:        [6,  'Password should be at least 6 charactors.']
+      max:        [80, 'Password should be at most 80 charactors.']
   }
 
-EmailUserSchema.pre 'save', (next) ->
-  unless @isModified 'password' then return next()
-
-  (do =>
-    salt = await bcrypt.genSalt SALT_WORK_FACTOR
-    @password = await bcrypt.hash @password, salt
-  )
-    .then -> next()
-    .catch next
-
-EmailUserSchema.methods.comparePassword = (password) ->
-  bcrypt.compare password, @password
+  @Plugin ExcludeFieldsToJSON, fields: ['password', 'email_unique']
 
 
-SystemUserSchema = UserSchema.extend {
-  systemUserType:
-    type:       String
-    enum:       ['CONTAINER_APPLET_OWNER']
-}
-
-SystemUserSchema.statics.containerAppletOwner = () ->
-  unless @_containerAppletOwner?
-    @_containerAppletOwner = await @findOneAndUpdate {
-      systemUserType: 'CONTAINER_APPLET_OWNER'
-    }, {
-      systemUserType: 'CONTAINER_APPLET_OWNER'
-      status:         'ACTIVE'
-      attributes:     {}
-    }, {
-      upsert:         true
+  @register: ({email, password}) ->
+    await @create {
+      email: email
+      password: password
     }
 
-  return @_containerAppletOwner
+  @Pre 'save', (next) ->
+    unless @isModified 'password' then return next()
+
+    (do =>
+      salt = await bcrypt.genSalt SALT_WORK_FACTOR
+      @password = await bcrypt.hash @password, salt
+    )
+      .then -> next()
+      .catch next
+
+  comparePassword: (password) ->
+    bcrypt.compare password, @password
+
+
+class SystemUserSchema extends UserSchema
+
+  @Schema {
+    systemUserType:
+      type:       String
+      enum:       ['CONTAINER_APPLET_OWNER']
+  }
+
+  @containerAppletOwner: () ->
+    unless @_containerAppletOwner?
+      @_containerAppletOwner = await @findOneAndUpdate {
+        systemUserType: 'CONTAINER_APPLET_OWNER'
+      }, {
+        systemUserType: 'CONTAINER_APPLET_OWNER'
+        status:         'ACTIVE'
+        attributes:     {}
+      }, {
+        upsert:         true
+      }
+
+    return @_containerAppletOwner
 
 
 module.exports = {

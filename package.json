@@ -37,7 +37,6 @@
     "lru-cache": "^4.0.2",
     "moment-timezone": "^0.5.13",
     "mongoose": "^4.11.0",
-    "mongoose-schema-extend": "https://github.com/nodeswork/mongoose-schema-extend.git",
     "mongoose-type-email": "1.0.5",
     "nodeswork-logger": "0.0.2",
     "nodeswork-utils": "0.0.2",

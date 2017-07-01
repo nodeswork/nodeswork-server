@@ -4,8 +4,10 @@ PASSWORD = '12345'
 
 
 clearDB = () ->
-  { User } = require '../../../src/api/models'
-  User.remove userType: 'EmailUser'
+  { User
+    Applet } = require '../../../src/api/models'
+  await User.remove userType: 'EmailUser'
+  await Applet.remove appletType: 'NpmApplet'
 
 
 createUser = (agent, options={}) ->
@@ -25,10 +27,8 @@ createUser = (agent, options={}) ->
   { EmailUser } = require '../../../src/api/models'
   u = await EmailUser.findOne email: email
   u.status                = status
-  # u.attributes = developer: developer
-  console.log u
+  u.attributes.developer  = developer
   u = await u.save()
-  console.log u
   res.body.status = status
 
   res.body
@@ -58,8 +58,23 @@ activeUser = (user) ->
 createApplet = (agent, options={}) ->
   res = await agent
     .post '/api/v1/dev/applets'
-    .send {}
-    .expect 500, {}
+    .send {
+      appletType:   'NpmApplet'
+      name:         'Applet'
+      version:      '0.0'
+      packageName:  'package'
+    }
+    .expect 200
+  res.body
+
+
+createUserApplet = (agent, user, applet) ->
+  res = await agent
+    .post '/api/v1/my-applets'
+    .send {
+    }
+    .expect {}
+    .expect 500
   res.body
 
 
@@ -69,4 +84,5 @@ module.exports = {
   createUser
   loginUser
   createApplet
+  createUserApplet
 }

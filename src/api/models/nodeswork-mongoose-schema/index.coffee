@@ -169,7 +169,6 @@ class NodesworkMongooseSchema
       mongooseSchema.plugin.apply mongooseSchema, plugin
 
     for index in mongooseOptions.indexes
-      console.log 'applying index', index
       mongooseSchema.index.apply mongooseSchema, index
 
     for {field, get, set} in mongooseOptions.virtuals

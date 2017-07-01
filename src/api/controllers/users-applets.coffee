@@ -76,6 +76,9 @@ usersAppletsRouter
 
   # Load applet and verify the permission.
   .post('/my-applets'
+    (ctx, next) ->
+      console.log 'reach here'
+      next()
     params.body(
       applet: [
         rules.isRequired

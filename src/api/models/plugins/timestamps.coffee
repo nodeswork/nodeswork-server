@@ -4,6 +4,8 @@ TimestampModelPlugin = (schema, {
   createdAtIndex,
   lastUpdateTimeIndex
 } = {}) ->
+  return if schema.options.noGlobalPlugins
+
   createdAtIndex      ?= true
   lastUpdateTimeIndex ?= true
 

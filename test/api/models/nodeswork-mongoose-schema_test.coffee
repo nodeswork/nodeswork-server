@@ -8,10 +8,7 @@ describe 'NodesworkMongooseSchema', ->
 
   before (next) ->
     do ->
-      # mongoose.set 'debug', true
-      mongoose.Promise = global.Promise
-      await mongoose.connect 'mongodb://localhost:27017/test'
-      mongoose.connection.db.dropDatabase next
+      mongoose.connection.db.dropCollection 'tests', next
     return
 
   class BaseSchema extends NodesworkMongooseSchema
