@@ -1,9 +1,10 @@
-_         = require 'underscore'
-request   = require 'supertest'
-should    = require 'should'
+_            = require 'underscore'
+request      = require 'supertest'
+should       = require 'should'
 
-{ app }   = require '../../../src/server'
-models    = require '../../../src/api/models'
+{ app }      = require '../../../src/server'
+models       = require '../../../src/api/models'
+{ clearDB }  = require './resource-helper'
 
 
 describe 'users', ->
@@ -37,10 +38,8 @@ describe 'users', ->
 
 
   before ->
-    await app.isReady()
+    await clearDB()
     agent = request.agent app.server
-    # TODO: handle this in schema-extend.
-    await models.User.remove userType: 'EmailUser'
 
   describe '#new', ->
 

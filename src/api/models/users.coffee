@@ -4,7 +4,9 @@ mongoose                  = require 'mongoose'
 momentTimezones           = require 'moment-timezone'
 
 { ExcludeFieldsToJSON }   = require './plugins/exclude-fields'
-{ KoaMiddlewares }        = require './plugins/koa-middlewares'
+{ KoaMiddlewares
+  AUTOGEN
+  READONLY }              = require './plugins/koa-middlewares'
 
 
 SALT_WORK_FACTOR = 10
@@ -13,14 +15,17 @@ SALT_WORK_FACTOR = 10
 exports.UserSchema = UserSchema = mongoose.Schema {
 
   attributes:
-    developer:
-      type:         Boolean
-      default:      false
+    type:
+      developer:
+        type:       Boolean
+        default:    false
+    api:            AUTOGEN
 
   status:
     enum:           ['ACTIVE', 'INACTIVE', 'UNVERIFIED']
     type:           String
     default:        'UNVERIFIED'
+    api:            AUTOGEN
 
   timezone:
     type:           String
@@ -40,6 +45,7 @@ exports.EmailUserSchema = EmailUserSchema = UserSchema.extend {
     required:   true
     unique:     true
     trim:       true
+    api:        READONLY
 
   password:
     type:       String

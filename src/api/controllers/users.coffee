@@ -1,6 +1,5 @@
 _                            = require 'underscore'
 KoaRouter                    = require 'koa-router'
-momentTimezones              = require 'moment-timezone'
 
 {EmailUser, User}            = require '../models'
 {
@@ -35,9 +34,6 @@ userRouter
 
   .get '/current', (ctx) ->
     ctx.body = ctx.user
-
-  .get  '/timezones', (ctx) ->
-    ctx.body = momentTimezones.tz.names()
 
   .post '/preferences', requireRoles(roles.USER), (ctx) ->
     _.extend ctx.user, _.pick ctx.request.body, [
