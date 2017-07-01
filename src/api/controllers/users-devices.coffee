@@ -19,6 +19,8 @@ KoaRouter                   = require 'koa-router'
 
 userDeviceRouter = new KoaRouter()
 
+  .prefix '/my-devices'
+
   .use requireRoles roles.USER
 
   # TODO: consolidate with Device.expose()
@@ -55,16 +57,20 @@ userDeviceRouter = new KoaRouter()
         ctx.object.withFieldsToJSON 'deviceToken'
   )
 
+  .useModel Device, {
 
-Device.expose userDeviceRouter, {
-  idField: 'deviceId'
-  prefix:  '/my-devices'
-  cruds:   [ 'find', 'get' ]
-  pres:
-    get:   [ overrideUserToQuery() ]
-  posts:
-    get:   [ expandDevice() ]
-}
+    virtualPrefix: '/api/v1/my-devices'
+
+    idField: 'deviceId'
+
+    cruds:   [ 'find', 'get' ]
+
+    pres:
+      get:   [ overrideUserToQuery() ]
+
+    posts:
+      get:   [ expandDevice() ]
+  }
 
 
 module.exports = {

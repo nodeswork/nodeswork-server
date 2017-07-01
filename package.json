@@ -10,7 +10,7 @@
   "scripts": {
     "start": "node --trace-warnings index.js",
     "docs": "codo",
-    "test": "NODE_ENV=test mocha --timeout=10000"
+    "test": "NODE_ENV=test mocha --timeout=10000 --trace-warnings"
   },
   "engines": {
     "node": ">= 7.0"

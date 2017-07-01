@@ -355,6 +355,8 @@ deleteMiddleware = (options={}) ->
 #   [all, One of gets or posts, One of methods or statics, individual]
 #
 # @param {KoaRouter} router specifies the target router to expose the apis to.
+# @option options {String} virtualPrefix specifies the virtual prefix used for
+#   log full path
 # @option options {Structure<String>} prefix specifies the prefix for binding
 #   the api.
 # @option options {String} idField specifies the field name in params which
@@ -377,6 +379,7 @@ expose = (router, options={}) ->
   {
     model
     schema
+    virtualPrefix     = ''
     prefix            = '/'
     idField           = 'id'
     instanceProvider  = null
@@ -418,7 +421,7 @@ expose = (router, options={}) ->
     ]
 
     logger.info 'Bind router', {
-      path:        fullpath
+      path:        "#{virtualPrefix}#{fullpath}"
       method:      mdType
       fnType:      fnType
       middlwares:  (x.name || 'unkown' for x in args[1..])

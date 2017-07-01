@@ -22,11 +22,13 @@ KoaRouter                   = require 'koa-router'
 
 deviceApiRouter = new KoaRouter()
 
+  .prefix '/device-api'
+
   .use requireRoles roles.DEVICE
 
   .useModel Device, {
 
-    prefix:            '/device-api'
+    virtualPrefix:     '/api/v1/device-api'
 
     instanceProvider:  _.property 'device'
 
@@ -35,7 +37,9 @@ deviceApiRouter = new KoaRouter()
 
   .useModel UserApplet, {
 
-    prefix:            '/device-api/usersApplets'
+    virtualPrefix:     '/api/v1/device-api'
+
+    prefix:            '/usersApplets'
 
     idField:           'relationId'
 
@@ -44,7 +48,9 @@ deviceApiRouter = new KoaRouter()
 
   .useModel Execution, {
 
-    prefix:            '/device-api/executions'
+    virtualPrefix:     '/api/v1/device-api'
+
+    prefix:            '/executions'
 
     idField:           'executionId'
 
@@ -57,7 +63,9 @@ deviceApiRouter = new KoaRouter()
 
   .useModel ExecutionAction, {
 
-    prefix:            '/device-api/executions/:executionId/accounts/:accountId/actions'
+    virtualPrefix:     '/api/v1/device-api'
+
+    prefix:            '/executions/:executionId/accounts/:accountId/actions'
 
     idField:           'actionId'
 

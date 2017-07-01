@@ -17,35 +17,6 @@ KoaRouter                      = require 'koa-router'
 { MINIMAL_DATA_LEVEL }         = require '../constants'
 
 
-usersAppletsRouter = new KoaRouter()
-
-  .use requireRoles roles.USER
-
-
-UserApplet.expose usersAppletsRouter, {
-  prefix:            '/my-applets'
-  idField:           'relationId'
-  cruds:             [ 'find', 'get' ]
-  options:
-    get:
-      populate:      [
-        {
-          path:      'applet'
-          select:
-            $level:  MINIMAL_DATA_LEVEL
-        }
-        {
-          path:      'device'
-          select:
-            $level:  MINIMAL_DATA_LEVEL
-        }
-      ]
-  posts:
-    get:             [ expandedInJSON() ]
-  binds:             [ 'run', 'restart' ]
-}
-
-
 validateUserApplet = (ctx, next) ->
   [userApplet, applet] = [ctx.userApplet, ctx.userApplet.applet]
 
@@ -61,10 +32,46 @@ validateUserApplet = (ctx, next) ->
   await next()
 
 
-usersAppletsRouter
+usersAppletsRouter = new KoaRouter()
+
+  .prefix '/my-applets'
+
+  .use requireRoles roles.USER
+
+  .useModel UserApplet, {
+
+    virtualPrefix:     '/api/v1/my-applets'
+
+    idField:           'relationId'
+
+    cruds:             [ 'find', 'get' ]
+
+    options:
+
+      get:
+
+        populate:      [
+          {
+            path:      'applet'
+            select:
+              $level:  MINIMAL_DATA_LEVEL
+          }
+          {
+            path:      'device'
+            select:
+              $level:  MINIMAL_DATA_LEVEL
+          }
+        ]
+
+    posts:
+
+      get:             [ expandedInJSON() ]
+
+    binds:             [ 'run', 'restart' ]
+  }
 
   # TODO: Move to expose
-  .post('/my-applets/:relationId', overrideUserToQuery(), overrideUserToDoc()
+  .post('/:relationId', overrideUserToQuery(), overrideUserToDoc()
     UserApplet.updateMiddleware {
       field:     'relationId'
       omits:     ['user', 'applet', 'errMsg']
@@ -75,10 +82,7 @@ usersAppletsRouter
   )
 
   # Load applet and verify the permission.
-  .post('/my-applets'
-    (ctx, next) ->
-      console.log 'reach here'
-      next()
+  .post('/'
     params.body(
       applet: [
         rules.isRequired

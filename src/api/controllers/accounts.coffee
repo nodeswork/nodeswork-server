@@ -18,15 +18,21 @@ errors                         = require '../errors'
 
 flexiableAccountRouter = new KoaRouter()
 
-TwitterAccount.expose flexiableAccountRouter, {
-  prefix:   '/accounts'
-  idField:  'accountId'
-  pres:     {
-    all:    [ requireRoles roles.USER ]
-    method: [ overrideUserToQuery()   ]
+  .prefix '/accounts'
+
+  .useModel TwitterAccount, {
+
+    virtualPrefix: '/api/v1/accounts'
+
+    idField:  'accountId'
+
+    pres:     {
+      all:    [ requireRoles roles.USER ]
+      method: [ overrideUserToQuery()   ]
+    }
+
+    posts:    { }
   }
-  posts:    { }
-}
 
 
 accountRouter = new KoaRouter()
