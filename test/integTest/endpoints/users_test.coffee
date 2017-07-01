@@ -4,7 +4,8 @@ should       = require 'should'
 
 { app }      = require '../../../src/server'
 models       = require '../../../src/api/models'
-{ clearDB }  = require './resource-helper'
+{ activeUser
+  clearDB }  = require './resource-helper'
 
 
 describe 'users', ->
@@ -26,11 +27,11 @@ describe 'users', ->
 
   verifyUserInfo = (user) ->
     user._id.should.be.ok
+    user.status.should.be.ok
     user.should.have.properties {
       userType:     'EmailUser'
       email:        users.user1.email
       timezone:     'America/Los_Angeles'
-      status:       'UNVERIFIED'
       attributes:
         developer:  false
     }
@@ -117,6 +118,7 @@ describe 'users', ->
   describe '#login', ->
 
     it 'should allow user to login', ->
+      await activeUser users.user1
       res = await agent
         .post '/api/v1/users/login'
         .send users.user1

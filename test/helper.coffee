@@ -1,3 +1,5 @@
+_          = require 'underscore'
+
 { app }    = require '../src/server'
 
 before ->

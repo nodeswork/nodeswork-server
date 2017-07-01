@@ -6,6 +6,7 @@ _                 = require 'underscore'
 }                 = require 'nodeswork-utils'
 
 { Device, User }  = require '../../models'
+{ USER_STATUS }   = require '../../constants'
 
 
 roles = {
@@ -34,9 +35,12 @@ updateUserAndRole = (ctx, user) ->
 userRole = (ctx, next) ->
   ctx.roles ?= {}
 
-  user =
-    if ctx.session.userId? then await User.findById ctx.session.userId
-    else {}
+  if ctx.session.userId?
+    user = await User.findById ctx.session.userId
+    unless user.status == USER_STATUS.ACTIVE
+      throw new NodesworkError 'User is not active.'
+  else
+    user = {}
 
   updateUserAndRole ctx, user
 

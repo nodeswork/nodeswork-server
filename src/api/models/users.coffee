@@ -7,24 +7,25 @@ momentTimezones           = require 'moment-timezone'
 { KoaMiddlewares
   AUTOGEN
   READONLY }              = require './plugins/koa-middlewares'
+{ USER_STATUS }           = require '../constants'
 
 
 SALT_WORK_FACTOR = 10
 
 
-exports.UserSchema = UserSchema = mongoose.Schema {
+UserSchema = mongoose.Schema {
 
   attributes:
     type:
-      developer:
-        type:       Boolean
-        default:    false
+      developer:    Boolean
     api:            AUTOGEN
+    default:
+      developer:    false
 
   status:
-    enum:           ['ACTIVE', 'INACTIVE', 'UNVERIFIED']
+    enum:           _.values USER_STATUS
     type:           String
-    default:        'UNVERIFIED'
+    default:        USER_STATUS.UNVERIFIED
     api:            AUTOGEN
 
   timezone:
@@ -39,7 +40,7 @@ exports.UserSchema = UserSchema = mongoose.Schema {
   }
 
 
-exports.EmailUserSchema = EmailUserSchema = UserSchema.extend {
+EmailUserSchema = UserSchema.extend {
   email:
     type:       mongoose.SchemaTypes.Email
     required:   true
@@ -77,7 +78,7 @@ EmailUserSchema.methods.comparePassword = (password) ->
   bcrypt.compare password, @password
 
 
-exports.SystemUserSchema = SystemUserSchema = UserSchema.extend {
+SystemUserSchema = UserSchema.extend {
   systemUserType:
     type:       String
     enum:       ['CONTAINER_APPLET_OWNER']
@@ -95,3 +96,11 @@ SystemUserSchema.statics.containerAppletOwner = () ->
     }
 
   return @_containerAppletOwner
+
+
+module.exports = {
+  UserSchema
+  EmailUserSchema
+  SystemUserSchema
+  USER_STATUS
+}
