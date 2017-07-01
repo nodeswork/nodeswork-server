@@ -13,14 +13,20 @@ momentTimezones           = require 'moment-timezone'
 SALT_WORK_FACTOR = 10
 
 
+AttributesSchema = new mongoose.Schema {
+  developer:
+    type:       Boolean
+    default:    true
+}
+
+# console.log AttributesSchema
+
 UserSchema = mongoose.Schema {
 
   attributes:
-    type:
-      developer:    Boolean
+    type:           AttributesSchema
     api:            AUTOGEN
-    default:
-      developer:    false
+    default:        {}
 
   status:
     enum:           _.values USER_STATUS
@@ -91,6 +97,7 @@ SystemUserSchema.statics.containerAppletOwner = () ->
     }, {
       systemUserType: 'CONTAINER_APPLET_OWNER'
       status:         'ACTIVE'
+      attributes:     {}
     }, {
       upsert:         true
     }

@@ -23,7 +23,13 @@ config                = require '../config'
 
 if config.env == 'test'
   # mongoose.set 'debug', true
-  nwLogger.transports = []
+  nwLogger.transports = [
+    nwLogger.transport winston.transports.File, {
+      filename: '/tmp/nodeswork-server-test-log'
+      colorize: true
+      json:     false
+    }
+  ]
 
 { registerModels }    = require './api/models'
 
@@ -33,7 +39,7 @@ app = new Koa
 do () ->
   mongoose.Promise = global.Promise
 
-  await mongoose.connect config.db
+  await mongoose.connect config.db, useMongoClient: true
 
   db               = mongoose.connections[0].db
   logCollection    = 'logs'

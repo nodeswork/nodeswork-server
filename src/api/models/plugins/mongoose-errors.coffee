@@ -7,8 +7,6 @@ HandleMongooseError = (schema, options) ->
         next new NodesworkError 'Duplicate record'
       when err?
         next err
-      else
-        next()
 
   schema.post 'save', handleError
   schema.post 'update', handleError

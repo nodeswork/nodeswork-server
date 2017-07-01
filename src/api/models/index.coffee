@@ -66,7 +66,9 @@ exports.registerModels = (mongooseInstance = mongoose) ->
     ['ContainerExecutionEvent',  events.ContainerExecutionEventSchema]
   ]
 
+  console.log 'before'
   containerAppletOwner = await mongoose.models.SystemUser.containerAppletOwner()
+  console.log 'afse'
   logger.info(
     'Ensure system user container applet exists:'
     containerAppletOwner.toJSON()

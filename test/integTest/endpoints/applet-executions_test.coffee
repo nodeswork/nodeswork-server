@@ -4,15 +4,24 @@ request         = require 'supertest'
 models          = require '../../../src/api/models'
 
 { createUser
-  clearDB }     = require './resource-helper'
+  createApplet
+  clearDB
+  loginUser }   = require './resource-helper'
 
 
 describe 'applet execution flow', ->
 
-  agent = null
-  user  = null
+  agent   = null
+  user    = null
+  applet  = null
 
   before ->
     await clearDB()
-    agent = request.agent app.server
-    user  = await createUser agent
+    agent   = request.agent app.server
+    user    = await createUser agent, developer: true
+    user    = await loginUser agent, user
+    applet  = await createApplet agent
+
+  it 'should have proper user', ->
+    user._id.should.be.ok
+    user.attributes.developer.should.be.true
