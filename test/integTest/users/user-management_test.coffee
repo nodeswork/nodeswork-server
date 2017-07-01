@@ -9,6 +9,19 @@ describe 'users', () ->
 
   agent = null
 
+  users = {
+
+    user1:
+      userType:    'EmailUser'
+      email:       'hello1@world.com'
+      password:    '12354'
+
+    user2:
+      userType:    'EmailUser'
+      email:       'hello2@world.com'
+      password:    '12354'
+  }
+
   before ->
     await app.isReady()
     agent = request.agent app.server
@@ -65,11 +78,7 @@ describe 'users', () ->
   it 'should create email user successfully', () ->
     res = await agent
       .post '/api/v1/users/new'
-      .send {
-        userType: 'EmailUser'
-        email:    'hello@world.com'
-        password: '12354'
-      }
+      .send users.user1
       .expect 200
 
     user = res.body
@@ -77,10 +86,26 @@ describe 'users', () ->
     user.should.have.properties '_id'
     user.should.have.properties {
       userType:     'EmailUser'
-      email:        'hello@world.com'
+      email:        users.user1.email
       timezone:     'America/Los_Angeles'
       status:       'UNVERIFIED'
       attributes:
         developer:  false
     }
     user.should.not.have.properties 'password'
+
+  it 'should failed when create duplicate user', () ->
+    await agent
+      .post '/api/v1/users/new'
+      .send users.user2
+      .expect 200
+
+    err = await agent
+      .post '/api/v1/users/new'
+      .send users.user2
+      .expect 500
+
+    err.body.should.have.properties {
+      name: 'NodesworkError'
+      message: 'Duplicate record'
+    }
