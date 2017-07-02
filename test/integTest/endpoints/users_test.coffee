@@ -5,7 +5,7 @@ should       = require 'should'
 { app }      = require '../../../src/server'
 models       = require '../../../src/api/models'
 { activeUser
-  clearDB }  = require './resource-helper'
+  clearDB }  = require '../resource-helper'
 
 
 describe 'users', ->

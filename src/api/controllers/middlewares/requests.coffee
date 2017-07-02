@@ -12,8 +12,8 @@ handleRequest = (ctx, next) ->
     await next()
     logger.info 'Request successed', code: ctx.response.status
   catch e
-    logger.error 'Request failed:', e
     err                  = NodesworkError.fromError e
+    logger.error 'Request failed:', err.toJSON()
     ctx.body             = _.omit err.toJSON(), 'stack'
     ctx.response.status  = err.meta?.responseCode ? 500
 

@@ -245,8 +245,8 @@ findMiddleware = (options={}) ->
   } = options
 
   NAMED "#{@modelName}.findMiddleware", (ctx, next) =>
-    query        = NodesworkError.parseJSON ctx.request.query.query
-    page         = NodesworkError.parseNumber ctx.request.query.page ? '0'
+    query        = validator.asJSON ctx.request.query.query
+    page         = validator.asNumber ctx.request.query.page ? '0'
     query        = _.pick query, allowedQueryFields if allowedQueryFields?
     _.extend query, ctx.overrides?.query
     qp           = @find query

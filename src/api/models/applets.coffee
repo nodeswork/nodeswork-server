@@ -54,14 +54,16 @@ class AppletSchema extends NodesworkMongooseSchema
       dataLevel:          'DETAIL'
 
     containers:
-      type:
+      type:               ContainerSchema = mongoose.Schema {
         userDevice:
           type:           Boolean
-        default:          false
+          default:        false
 
         cloud:
           type:           Boolean
-        default:          false
+          default:        false
+      }, noGlobalPlugins: true, _id: false
+      default:            ContainerSchema
       dataLevel:          'DETAIL'
 
     requiredAccounts:

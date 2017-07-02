@@ -1,3 +1,13 @@
+
+{ NodesworkError }  = require 'nodeswork-utils'
+
+
+class ParameterValidationError extends NodesworkError
+
+  constructor: (message, errorCode) ->
+    super message, responseCode: errorCode
+
+
 module.exports = {
   FUT_TWO_FACTOR_CODE_REQUIRED: 'FUT Two factor code required.'
   FUT_TWO_FACTOR_FUNCTION_NOT_FOUND: 'FUT Two factor function not found.'
@@ -5,8 +15,9 @@ module.exports = {
 
   NodesworkError: NodesworkError = (@message, @errorCode=422) ->
 
-  ParameterValidationError: (@message, @errorCode=422) ->
+  ParameterValidationError
 }
+
 
 NodesworkError.required = (target, key) ->
   unless target[key]?
@@ -20,15 +31,3 @@ NodesworkError.mongooseError = (e) ->
     when e.name == 'MongoError' and e.code == 11000
       throw new NodesworkError "Duplicate record detected."
     else throw new NodesworkError "Unknown MongoError"
-
-NodesworkError.parseJSON = (jsonStr) ->
-  try
-    JSON.parse jsonStr ? '{}'
-  catch e
-    throw new NodesworkError "JSON parse failed for #{jsonStr}"
-
-NodesworkError.parseNumber = (numStr) ->
-  try
-    parseInt numStr
-  catch e
-    throw new NodesworkError "Number parse failed for #{numStr}"
