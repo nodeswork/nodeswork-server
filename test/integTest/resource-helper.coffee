@@ -18,8 +18,9 @@ clearDB = () ->
 
 class AgentSession
 
-  constructor: () ->
-    @agent = request.agent app.server
+  constructor: (options={}) ->
+    @agent    = request.agent app.server
+    @headers  = options.headers ? {}
 
   createUser: (options={}) ->
     { suffix    = '1'
@@ -111,6 +112,23 @@ class AgentSession
   getAccountCategories: () ->
     res = await @agent
       .get '/api/v1/resources/account-categories'
+      .expect 200
+    res.body
+
+  executeUserApplet: (userApplet) ->
+    res = await @agent
+      .post "/api/v1/device-api/usersApplets/#{userApplet._id}/execute"
+      .set  @headers
+      .send { }
+      .expect 200
+    res.body
+
+  createUserAppletExecuteAction: (execution, account) ->
+    res = await @agent
+      .post "/api/v1/device-api/executions/#{execution._id}/accounts/#{account._id}/actions"
+      .set  @headers
+      .send { }
+      .expect {}
       .expect 200
     res.body
 

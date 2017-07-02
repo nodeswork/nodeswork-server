@@ -1,32 +1,25 @@
-d3           = require 'd3'
-fs           = require 'fs'
-path         = require 'path'
-winston      = require 'winston'
+_                   = require 'underscore'
+mongoose            = require 'mongoose'
 
-{RpcClient}  = require './rpc'
+{ NodesworkError }  = require 'nodeswork-utils'
+
+{ RpcClient }  = require './rpc'
 
 
-module.exports = utils = Object.create Object.prototype, {
-  logger:
-    get: () -> require('./logger').logger
+ObjectId = (x) ->
+  switch
+    when x?._id? then x._id
+    when _.isString x then mongoose.Types.ObjectId x
+    when x instanceof mongoose.Types.ObjectId then x
+    else throw new NodesworkError 'Unkown id type'
 
-  RpcClient:
-    value: RpcClient
+
+ObjectIdEquals = (a, b) ->
+  ObjectId(a).equals Object(b)
+
+
+module.exports = {
+  RpcClient
+  ObjectId
+  ObjectIdEquals
 }
-
-
-
-cwd = process.cwd()
-fmt = d3.timeFormat '%Y-%m-%d %X'
-
-winston.remove winston.transports.Console
-winston.add    winston.transports.Console, {
-  colorize: true
-  timestamp: () ->
-    fmt new Date()
-}
-
-getLabel = () ->
-  stack = new Error().stack
-  fullPath = stack.split('\n')[2].split(':')[0].split('(')[1]
-  path.relative cwd, fullPath

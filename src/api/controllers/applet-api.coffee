@@ -75,7 +75,7 @@ fetchAccount = (ctx, next) ->
 
 
 appletApiRouter = new KoaRouter {
-  prefix: '/applet-api/:appletId/users/:userId'
+  prefix: '/v1/applet-api/:appletId/users/:userId'
 }
 
   .use requireRoles roles.DEVICE

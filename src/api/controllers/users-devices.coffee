@@ -19,7 +19,7 @@ KoaRouter                   = require 'koa-router'
 
 userDeviceRouter = new KoaRouter()
 
-  .prefix '/my-devices'
+  .prefix '/v1/my-devices'
 
   .use requireRoles roles.USER
 

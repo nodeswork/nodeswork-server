@@ -2,7 +2,8 @@
 
 _                           = require 'underscore'
 KoaRouter                   = require 'koa-router'
-{ NAMED }                   = require 'nodeswork-utils'
+{ NAMED
+  NodesworkError }          = require 'nodeswork-utils'
 
 { requireRoles, roles }     = require './middlewares/roles'
 
@@ -22,7 +23,7 @@ KoaRouter                   = require 'koa-router'
 
 deviceApiRouter = new KoaRouter()
 
-  .prefix '/device-api'
+  .prefix '/v1/device-api'
 
   .use requireRoles roles.DEVICE
 
@@ -80,7 +81,11 @@ deviceApiRouter = new KoaRouter()
         Execution.getMiddleware {
           field:        'executionId'
           writeToBody:  false
+          triggerNext:  true
           target:       'execution'
+          populate:     [
+            'userApplet'
+          ]
         }
 
         clearOverrideQuery()
@@ -88,11 +93,13 @@ deviceApiRouter = new KoaRouter()
         Account.getMiddleware {
           field:        'accountId'
           writeToBody:  false
+          triggerNext:  true
           target:       'account'
         }
 
         NAMED 'VerifyAccountPermission', (ctx, next) ->
-          unless ctx.execution.hasAccount ctx.account
+          console.log ctx.execution
+          unless ctx.execution.userApplet.hasAccount ctx.account
             throw new NodesworkError "No permission to account.", {
               responseCode: 402
             }

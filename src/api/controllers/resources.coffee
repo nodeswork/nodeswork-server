@@ -7,7 +7,7 @@ momentTimezones              = require 'moment-timezone'
 
 resourceRouter = new KoaRouter()
 
-  .prefix '/resources'
+  .prefix '/v1/resources'
 
   .get  '/timezones', (ctx) ->
     ctx.body = momentTimezones.tz.names()

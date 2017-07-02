@@ -5,7 +5,7 @@ KoaRouter                    = require 'koa-router'
 { SystemApplet }             = require '../models'
 
 
-exports.systemRouter = systemRouter = new KoaRouter prefix: '/systems'
+exports.systemRouter = systemRouter = new KoaRouter prefix: '/v1/systems'
 
 
 # TODO: Change to resources.

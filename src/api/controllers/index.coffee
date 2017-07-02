@@ -17,7 +17,7 @@ KoaRouter                   = require 'koa-router'
 { deviceApiRouter }         = require './device-api'
 { userDeviceRouter }        = require './users-devices'
 
-exports.router = router = new KoaRouter prefix: '/api/v1'
+exports.router = router = new KoaRouter prefix: '/api'
 
 router
 

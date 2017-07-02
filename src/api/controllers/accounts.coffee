@@ -37,7 +37,7 @@ flexiableAccountRouter = new KoaRouter()
 
 accountRouter = new KoaRouter()
 
-  .prefix '/accounts'
+  .prefix '/v1/accounts'
 
   .use requireRoles roles.USER
 

@@ -13,7 +13,7 @@ KoaRouter                   = require 'koa-router'
 
 executionRouter = new KoaRouter()
 
-  .prefix '/executions'
+  .prefix '/v1/executions'
 
   .use requireRoles roles.USER
 

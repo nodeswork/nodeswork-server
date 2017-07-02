@@ -8,7 +8,7 @@ KoaRouter                    = require 'koa-router'
 { requireRoles, roles }      = require './middlewares/roles'
 
 
-exports.userRouter = userRouter = new KoaRouter prefix: '/users'
+exports.userRouter = userRouter = new KoaRouter prefix: '/v1/users'
 
 
 userRouter

@@ -9,7 +9,7 @@ KoaRouter               = require 'koa-router'
 {Applet}                = require '../models'
 
 
-exports.devRouter = devRouter = new KoaRouter prefix: '/dev/'
+exports.devRouter = devRouter = new KoaRouter prefix: '/v1/dev/'
 
 devRouter
 

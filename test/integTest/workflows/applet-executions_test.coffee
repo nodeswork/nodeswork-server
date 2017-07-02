@@ -24,35 +24,67 @@ describe 'Device applet execution flow', ->
     userSession       = new AgentSession
     developerSession  = new AgentSession
 
-  it 'creates user and logins the user', ->
-    user = await userSession.createUser suffix: '100'
-    user = await userSession.loginUser user
+  describe '#prepare', ->
 
-  it 'creates developer and logins the developer', ->
-    developer = await developerSession.createUser developer: true
-    developer = await developerSession.loginUser developer
+    it 'creates user and logins the user', ->
+      user = await userSession.createUser suffix: '100'
+      user = await userSession.loginUser user
 
-  it 'lets developer create an applet', ->
-    applet = await developerSession.createApplet permission: 'PUBLIC'
+    it 'creates developer and logins the developer', ->
+      developer = await developerSession.createUser developer: true
+      developer = await developerSession.loginUser developer
 
-  it 'lets user create a device', ->
-    device = await userSession.createDevice {}
+    it 'lets developer create an applet', ->
+      applet = await developerSession.createApplet permission: 'PUBLIC'
 
-  it 'lets user to fetch all categories', ->
-    categories       = await userSession.getAccountCategories()
-    twitterCategory  = _.find categories, (x) -> x.name == 'Twitter'
-    twitterCategory.should.be.ok()
+    it 'lets user create a device', ->
+      device = await userSession.createDevice {}
+      device.deviceToken.should.be.ok()
 
-  it 'lets user create an account', ->
-    account = await userSession.createAccount {
-      accountType:  'TwitterAccount'
-      category:     twitterCategory._id
-      name:         'My Twitter Account'
-    }
-    account.should.be.ok()
+    it 'lets user to fetch all categories', ->
+      categories       = await userSession.getAccountCategories()
+      twitterCategory  = _.find categories, (x) -> x.name == 'Twitter'
+      twitterCategory.should.be.ok()
 
-  it 'lets user install the applet', ->
-    userApplet = await userSession.createUserApplet(
-      user, applet, device, [account]
-    )
-    userApplet.should.be.ok()
+    it 'lets user create an account', ->
+      account = await userSession.createAccount {
+        accountType:  'TwitterAccount'
+        category:     twitterCategory._id
+        name:         'My Twitter Account'
+      }
+      account.should.be.ok()
+
+    it 'lets user install the applet', ->
+      userApplet = await userSession.createUserApplet(
+        user, applet, device, [account]
+      )
+      userApplet.should.be.ok()
+
+
+  deviceSession = null
+  execution     = null
+
+  describe '#execute', ->
+
+    before ->
+      deviceSession = new AgentSession {
+        headers:
+          'device-token': device.deviceToken
+      }
+
+    it 'lets device to create an execution', ->
+      execution = await deviceSession.executeUserApplet userApplet
+
+      execution.should.be.ok()
+      execution.userApplet._id.should.be.deepEqual userApplet._id
+
+      execution.userApplet.accounts.should.have.length 1
+      execution.userApplet.accounts[0]._id.should.be.ok()
+
+    it 'lets device to create an action', ->
+      action = await deviceSession.createUserAppletExecuteAction execution, account
+      console.log action
+
+    it 'lets device to update action status', ->
+
+    it 'lets device to update execution status', ->

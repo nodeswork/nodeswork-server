@@ -11,6 +11,7 @@ momentTimezones               = require 'moment-timezone'
 { pop }                       = require './plugins/data-levels'
 { CronValidator }             = require './validators/cron-jobs'
 { MINIMAL_DATA_LEVEL }        = require '../constants'
+{ ObjectIdEquals }            = require '../../utils'
 
 
 class UserAppletSchema extends NodesworkMongooseSchema
@@ -162,6 +163,9 @@ class UserAppletSchema extends NodesworkMongooseSchema
       @toJSON()
       stats: await @stats
     )
+
+  hasAccount: (account) ->
+    _.find @accounts, (act) -> ObjectIdEquals act, account
 
 
 module.exports = {

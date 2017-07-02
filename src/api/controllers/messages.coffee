@@ -11,7 +11,7 @@ mongoose                     = require 'mongoose'
 { Message }                  = require '../models'
 {params, rules}              = require './params'
 
-exports.messageRouter = messageRouter = new KoaRouter prefix: '/messages'
+exports.messageRouter = messageRouter = new KoaRouter prefix: '/v1/messages'
 
 
 messageRouter

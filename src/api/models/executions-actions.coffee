@@ -82,9 +82,6 @@ class ExecutionActionSchema extends NodesworkMongooseSchema
     account:   1
   }
 
-  hasAccount: (account) ->
-    _.find @accounts, (x) -> false
-
 
 module.exports = {
   ExecutionActionSchema

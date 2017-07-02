@@ -34,7 +34,7 @@ validateUserApplet = (ctx, next) ->
 
 usersAppletsRouter = new KoaRouter()
 
-  .prefix '/my-applets'
+  .prefix '/v1/my-applets'
 
   .use requireRoles roles.USER
 
