@@ -13,26 +13,7 @@ KoaRouter                      = require 'koa-router'
   TwitterAccount
 }                              = require '../models'
 errors                         = require '../errors'
-{params, rules}                = require './params'
-
-
-flexiableAccountRouter = new KoaRouter()
-
-  .prefix '/accounts'
-
-  .useModel TwitterAccount, {
-
-    virtualPrefix: '/api/v1/accounts'
-
-    idField:  'accountId'
-
-    pres:     {
-      all:    [ requireRoles roles.USER ]
-      method: [ overrideUserToQuery()   ]
-    }
-
-    posts:    { }
-  }
+{ params, rules }              = require './params'
 
 
 accountRouter = new KoaRouter()
@@ -41,8 +22,24 @@ accountRouter = new KoaRouter()
 
   .use requireRoles roles.USER
 
-  .get '/', overrideUserToQuery(), Account.findMiddleware {
-    populate: [ 'category' ]
+  .useModel Account, {
+
+    virtualPrefix: '/api/v1/accounts'
+
+    idField:       'accountId'
+
+    cruds:         [ 'find' ]
+
+    middlewares:   {
+
+      find:        [
+        overrideUserToQuery()
+
+        {
+          populate: [ 'category' ]
+        }
+      ]
+    }
   }
 
   .post('/',
@@ -125,5 +122,4 @@ accountRouter = new KoaRouter()
 
 module.exports = {
   accountRouter
-  flexiableAccountRouter
 }

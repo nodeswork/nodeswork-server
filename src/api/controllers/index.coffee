@@ -1,21 +1,20 @@
-_                           = require 'underscore'
-KoaRouter                   = require 'koa-router'
+_                              = require 'underscore'
+KoaRouter                      = require 'koa-router'
 
-{appletApiRouter}           = require './applet-api'
-{usersAppletsRouter}        = require './users-applets'
-{ accountRouter
-  flexiableAccountRouter }  = require './accounts'
-{devRouter}                 = require './devs'
-{executionRouter}           = require './executions'
-{exploreRouter}             = require './explore'
-{messageRouter}             = require './messages'
-{userRouter}                = require './users'
-{handleRequest}             = require './middlewares/requests'
-{userRole, deviceRole}      = require './middlewares/roles'
-{systemRouter}              = require './systems'
-{resourceRouter}            = require './resources'
-{ deviceApiRouter }         = require './device-api'
-{ userDeviceRouter }        = require './users-devices'
+{ appletApiRouter }            = require './applet-api'
+{ usersAppletsRouter }         = require './users-applets'
+{ accountRouter }              = require './accounts'
+{ devRouter }                  = require './devs'
+{ executionRouter }            = require './executions'
+{ exploreRouter }              = require './explore'
+{ messageRouter }              = require './messages'
+{ userRouter }                 = require './users'
+{ handleRequest }              = require './middlewares/requests'
+{ userRole, deviceRole }       = require './middlewares/roles'
+{ systemRouter }               = require './systems'
+{ resourceRouter }             = require './resources'
+{ deviceApiRouter }            = require './device-api'
+{ userDeviceRouter }           = require './users-devices'
 
 exports.router = router = new KoaRouter prefix: '/api'
 
@@ -28,7 +27,6 @@ router
   .use devRouter.routes(), devRouter.allowedMethods()
   .use appletApiRouter.routes(), appletApiRouter.allowedMethods()
   .use accountRouter.routes(), accountRouter.allowedMethods()
-  .use flexiableAccountRouter.routes(), flexiableAccountRouter.allowedMethods()
   .use userRouter.routes(), userRouter.allowedMethods()
   .use exploreRouter.routes(), exploreRouter.allowedMethods()
 

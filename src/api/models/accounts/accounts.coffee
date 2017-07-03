@@ -1,7 +1,8 @@
 mongoose                     = require 'mongoose'
 
 { NodesworkMongooseSchema }  = require '../nodeswork-mongoose-schema'
-{ KoaMiddlewares }           = require '../plugins/koa-middlewares'
+{ KoaMiddlewares
+  AUTOGEN }                  = require '../plugins/koa-middlewares'
 { DataLevel }                = require '../plugins/data-levels'
 
 
@@ -35,6 +36,7 @@ class AccountSchema extends NodesworkMongooseSchema
       enum:       [ 'ACTIVE', 'ERROR', 'INACTIVE', 'UNVERIFIED' ]
       type:       String
       default:    'UNVERIFIED'
+      api:        AUTOGEN
   }
 
   @Plugin DataLevel, levels: [ 'DETAIL', 'TOKEN' ]
