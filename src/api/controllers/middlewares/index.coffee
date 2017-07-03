@@ -8,11 +8,11 @@ futapi                             = require 'fut-api'
   Account
   FifaFutAccount
   Message
-}                                  = require '../models'
+}                                  = require '../../models'
 {
   MESSAGE_ROOM_SOCKET
   STATE_CHANGE_TOPIC
-}                                  = require '../constants'
+}                                  = require '../../constants'
 
 FIFA_FUT_API_CLIENT = LRU {
   max: 100                      # max size
