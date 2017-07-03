@@ -9,11 +9,19 @@ PASSWORD = '12345'
 
 clearDB = () ->
   { User
+    Account
     Device
+    UserApplet
+    Execution
+    ExecutionAction
     Applet } = require '../../src/api/models'
+  await Account.remove {}
   await Device.remove {}
   await User.remove userType: 'EmailUser'
   await Applet.remove appletType: 'NpmApplet'
+  await UserApplet.remove {}
+  await Execution.remove {}
+  await ExecutionAction.remove {}
 
 
 class AgentSession
@@ -123,12 +131,13 @@ class AgentSession
       .expect 200
     res.body
 
-  createUserAppletExecuteAction: (execution, account) ->
+  createUserAppletExecuteAction: (execution, account, action) ->
     res = await @agent
       .post "/api/v1/device-api/executions/#{execution._id}/accounts/#{account._id}/actions"
       .set  @headers
-      .send { }
-      .expect {}
+      .send {
+        action: action
+      }
       .expect 200
     res.body
 

@@ -15,7 +15,7 @@ ObjectId = (x) ->
 
 
 ObjectIdEquals = (a, b) ->
-  ObjectId(a).equals Object(b)
+  ObjectId(a).equals ObjectId(b)
 
 
 module.exports = {

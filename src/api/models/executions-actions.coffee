@@ -52,7 +52,7 @@ class ExecutionActionSchema extends NodesworkMongooseSchema
     status:
       enum:       [ "SUCCESS", "FAILED", "IN_PROGRESS", "EXPAIRED" ]
       type:       String
-      required:   true
+      default:    'IN_PROGRESS'
 
     duration:
       type:       Number
@@ -62,6 +62,12 @@ class ExecutionActionSchema extends NodesworkMongooseSchema
       type:       String
       required:   true
       api:        AUTOGEN
+
+    # TODO: Validate action exists.
+    action:
+      type:       String
+      required:   true
+      api:        READONLY
 
     params:
       type:       mongoose.Schema.Types.Mixed

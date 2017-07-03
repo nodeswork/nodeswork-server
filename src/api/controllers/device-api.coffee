@@ -11,6 +11,8 @@ KoaRouter                   = require 'koa-router'
   overrideToQuery
   overrideToDoc
   expandDevice }            = require './middlewares'
+{ params
+  rules }                   = require './params'
 
 { Account
   Device
@@ -72,9 +74,13 @@ deviceApiRouter = new KoaRouter()
 
     cruds:             [ 'create' ]
 
-    pres:
+    middlewares:
 
       create:          [
+
+        params.body    {
+          action:      [ rules.isRequired ]
+        }
 
         overrideToQuery(src: 'device')
 
@@ -98,26 +104,52 @@ deviceApiRouter = new KoaRouter()
         }
 
         NAMED 'VerifyAccountPermission', (ctx, next) ->
-          console.log ctx.execution
           unless ctx.execution.userApplet.hasAccount ctx.account
             throw new NodesworkError "No permission to account.", {
               responseCode: 402
             }
+          action        = ctx.request.body.action
+          actionFn      = ctx.account[action]
+          ctx.apiLevel  = switch
+            when actionFn?.method == 'GET'  then 'READ'
+            when actionFn?.method == 'POST' then 'WRITE'
+            else null
+
+          unless ctx.apiLevel?
+            throw new NodesworkError 'Action does not exist.', {
+              responseCode: 405
+              action: action
+            }
+
           await next()
 
-        overrideToDoc(src: 'execution')
-
-        overrideToDoc(src: 'account')
-
         NAMED 'PrepareOverrideDoc', (ctx, next) ->
-          _.extend ctx.overrides, {
+          ctx.overrides     ?= {}
+          ctx.overrides.doc ?= {}
+          _.extend ctx.overrides.doc, {
             user:        ctx.execution.user
             applet:      ctx.execution.applet
-            userApplet:  ctx.execution.userApplet
-            device:      ctx.device
+            userApplet:  ctx.execution.userApplet._id
+            device:      ctx.device._id
+            execution:   ctx.execution._id
+            account:     ctx.account._id
           }
-      ]
+          await next()
+          ctx.body = _.extend ctx.action.toJSON(), {
+            # TODO: Implmennt toJSON with $level.
+            account: ctx.account.toJSON $level: 'TOKEN'
+          }
 
+        {
+          fromExtend:   false
+          triggerNext:  true
+          target:       'action'
+          writeToBody:  false
+        }
+
+        (ctx) ->
+          ctx.action.apiLevel = ctx.apiLevel
+      ]
   }
 
 

@@ -165,7 +165,7 @@ class UserAppletSchema extends NodesworkMongooseSchema
     )
 
   hasAccount: (account) ->
-    _.find @accounts, (act) -> ObjectIdEquals act, account
+    _.find(@accounts, (act) -> ObjectIdEquals act, account)?
 
 
 module.exports = {

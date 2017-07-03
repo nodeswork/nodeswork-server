@@ -10,14 +10,27 @@ handleRequest = (ctx, next) ->
 
   try
     await next()
-    logger.info 'Request successed', code: ctx.response.status
+    logger.info 'Request successed', {
+      code:       ctx.response.status
+      callstack:  ctx.callstack
+    }
   catch e
     err                  = NodesworkError.fromError e
-    logger.error 'Request failed:', err.toJSON()
+    logger.error 'Request failed:', _.extend(
+      err.toJSON(), callstack: ctx.callstack
+    )
     ctx.body             = _.omit err.toJSON(), 'stack'
     ctx.response.status  = err.meta?.responseCode ? 500
 
 
+attachCallstack = (fn) ->
+  (ctx, next) ->
+    ctx.callstack ?= []
+    ctx.callstack.push fn.name
+    fn ctx, next
+
+
 module.exports = {
+  attachCallstack
   handleRequest
 }

@@ -82,8 +82,10 @@ describe 'Device applet execution flow', ->
       execution.userApplet.accounts[0]._id.should.be.ok()
 
     it 'lets device to create an action', ->
-      action = await deviceSession.createUserAppletExecuteAction execution, account
-      console.log action
+      action = await deviceSession.createUserAppletExecuteAction(
+        execution, account, 'tweet'
+      )
+      action.should.be.ok()
 
     it 'lets device to update action status', ->
 

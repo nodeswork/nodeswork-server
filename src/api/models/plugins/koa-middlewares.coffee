@@ -1,4 +1,4 @@
-### Generate CRUD KOA middlwares for mongoose models.
+### Generate CRUD KOA middlewares for mongoose models.
 ###
 
 
@@ -10,6 +10,9 @@ KoaRouter           = require 'koa-router'
 { NAMED
   validator
   NodesworkError }  = require 'nodeswork-utils'
+
+# TODO: ugly import here, fix later.
+{ attachCallstack } = require '../../controllers/middlewares/requests'
 
 
 
@@ -369,6 +372,8 @@ deleteMiddleware = (options={}) ->
 #   middlewares after call the actual execution functions.
 # @option options {Structure<Object>} options specifies the options passed to
 #   the actual execution functions.
+# @option options {Structure<Array<Middleware, Object>>} middlewares is a short
+#   cut to pres, options, and posts.
 # @option options {Array<String>} binds specifies the target function names to
 #   bind.
 # @option options {Boolean, Array<String>} cruds specifies if or which crud
@@ -383,12 +388,20 @@ expose = (router, options={}) ->
     prefix            = '/'
     idField           = 'id'
     instanceProvider  = null
-    pres              = null
-    posts             = null
-    options           = null
+    pres              = {}
+    posts             = {}
+    options           = {}
+    middlewares       = {}
     binds             = null
     cruds             = null
   }              = options
+
+  for key, chain of middlewares
+    idx          = chain.findIndex (x) -> not _.isFunction(x)
+    idx          = chain.length if idx == -1
+    pres[key]    = _.union pres[key], chain[...idx]
+    posts[key]   = _.union chain[idx+1..], posts[key] if idx + 1 < chain.length
+    options[key] = _.extend {}, options[key], chain[idx] if idx < chain.length
 
   prefix         = new Structure prefix, _.last
   pres           = new Structure pres, _.union
@@ -412,19 +425,20 @@ expose = (router, options={}) ->
   binds = _.union binds, cruds
 
   bind = (name, pathname, fnType, mdType, middlewares...) ->
-    fullpath = path.join prefix.get(name, fnType, mdType), pathname
-    args     = _.filter _.flatten [
-      fullpath
+    fullpath        = path.join prefix.get(name, fnType, mdType), pathname
+    fMiddlewares    = _.filter _.flatten [
       pres.get name, fnType, mdType
       middlewares
       posts.get name, fnType, mdType
     ]
+    fullMiddlewares = _.map fMiddlewares, (fn) -> attachCallstack fn
+    args            = [ fullpath ].concat fullMiddlewares
 
     logger.info 'Bind router', {
-      path:        "#{virtualPrefix}#{fullpath}"
-      method:      mdType
-      fnType:      fnType
-      middlwares:  (x.name || 'unkown' for x in args[1..])
+      path:         "#{virtualPrefix}#{fullpath}"
+      method:       mdType
+      fnType:       fnType
+      middlewares:  (x.name || 'unkown' for x in fMiddlewares)
     }
     fn       = switch mdType
       when 'GET' then 'get'
