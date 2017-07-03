@@ -72,7 +72,7 @@ deviceApiRouter = new KoaRouter()
 
     idField:           'actionId'
 
-    cruds:             [ 'create' ]
+    cruds:             [ 'create', 'update' ]
 
     middlewares:
 
@@ -149,6 +149,42 @@ deviceApiRouter = new KoaRouter()
 
         (ctx) ->
           ctx.action.apiLevel = ctx.apiLevel
+      ]
+
+      update:          [
+
+        params.body    {
+
+          status:      [
+
+            rules.isRequired
+
+            rules.notEquals 'IN_PROGRESS', {
+              message: 'Action is already finished.'
+            }
+          ]
+        }
+
+        overrideToQuery src: 'device'
+
+        Execution.getMiddleware {
+          field:        'executionId'
+          writeToBody:  false
+          triggerNext:  true
+          target:       'execution'
+        }
+
+        overrideToQuery(
+          { src: 'execution' }
+          { from: 'params', src: 'accountId', dst: 'account' }
+        )
+
+        NAMED 'VerifyModelNotComplete', (ctx, next) ->
+          unless ctx.execution.status == 'IN_PROGRESS'
+            throw new NodesworkError 'Execution is already finished.'
+          await next()
+
+        { target: 'action' }
       ]
   }
 

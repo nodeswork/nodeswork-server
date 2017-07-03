@@ -24,6 +24,30 @@ isRequired = (ctx, val, path) ->
   return
 
 
+wrapValidator = (options, fn) ->
+  (ctx, val, path) ->
+    return unless val?
+    options.meta     ?= {}
+    options.meta.path = path
+    fn ctx, val, path
+    return
+
+
+isIn = (range, options={}) ->
+  wrapValidator options, (ctx, val, path) ->
+    validator.isIn val, range, options
+
+
+equals = (comparison, options={}) ->
+  wrapValidator options, (ctx, val, path) ->
+    validator.equals val, comparison, options
+
+
+notEquals = (comparison, options={}) ->
+  wrapValidator options, (ctx, val, path) ->
+    validator.notEquals val, comparison, options
+
+
 # Rules - Populate from model based on id(s).
 #
 # @throw [NodesworkError] error when is is invalid or value doesn't exist.
@@ -110,6 +134,9 @@ _.extend params, { body }
 
 rules = {
   isRequired
+  isIn
+  equals
+  notEquals
   populateFromModel
 }
 

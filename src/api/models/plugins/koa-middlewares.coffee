@@ -304,6 +304,10 @@ updateMiddleware = (options={}) ->
     ctx[target]  = await @findOne query
     omits        = _.union omits, @schema.api?[READONLY], @schema.api?[AUTOGEN]
 
+    validator.isRequired ctx[target], {
+      message: "Update target doesn't exist"
+    }
+
     _.extend ctx[target], _.omit ctx.request.body, omits
     await next() if triggerNext
     await ctx[target].save()

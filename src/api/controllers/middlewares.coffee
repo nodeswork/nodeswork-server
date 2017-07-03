@@ -55,23 +55,32 @@ fetchAccount = (ctx, next) ->
           await ctx.account.save()
 
 
-overrideToQuery = (options={}) ->
-  { src, dst } = options
-  dst         ?= src
-  NAMED "overrideToQuery(#{src}->#{dst})", (ctx, next) ->
+overrideToQuery = (options...) ->
+  docStrings = _.map options, (option) ->
+    option.dst ?= option.src
+    "#{option.src}->#{option.dst}"
+
+  NAMED "overrideToQuery(#{docStrings.join ','})", (ctx, next) ->
     ctx.overrides ?= {}
     ctx.overrides.query ?= {}
-    ctx.overrides.query[dst] = ctx[src]
+    _.each options, (option) ->
+      ctx.overrides.query[option.dst] =
+        if option.from? then ctx[option.from][option.src]
+        else ctx[option.src]
     await next()
 
 
-overrideToDoc = (options={}) ->
-  { src, dst } = options
-  dst         ?= src
-  NAMED "overrideToDoc(#{src}->#{dst})", (ctx, next) ->
+overrideToDoc = (options...) ->
+  docStrings = _.map options, (option) ->
+    option.dst ?= option.src
+    "#{option.src}->#{option.dst}"
+  NAMED "overrideToDoc(#{docStrings.join ' '})", (ctx, next) ->
     ctx.overrides ?= {}
     ctx.overrides.doc ?= {}
-    ctx.overrides.doc[dst] = ctx[src]
+    _.each options, (option) ->
+      ctx.overrides.doc[option.dst] =
+        if option.from? then ctx[option.from][option.src]
+        else ctx[option.src]
     await next()
 
 

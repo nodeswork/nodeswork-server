@@ -63,6 +63,7 @@ describe 'Device applet execution flow', ->
 
   deviceSession = null
   execution     = null
+  action        = null
 
   describe '#execute', ->
 
@@ -83,10 +84,22 @@ describe 'Device applet execution flow', ->
 
     it 'lets device to create an action', ->
       action = await deviceSession.createUserAppletExecuteAction(
-        execution, account, 'tweet'
+        execution, account, action: 'tweet', params: { oldParam: true }
       )
       action.should.be.ok()
+      action.params.should.have.properties oldParam: true
 
     it 'lets device to update action status', ->
+      action = await deviceSession.updateUserAppletExecutionAction(
+        action,
+        status:    'SUCCESS',
+        params:    { newParam:  true }
+        result:    { status:    'ok' }
+        duration:  100
+      )
+      action.should.be.ok()
+      action.status.should.be.equal 'SUCCESS'
+      action.params.should.be.deepEqual oldParam: true
+      action.duration.should.be.equal 100
 
     it 'lets device to update execution status', ->
