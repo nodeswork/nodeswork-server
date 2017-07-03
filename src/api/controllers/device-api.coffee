@@ -59,9 +59,24 @@ deviceApiRouter = new KoaRouter()
 
     cruds:             [ 'update' ]
 
-    pres:
+    options:
 
-      update:          [ overrideToQuery(src: 'device') ]
+      update:          [
+
+        params.body    {
+
+          status:      [
+
+            rules.isRequired
+
+            rules.notEquals 'IN_PROGRESS', {
+              message: 'Execution is already finished.'
+            }
+          ]
+        }
+
+        overrideToQuery(src: 'device')
+      ]
   }
 
   .useModel ExecutionAction, {

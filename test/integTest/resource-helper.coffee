@@ -123,11 +123,11 @@ class AgentSession
       .expect 200
     res.body
 
-  executeUserApplet: (userApplet) ->
+  executeUserApplet: (userApplet, doc) ->
     res = await @agent
       .post "/api/v1/device-api/usersApplets/#{userApplet._id}/execute"
       .set  @headers
-      .send { }
+      .send doc
       .expect 200
     res.body
 
@@ -142,6 +142,14 @@ class AgentSession
   updateUserAppletExecutionAction: (action, doc) ->
     res = await @agent
       .post "/api/v1/device-api/executions/#{action.execution}/accounts/#{action.account._id}/actions/#{action._id}"
+      .set  @headers
+      .send doc
+      .expect 200
+    res.body
+
+  updateExecuteUserApplet: (execution, doc) ->
+    res = await @agent
+      .post "/api/v1/device-api/executions/#{execution._id}"
       .set  @headers
       .send doc
       .expect 200

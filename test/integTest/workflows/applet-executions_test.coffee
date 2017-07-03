@@ -74,7 +74,9 @@ describe 'Device applet execution flow', ->
       }
 
     it 'lets device to create an execution', ->
-      execution = await deviceSession.executeUserApplet userApplet
+      execution = await deviceSession.executeUserApplet userApplet, {
+        oldParam: 1
+      }
 
       execution.should.be.ok()
       execution.userApplet._id.should.be.deepEqual userApplet._id
@@ -92,7 +94,7 @@ describe 'Device applet execution flow', ->
     it 'lets device to update action status', ->
       action = await deviceSession.updateUserAppletExecutionAction(
         action,
-        status:    'SUCCESS',
+        status:    'SUCCESS'
         params:    { newParam:  true }
         result:    { status:    'ok' }
         duration:  100
@@ -103,3 +105,13 @@ describe 'Device applet execution flow', ->
       action.duration.should.be.equal 100
 
     it 'lets device to update execution status', ->
+      execution = await deviceSession.updateExecuteUserApplet execution, {
+        status: 'SUCCESS'
+        params:   { oldParam: 2 }
+        result:   { status: 'ok' }
+        duration: 200
+      }
+      execution.should.be.ok()
+      execution.status.should.be.equal 'SUCCESS'
+      execution.params.should.be.deepEqual oldParam: 1
+      execution.duration.should.be.equal 200
