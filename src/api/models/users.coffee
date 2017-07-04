@@ -8,6 +8,8 @@ momentTimezones              = require 'moment-timezone'
   NodesworkMongooseSchema }  = require 'nodeswork-mongoose'
 
 { ExcludeFieldsToJSON }      = require './plugins/exclude-fields'
+{ DataLevel
+  pop }                      = require './plugins/data-levels'
 { USER_STATUS }              = require '../constants'
 
 
@@ -47,6 +49,8 @@ class UserSchema extends NodesworkMongooseSchema
       enum:           momentTimezones.tz.names()
   }
 
+  @Plugin DataLevel, levels: [ 'DETAIL', 'CREDENTIAL' ]
+
 
 class EmailUserSchema extends UserSchema
 
@@ -58,12 +62,14 @@ class EmailUserSchema extends UserSchema
       unique:     true
       trim:       true
       api:        READONLY
+      dataLevel:  'DETAIL'
 
     password:
       type:       String
       required:   true
       min:        [6,  'Password should be at least 6 charactors.']
       max:        [80, 'Password should be at most 80 charactors.']
+      dataLevel:  'CREDENTIAL'
   }
 
   @Plugin ExcludeFieldsToJSON, fields: ['password', 'email_unique']

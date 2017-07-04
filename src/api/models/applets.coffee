@@ -143,7 +143,6 @@ class NpmAppletSchema extends AppletSchema
       type:       String
       required:   true
       unique:     true
-      dataLevel:  'DETAIL'
 
     version:
       type:       String

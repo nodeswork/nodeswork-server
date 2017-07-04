@@ -112,6 +112,12 @@ do () ->
     .use staticCache './public', dynamic: true
     .use router.routes()
     .use router.allowedMethods()
+    .use (ctx) ->
+      logger.warn 'Uncatched request', {
+        url:      ctx.request.url
+        method:   ctx.request.method
+        headers:  ctx.request.headers
+      }
 
   server = http.Server app.callback()
   api.attachIO IO server

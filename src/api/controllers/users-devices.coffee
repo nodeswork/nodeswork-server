@@ -23,53 +23,54 @@ userDeviceRouter = new KoaRouter()
 
   .use requireRoles roles.USER
 
-  # TODO: consolidate with Device.expose()
-  .post('/'
-    overrideUserToDoc(),
-    (ctx, next) ->
-      device = await Device.findOne {
-        user:      ctx.user
-        deviceId:  ctx.request.body.deviceId
-      }
-      if device?
-        device.user = ctx.user
-        ctx.device = _.extend device, _.omit ctx.request.body, [
-          '_id', 'createdAt', 'lastUpdateTime', 'user', 'deviceToken'
-        ]
-        await ctx.device.save()
-      else
-        await next()
-      ctx.device.withFieldsToJSON 'deviceToken'
-      ctx.body = ctx.device
-    Device.createMiddleware fromExtend: false, target: 'device'
-  )
-
-  .post('/:deviceId'
-    overrideUserToQuery()
-    Device.updateMiddleware(
-      field: 'deviceId'
-      omits: ['user', 'deviceToken']
-      triggerNext: true
-    )
-    (ctx) ->
-      if ctx.params.deviceToken == null
-        ctx.object.regenerateDeviceToken()
-        ctx.object.withFieldsToJSON 'deviceToken'
-  )
-
   .useModel Device, {
 
-    virtualPrefix: '/api/v1/my-devices'
+    virtualPrefix:             '/api/v1/my-devices'
 
-    idField: 'deviceId'
+    idField:                   'deviceId'
 
-    cruds:   [ 'find', 'get' ]
+    cruds:                     [ 'find', 'get', 'create' ]
 
-    pres:
-      get:   [ overrideUserToQuery() ]
+    middlewares:
 
-    posts:
-      get:   [ expandDevice() ]
+      gets:                    [
+
+        overrideUserToQuery()
+
+        {}
+
+        expandDevice()
+      ]
+
+      create:                  [
+
+        overrideUserToDoc()
+
+        (ctx, next) ->
+          # Find existing device
+          device        = await Device.findOne {
+            user:      ctx.user
+            deviceId:  ctx.request.body.deviceId
+          }
+          if device?
+            #TODO: Revisit here.
+            ctx.device  = _.extend device, _.omit ctx.request.body, [
+              '_id', 'createdAt', 'lastUpdateTime', 'user', 'deviceToken'
+            ]
+            await ctx.device.save()
+          else
+            await next()
+
+          await ctx.device.ensureContainerApplet()
+
+          ctx.device.withFieldsToJSON 'deviceToken'
+          ctx.body = ctx.device
+
+        {
+          fromExtend: false
+          target: 'device'
+        }
+      ]
   }
 
 

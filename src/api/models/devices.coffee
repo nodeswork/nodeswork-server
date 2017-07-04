@@ -3,6 +3,8 @@ mongoose                      = require 'mongoose'
 randtoken                     = require 'rand-token'
 { NodesworkMongooseSchema
   KoaMiddlewares
+  AUTOGEN
+  READONLY
   GET }                       = require 'nodeswork-mongoose'
 
 { ExcludeFieldsToJSON }       = require './plugins/exclude-fields'
@@ -26,10 +28,17 @@ class DeviceSchema extends NodesworkMongooseSchema
       ref:        'User'
       required:   true
       index:      true
+      api:        READONLY
 
     name:
       type:       String
       default:    'My Device'
+
+    containerApplet:
+      type:       mongoose.Schema.ObjectId
+      ref:        'UserApplet'
+      default:    null
+      api:        AUTOGEN
 
     deviceToken:
       type:       String
@@ -37,6 +46,7 @@ class DeviceSchema extends NodesworkMongooseSchema
       index:      true
       default:    () -> randtoken.generate DEVICE_TOKEN_LEN
       dateLevel:  'TOKEN'
+      api:        AUTOGEN
 
     platform:
       type:       String
@@ -62,11 +72,13 @@ class DeviceSchema extends NodesworkMongooseSchema
       enum:       [ "ACTIVE", "DEACTIVE", "ERROR" ]
       type:       String
       default:    "ACTIVE"
+      api:        AUTOGEN
 
     dev:
       type:       Boolean
       default:    false
       dataLevel:  'DETAIL'
+      api:        AUTOGEN
   }
 
   @Virtual 'rpc', {
@@ -117,17 +129,44 @@ class DeviceSchema extends NodesworkMongooseSchema
       userApplets:  userApplets
     }
 
-  # Get applets which should run on current device.
+  # Get user applets which should run on current device.
   applets: GET () ->
     userApplets = await mongoose.models.UserApplet.find {
-      user:    @user
-      device:  @_id
-      status:  "ON"
+      user:         @user
+      device:       @_id
+      status:       "ON"
+      isSysApplet:  false
     }
       .populate pop 'applet', MINIMAL_DATA_LEVEL
+    _.map userApplets, _.property 'applet'
 
   current: GET () ->
+    await @populate 'containerApplet'
+      .execPopulate()
+    await @containerApplet
+      .populate [
+        pop 'user', MINIMAL_DATA_LEVEL
+        pop 'applet', MINIMAL_DATA_LEVEL
+      ]
+      .execPopulate()
     @
+
+  ensureContainerApplet: () ->
+    return @ if @containerApplet?
+
+    { SystemApplet
+      UserApplet }   = mongoose.models
+    applet           = await SystemApplet.containerApplet()
+    userApplet       = await UserApplet.create {
+      user:          @user
+      applet:        applet
+      isSysApplet:   true
+      status:        'ON'
+      device:        @_id
+    }
+
+    @containerApplet = userApplet
+    @save()
 
 
 module.exports = {

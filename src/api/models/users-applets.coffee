@@ -5,6 +5,8 @@ momentTimezones               = require 'moment-timezone'
 { NodesworkError }            = require 'nodeswork-utils'
 { NodesworkMongooseSchema
   KoaMiddlewares
+  AUTOGEN
+  READONLY
   POST }                      = require 'nodeswork-mongoose'
 
 { pop }                       = require './plugins/data-levels'
@@ -26,17 +28,22 @@ class UserAppletSchema extends NodesworkMongooseSchema
       ref:        'User'
       required:   true
       index:      true
+      api:        READONLY
 
     applet:
       type:       mongoose.Schema.ObjectId
       ref:        'Applet'
       required:   true
+      api:        READONLY
+
+    isSysApplet:
+      type:       Boolean
+      default:    false
+      api:        AUTOGEN
 
     status:
       enum:       ["ON", "OFF", "INSUFFICIENT_ACCOUNT"]
       type:       String
-
-    errMsg:       String
 
     cloud:
       mode:

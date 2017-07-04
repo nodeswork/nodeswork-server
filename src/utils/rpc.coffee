@@ -92,7 +92,9 @@ class RpcCaller
         @_callstack.del resp.sid
       else
         logger.warn 'The rpc entry is gone:', sid: resp.sid
-    throw new Error("Socket has already been registerd.") if @_rpcs[key]?
+
+    # TODO: without checking existing rpc may cause memory leak.
+    # throw new Error("Socket has already been registerd.") if @_rpcs[key]?
     @_rpcs[key]  = new @_RpcClass socket: socket
 
   # Unregister the existing socket.

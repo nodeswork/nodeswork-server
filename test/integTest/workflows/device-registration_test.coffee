@@ -4,7 +4,7 @@ _               = require 'underscore'
   clearDB }     = require '../resource-helper'
 
 
-describe 'Device registion flow', ->
+describe 'Device registration flow', ->
 
   userSession       = null
   user              = null

@@ -42,7 +42,7 @@ deviceApiRouter = new KoaRouter()
 
     virtualPrefix:     '/api/v1/device-api'
 
-    prefix:            '/usersApplets'
+    prefix:            '/userApplets'
 
     idField:           'relationId'
 

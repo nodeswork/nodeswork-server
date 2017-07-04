@@ -125,7 +125,7 @@ class AgentSession
 
   executeUserApplet: (userApplet, doc) ->
     res = await @agent
-      .post "/api/v1/device-api/usersApplets/#{userApplet._id}/execute"
+      .post "/api/v1/device-api/userApplets/#{userApplet._id}/execute"
       .set  @headers
       .send doc
       .expect 200
