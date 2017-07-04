@@ -1,9 +1,9 @@
 _                             = require 'underscore'
 mongoose                      = require 'mongoose'
 randtoken                     = require 'rand-token'
+{ NodesworkMongooseSchema
+  KoaMiddlewares }            = require 'nodeswork-mongoose'
 
-{ NodesworkMongooseSchema }   = require './nodeswork-mongoose-schema'
-{ KoaMiddlewares }            = require './plugins/koa-middlewares'
 { ExcludeFieldsToJSON }       = require './plugins/exclude-fields'
 { DataLevel }                 = require './plugins/data-levels'
 { CronValidator }             = require './validators/cron-jobs'

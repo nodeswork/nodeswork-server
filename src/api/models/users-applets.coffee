@@ -3,11 +3,10 @@ mongoose                      = require 'mongoose'
 momentTimezones               = require 'moment-timezone'
 
 { NodesworkError }            = require 'nodeswork-utils'
+{ NodesworkMongooseSchema
+  KoaMiddlewares
+  POST }                      = require 'nodeswork-mongoose'
 
-
-{ NodesworkMongooseSchema }   = require './nodeswork-mongoose-schema'
-{ KoaMiddlewares
-  POST }                      = require './plugins/koa-middlewares'
 { pop }                       = require './plugins/data-levels'
 { CronValidator }             = require './validators/cron-jobs'
 { MINIMAL_DATA_LEVEL }        = require '../constants'

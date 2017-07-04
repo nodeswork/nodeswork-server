@@ -2,13 +2,13 @@ _                            = require 'underscore'
 bcrypt                       = require 'bcrypt'
 mongoose                     = require 'mongoose'
 momentTimezones              = require 'moment-timezone'
-
-{ ExcludeFieldsToJSON }      = require './plugins/exclude-fields'
 { KoaMiddlewares
   AUTOGEN
-  READONLY }                 = require './plugins/koa-middlewares'
+  READONLY
+  NodesworkMongooseSchema }  = require 'nodeswork-mongoose'
+
+{ ExcludeFieldsToJSON }      = require './plugins/exclude-fields'
 { USER_STATUS }              = require '../constants'
-{ NodesworkMongooseSchema }  = require './nodeswork-mongoose-schema'
 
 
 SALT_WORK_FACTOR = 10

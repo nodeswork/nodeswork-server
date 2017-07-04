@@ -1,8 +1,9 @@
 # Patch mongoose schema extend
 _                           = require 'underscore'
-{logger}                    = require 'nodeswork-logger'
+{ logger }                  = require 'nodeswork-logger'
 mongoose                    = require 'mongoose'
 mongooseTypeEmail           = require 'mongoose-type-email'
+{ KoaMiddlewares }          = require 'nodeswork-mongoose'
 
 
 accounts                    = require './accounts'
@@ -16,7 +17,6 @@ messages                    = require './messages'
 users                       = require './users'
 usersApplets                = require './users-applets'
 
-{ KoaMiddlewares }          = require './plugins/koa-middlewares'
 { TimestampModelPlugin }    = require './plugins/timestamps'
 { DataLevel }               = require './plugins/data-levels'
 { HandleMongooseError }     = require './plugins/mongoose-errors'

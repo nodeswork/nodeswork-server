@@ -1,8 +1,7 @@
 mongoose                     = require 'mongoose'
-
-{ NodesworkMongooseSchema }  = require './nodeswork-mongoose-schema'
-{ KoaMiddlewares
-  READONLY }                 = require './plugins/koa-middlewares'
+{ NodesworkMongooseSchema
+  KoaMiddlewares
+  READONLY }                 = require 'nodeswork-mongoose'
 
 
 class ExecutionSchema extends NodesworkMongooseSchema

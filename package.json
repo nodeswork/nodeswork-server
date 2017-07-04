@@ -39,6 +39,7 @@
     "mongoose": "^4.11.0",
     "mongoose-type-email": "1.0.5",
     "nodeswork-logger": "0.0.2",
+    "nodeswork-mongoose": "0.0.2",
     "nodeswork-utils": "0.0.2",
     "oauth": "^0.9.15",
     "rand-token": "^0.3.0",

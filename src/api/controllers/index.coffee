@@ -1,5 +1,6 @@
 _                              = require 'underscore'
 KoaRouter                      = require 'koa-router'
+{ handleRequestMiddleware }    = require 'nodeswork-mongoose'
 
 { appletApiRouter }            = require './applet-api'
 { usersAppletsRouter }         = require './users-applets'
@@ -9,7 +10,6 @@ KoaRouter                      = require 'koa-router'
 { exploreRouter }              = require './explore'
 { messageRouter }              = require './messages'
 { userRouter }                 = require './users'
-{ handleRequest }              = require './middlewares/requests'
 { userRole, deviceRole }       = require './middlewares/roles'
 { systemRouter }               = require './systems'
 { resourceRouter }             = require './resources'
@@ -20,7 +20,7 @@ exports.router = router = new KoaRouter prefix: '/api'
 
 router
 
-  .use handleRequest
+  .use handleRequestMiddleware
   .use userRole
   .use deviceRole
 

@@ -1,7 +1,6 @@
 mongoose                    = require 'mongoose'
-
-{ NodesworkMongooseSchema } = require './nodeswork-mongoose-schema'
-{ KoaMiddlewares }          = require './plugins/koa-middlewares'
+{ NodesworkMongooseSchema
+  KoaMiddlewares }          = require 'nodeswork-mongoose'
 
 
 # Schema of events.

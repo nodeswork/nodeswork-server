@@ -1,11 +1,10 @@
 _                             = require 'underscore'
 mongoose                      = require 'mongoose'
 randtoken                     = require 'rand-token'
+{ NodesworkMongooseSchema
+  KoaMiddlewares
+  GET }                       = require 'nodeswork-mongoose'
 
-
-{ NodesworkMongooseSchema }   = require './nodeswork-mongoose-schema'
-{ KoaMiddlewares
-  GET }                       = require './plugins/koa-middlewares'
 { ExcludeFieldsToJSON }       = require './plugins/exclude-fields'
 { DataLevel
   pop }                       = require './plugins/data-levels'

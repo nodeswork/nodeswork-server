@@ -1,8 +1,8 @@
 _                            = require 'underscore'
 mongoose                     = require 'mongoose'
+{ NodesworkMongooseSchema
+  KoaMiddlewares }           = require 'nodeswork-mongoose'
 
-{ NodesworkMongooseSchema }  = require './nodeswork-mongoose-schema'
-{ KoaMiddlewares }           = require './plugins/koa-middlewares'
 { ExcludeFieldsToJSON }      = require './plugins/exclude-fields'
 
 

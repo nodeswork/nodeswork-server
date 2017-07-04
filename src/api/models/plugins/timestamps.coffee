@@ -1,4 +1,4 @@
-{ READONLY } = require './koa-middlewares'
+{ READONLY } = require 'nodeswork-mongoose'
 
 TimestampModelPlugin = (schema, {
   createdAtIndex,
