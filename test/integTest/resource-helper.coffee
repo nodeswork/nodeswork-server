@@ -155,6 +155,13 @@ class AgentSession
       .expect 200
     res.body
 
+  getCurrentDevice: () ->
+    res = await @agent
+      .get  "/api/v1/device-api/current"
+      .set  @headers
+      .expect 200
+    res.body
+
 
 activeUser = (user) ->
   { EmailUser } = require '../../src/api/models'
