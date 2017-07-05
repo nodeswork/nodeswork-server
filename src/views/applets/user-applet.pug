@@ -62,22 +62,21 @@ div
                   a.btn.btn-default(href="/my-applets") Cancel
     div#executions.panel.panel-default.tab-pane
       div.panel-body
-        table.table.table-striped
-          thead
-            tr
-              th ID
-              th Device
-              th Status
-              th Trigger
-              th Duration (ms)
-              th Time
-          tbody
-            tr(ng-repeat="execution in executions")
-              td {{execution._id}}
-              td {{execution.device}}
-              td {{execution.status}}
-              td {{execution.trigger}}
-              td {{execution.duration}}
-              td {{execution.createdAt}}
-
-pre {{userApplet|json}}
+        executions(user-applet="userApplet")
+        //- table.table.table-striped
+          //- thead
+            //- tr
+              //- th ID
+              //- th Device
+              //- th Status
+              //- th Trigger
+              //- th Duration (ms)
+              //- th Time
+          //- tbody
+            //- tr(ng-repeat="execution in executions")
+              //- td {{execution._id}}
+              //- td {{execution.device}}
+              //- td {{execution.status}}
+              //- td {{execution.trigger}}
+              //- td {{execution.duration}}
+              //- td {{execution.createdAt}}

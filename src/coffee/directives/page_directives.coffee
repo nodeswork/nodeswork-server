@@ -166,7 +166,13 @@ define ['directives/directive'], (Directive) -> new Directive {
       _.extend scope, {
         view: () ->
           scope.message.$view () ->
-            console.log 'viewed'
             scope.onChange()
       }
+
+  executionsDirective: (_) ->
+    restrict:     'E'
+    templateUrl:  '/views/executions/executions-directive.html'
+    scope:
+      userApplet: '=userApplet'
+    link: (scope, element) ->
 }
