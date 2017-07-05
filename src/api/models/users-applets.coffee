@@ -161,7 +161,8 @@ class UserAppletSchema extends NodesworkMongooseSchema
       device:      @device
       status:      'IN_PROGRESS'
       scheduled:   scheduled
-      params:      body
+      purpose:     body.purpose
+      params:      body.params
     }
 
   expandedInJSON: () ->

@@ -75,7 +75,9 @@ describe 'Device applet execution flow', ->
 
     it 'lets device to create an execution', ->
       execution = await deviceSession.executeUserApplet userApplet, {
-        oldParam: 1
+        purpose:   'Execute User Applet'
+        params:
+          oldParam: 1
       }
 
       execution.should.be.ok()

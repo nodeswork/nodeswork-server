@@ -37,6 +37,11 @@ class ExecutionSchema extends NodesworkMongooseSchema
       required:   true
       api:        READONLY
 
+    purpose:
+      type:       String
+      required:   true
+      api:        READONLY
+
     status:
       enum:       [ "SUCCESS", "FAILED", "IN_PROGRESS", "EXPAIRED" ]
       type:       String
