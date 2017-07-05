@@ -7,6 +7,7 @@ KoaRouter                      = require 'koa-router'
   expandedInJSON
 }                              = require './middlewares'
 { requireRoles, roles }        = require './middlewares/roles'
+{ pop }                        = require '../models/plugins/data-levels'
 {
   Applet
   Device
@@ -48,19 +49,11 @@ usersAppletsRouter = new KoaRouter()
 
     options:
 
-      get:
+      gets:
 
         populate:      [
-          {
-            path:      'applet'
-            select:
-              $level:  MINIMAL_DATA_LEVEL
-          }
-          {
-            path:      'device'
-            select:
-              $level:  MINIMAL_DATA_LEVEL
-          }
+          pop 'applet', MINIMAL_DATA_LEVEL
+          pop 'device', MINIMAL_DATA_LEVEL
         ]
 
       create:
@@ -68,16 +61,8 @@ usersAppletsRouter = new KoaRouter()
         fromExtend:  false
 
         populate:      [
-          {
-            path:      'applet'
-            select:
-              $level:  MINIMAL_DATA_LEVEL
-          }
-          {
-            path:      'device'
-            select:
-              $level:  MINIMAL_DATA_LEVEL
-          }
+          pop 'applet', MINIMAL_DATA_LEVEL
+          pop 'device', MINIMAL_DATA_LEVEL
         ]
 
         target:      'userApplet'

@@ -72,7 +72,6 @@ define [
         _.each item.subItems, (subItem) ->
           subItem.active = subItem.name == route.subItem
 
-
   UsersAppletsController: ($scope, UserAppletResource) ->
     console.log 'applets', $scope.applets = UserAppletResource.query()
 
