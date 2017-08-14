@@ -13,7 +13,7 @@ COPY package.json .
 RUN npm install
 
 RUN npm install --global bower
-RUN bower install
+USER bower install
 
 # Bundle app source
 COPY . .
