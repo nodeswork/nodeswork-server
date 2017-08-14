@@ -3,6 +3,8 @@ FROM node:8.3.0
 # Create app directory
 WORKDIR /usr/src/app
 
+ENV NODE_ENV production
+
 # Install app dependencies
 COPY package.json .
 # For npm@5 or later, copy package-lock.json as well
