@@ -1,5 +1,5 @@
 
-{ NodesworkError }  = require 'nodeswork-utils'
+{ NodesworkError }  = require '@nodeswork/utils'
 
 
 class ParameterValidationError extends NodesworkError

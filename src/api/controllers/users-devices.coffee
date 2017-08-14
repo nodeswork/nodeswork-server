@@ -2,7 +2,7 @@
 _                           = require 'underscore'
 KoaRouter                   = require 'koa-router'
 
-{ NAMED }                   = require 'nodeswork-utils'
+{ NAMED }                   = require '@nodeswork/utils'
 
 {
   overrideUserToQuery

@@ -1,6 +1,6 @@
 { KoaMiddlewares
   GET
-  POST }               = require 'nodeswork-mongoose'
+  POST }               = require '@nodeswork/mongoose'
 
 { OAuthAccountSchema } = require './oauth-accounts'
 

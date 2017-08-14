@@ -15,9 +15,10 @@ mongoose              = require 'mongoose'
 mongooseStore         = require 'koa-session-mongoose'
 session               = require 'koa-generic-session'
 staticCache           = require 'koa-static-cache'
-nwLogger              = require 'nodeswork-logger'
 { MongoDB }           = require 'winston-mongodb'
 winston               = require 'winston'
+
+nwLogger              = require '@nodeswork/logger'
 
 config                = require '../config'
 
@@ -48,11 +49,11 @@ do () ->
     db:          db
     collection:  logCollection
   }
-  Log              = nwLogger.registerMongooseModel {
-    collections: logCollection
-    mongoose:    mongoose
-    modelName:   'Log'
-  }
+  # Log              = nwLogger.registerMongooseModel {
+    # collections: logCollection
+    # mongoose:    mongoose
+    # modelName:   'Log'
+  # }
 
   logger           = nwLogger.logger
 
@@ -78,6 +79,10 @@ do () ->
       ctx.render 'index'
     .get /\/views\/(.*)\.html/, (ctx) ->
       ctx.render ctx.params[0]
+    .get '/sstats', (ctx) ->
+      ctx.body = {
+        config
+      }
 
   app
     .use error {

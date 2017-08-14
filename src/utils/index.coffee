@@ -1,7 +1,7 @@
 _                   = require 'underscore'
 mongoose            = require 'mongoose'
 
-{ NodesworkError }  = require 'nodeswork-utils'
+{ NodesworkError }  = require '@nodeswork/utils'
 
 { RpcClient }  = require './rpc'
 

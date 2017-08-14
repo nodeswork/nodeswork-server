@@ -2,10 +2,11 @@ _                            = require 'underscore'
 bcrypt                       = require 'bcrypt'
 mongoose                     = require 'mongoose'
 momentTimezones              = require 'moment-timezone'
+
 { KoaMiddlewares
   AUTOGEN
   READONLY
-  NodesworkMongooseSchema }  = require 'nodeswork-mongoose'
+  NodesworkMongooseSchema }  = require '@nodeswork/mongoose'
 
 { ExcludeFieldsToJSON }      = require './plugins/exclude-fields'
 { DataLevel

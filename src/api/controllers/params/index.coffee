@@ -4,7 +4,7 @@ mongoose            = require 'mongoose'
 
 { validator
   NAMED
-  NodesworkError }  = require 'nodeswork-utils'
+  NodesworkError }  = require '@nodeswork/utils'
 
 
 # Generate parameters validation Koa middlewares.

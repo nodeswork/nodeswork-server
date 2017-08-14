@@ -1,6 +1,7 @@
 mongoose                      = require 'mongoose'
+
 { NodesworkMongooseSchema
-  KoaMiddlewares }            = require 'nodeswork-mongoose'
+  KoaMiddlewares }            = require '@nodeswork/mongoose'
 
 
 class MessageSchema extends NodesworkMongooseSchema

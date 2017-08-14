@@ -1,5 +1,6 @@
 _              = require 'underscore'
-{ validator }  = require 'nodeswork-utils'
+
+{ validator }  = require '@nodeswork/utils'
 
 
 MINIMAL   = 'MINIMAL'

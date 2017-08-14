@@ -1,8 +1,9 @@
 mongoose                     = require 'mongoose'
+
 { NodesworkMongooseSchema
   KoaMiddlewares
   AUTOGEN
-  READONLY }                 = require 'nodeswork-mongoose'
+  READONLY }                 = require '@nodeswork/mongoose'
 
 
 class ExecutionActionSchema extends NodesworkMongooseSchema

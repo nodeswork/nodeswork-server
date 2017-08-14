@@ -1,4 +1,4 @@
-{logger}          = require 'nodeswork-logger'
+{logger}          = require '@nodeswork/logger'
 
 {
   deviceSocket

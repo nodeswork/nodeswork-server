@@ -1,6 +1,7 @@
 _                              = require 'underscore'
 KoaRouter                      = require 'koa-router'
-{ handleRequestMiddleware }    = require 'nodeswork-mongoose'
+
+{ handleRequestMiddleware }    = require '@nodeswork/mongoose'
 
 { appletApiRouter }            = require './applet-api'
 { usersAppletsRouter }         = require './users-applets'

@@ -1,4 +1,4 @@
-{ NodesworkError } = require 'nodeswork-utils'
+{ NodesworkError } = require '@nodeswork/utils'
 
 HandleMongooseError = (schema, options) ->
   handleError = (err, res, next) ->

@@ -2,8 +2,9 @@
 
 _                           = require 'underscore'
 KoaRouter                   = require 'koa-router'
+
 { NAMED
-  NodesworkError }          = require 'nodeswork-utils'
+  NodesworkError }          = require '@nodeswork/utils'
 
 { requireRoles, roles }     = require './middlewares/roles'
 

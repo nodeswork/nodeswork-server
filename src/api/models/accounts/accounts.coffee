@@ -1,7 +1,8 @@
 mongoose                     = require 'mongoose'
+
 { KoaMiddlewares
   NodesworkMongooseSchema
-  AUTOGEN }                  = require 'nodeswork-mongoose'
+  AUTOGEN }                  = require '@nodeswork/mongoose'
 
 { DataLevel }                = require '../plugins/data-levels'
 

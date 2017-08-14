@@ -2,7 +2,7 @@ _                                  = require 'underscore'
 LRU                                = require 'lru-cache'
 futapi                             = require 'fut-api'
 
-{ NAMED }                          = require 'nodeswork-utils'
+{ NAMED }                          = require '@nodeswork/utils'
 
 {
   Account

@@ -1,7 +1,7 @@
 _                     = require 'underscore'
 cookie                = require 'cookie'
 mongoose              = require 'mongoose'
-{logger}              = require 'nodeswork-logger'
+{logger}              = require '@nodeswork/logger'
 {
   MESSAGE_ROOM_SOCKET
 }                     = require '../constants'

@@ -2,12 +2,12 @@ _                             = require 'underscore'
 mongoose                      = require 'mongoose'
 momentTimezones               = require 'moment-timezone'
 
-{ NodesworkError }            = require 'nodeswork-utils'
+{ NodesworkError }            = require '@nodeswork/utils'
 { NodesworkMongooseSchema
   KoaMiddlewares
   AUTOGEN
   READONLY
-  POST }                      = require 'nodeswork-mongoose'
+  POST }                      = require '@nodeswork/mongoose'
 
 { pop }                       = require './plugins/data-levels'
 { CronValidator }             = require './validators/cron-jobs'

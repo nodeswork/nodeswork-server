@@ -1,10 +1,10 @@
 # Patch mongoose schema extend
 _                           = require 'underscore'
-{ logger }                  = require 'nodeswork-logger'
 mongoose                    = require 'mongoose'
 mongooseTypeEmail           = require 'mongoose-type-email'
-{ KoaMiddlewares }          = require 'nodeswork-mongoose'
 
+{ logger }                  = require '@nodeswork/logger'
+{ KoaMiddlewares }          = require '@nodeswork/mongoose'
 
 accounts                    = require './accounts'
 accountCategories           = require './account_categories'

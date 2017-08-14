@@ -1,6 +1,7 @@
 _         = require 'underscore'
 LRU       = require 'lru-cache'
-{logger}  = require 'nodeswork-logger'
+
+{logger}  = require '@nodeswork/logger'
 
 
 # A Rpc object used to call remote functions.

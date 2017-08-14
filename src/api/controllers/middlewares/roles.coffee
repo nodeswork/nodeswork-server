@@ -3,7 +3,7 @@ _                 = require 'underscore'
   NodesworkError
   validator
   NAMED
-}                 = require 'nodeswork-utils'
+}                 = require '@nodeswork/utils'
 
 { Device, User }  = require '../../models'
 { USER_STATUS }   = require '../../constants'

@@ -1,4 +1,4 @@
-{ READONLY } = require 'nodeswork-mongoose'
+{ READONLY } = require '@nodeswork/mongoose'
 
 TimestampModelPlugin = (schema, {
   createdAtIndex,
