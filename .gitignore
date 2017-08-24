@@ -49,3 +49,5 @@ jspm_packages
 
 # doc
 /doc
+
+/dist

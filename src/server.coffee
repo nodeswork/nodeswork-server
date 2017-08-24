@@ -20,7 +20,7 @@ winston               = require 'winston'
 
 nwLogger              = require '@nodeswork/logger'
 
-config                = require '../config'
+config                = require './config'
 
 if config.env == 'test'
   # mongoose.set 'debug', true

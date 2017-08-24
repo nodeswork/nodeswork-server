@@ -8,7 +8,8 @@
     "url": "git@github.com:nodeswork/nodeswork-server.git"
   },
   "scripts": {
-    "start": "node --trace-warnings index.js",
+    "build": "rm -rf dist/ && ./node_modules/.bin/gulp",
+    "start": "node --trace-warnings dist/server.js",
     "docs": "codo",
     "test": "NODE_ENV=test mocha --timeout=10000 --trace-warnings"
   },
@@ -25,6 +26,7 @@
     "cookie": "^0.3.1",
     "cron": "^1.2.1",
     "fut-api": "https://github.com/nodeswork/fut-api.git",
+    "gulp-coffeescript": "0.0.15",
     "koa": "2.2.0",
     "koa-bodyparser": "^4.2.0",
     "koa-connect": "^2.0.0",
@@ -44,6 +46,7 @@
     "oauth": "^0.9.15",
     "rand-token": "^0.3.0",
     "socket.io": "^2.0.1",
+    "typescript": "^2.4.2",
     "underscore": "1.8.3",
     "validator": "^7.0.0",
     "winston": "^2.3.1",
@@ -51,6 +54,8 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
+    "gulp": "^3.9.1",
+    "gulp-typescript": "^3.2.2",
     "mocha": "^3.3.0",
     "should": "^11.2.1",
     "sleep-promise": "^2.0.0",
