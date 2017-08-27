@@ -1,159 +1,159 @@
-_            = require 'underscore'
-request      = require 'supertest'
-should       = require 'should'
+# _            = require 'underscore'
+# request      = require 'supertest'
+# should       = require 'should'
 
-{ app }      = require '../../../src/server'
-models       = require '../../../src/api/models'
-{ activeUser
-  clearDB }  = require '../resource-helper'
-
-
-describe 'users', ->
-
-  agent = null
-
-  users = {
-
-    user1:
-      userType:    'EmailUser'
-      email:       'hello1@world.com'
-      password:    '12354'
-
-    user2:
-      userType:    'EmailUser'
-      email:       'hello2@world.com'
-      password:    '12354'
-  }
-
-  verifyUserInfo = (user) ->
-    user._id.should.be.ok
-    user.status.should.be.ok
-    user.should.have.properties {
-      userType:     'EmailUser'
-      email:        users.user1.email
-      timezone:     'America/Los_Angeles'
-      attributes:
-        developer:  false
-    }
-    user.should.not.have.properties 'password'
+# { app }      = require '../../../src/server'
+# models       = require '../../../src/api/models'
+# { activeUser
+  # clearDB }  = require '../resource-helper'
 
 
-  before ->
-    await clearDB()
-    agent = request.agent app.server
+# describe 'users', ->
 
-  describe '#new', ->
+  # agent = null
 
-    it 'should fail to register without parameter', ->
-      await agent
-        .post '/api/v1/users/new'
-        .expect 500, {
-          name:     'NodesworkError'
-          message:  'Required parameter is missing'
-          meta:
-            path:   'userType'
-        }
+  # users = {
 
-    it 'should fail to register without email and password', ->
-      await agent
-        .post '/api/v1/users/new'
-        .send {
-          userType: 'EmailUser'
-        }
-        .expect 500, {
-          name:     'NodesworkError'
-          message:  'Validation error'
-          meta:
-            errors:
-              email:
-                kind: 'required'
-                message: 'email is required.'
-              password:
-                kind: 'required'
-                message: 'password is required.'
-        }
+    # user1:
+      # userType:    'EmailUser'
+      # email:       'hello1@world.com'
+      # password:    '12354'
 
-    it 'should fail when email format is wrong', ->
-      await agent
-        .post '/api/v1/users/new'
-        .send {
-          userType: 'EmailUser'
-          email:    'hello world'
-          password: '12354'
-        }
-        .expect 500, {
-          name:     'NodesworkError'
-          message:  'Validation error'
-          meta:
-            errors:
-              email:
-                kind: "user defined"
-                message: "invalid email address"
-        }
+    # user2:
+      # userType:    'EmailUser'
+      # email:       'hello2@world.com'
+      # password:    '12354'
+  # }
 
-    it 'should create email user successfully', ->
-      res = await agent
-        .post '/api/v1/users/new'
-        .send users.user1
-        .expect 200
+  # verifyUserInfo = (user) ->
+    # user._id.should.be.ok
+    # user.status.should.be.ok
+    # user.should.have.properties {
+      # userType:     'EmailUser'
+      # email:        users.user1.email
+      # timezone:     'America/Los_Angeles'
+      # attributes:
+        # developer:  false
+    # }
+    # user.should.not.have.properties 'password'
 
-      verifyUserInfo res.body
 
-    it 'should failed when create duplicate user', ->
-      await agent
-        .post '/api/v1/users/new'
-        .send users.user2
-        .expect 200
+  # before ->
+    # await clearDB()
+    # agent = request.agent app.server
 
-      err = await agent
-        .post '/api/v1/users/new'
-        .send users.user2
-        .expect 500
+  # describe '#new', ->
 
-      err.body.should.have.properties {
-        name: 'NodesworkError'
-        message: 'Duplicate record'
-      }
+    # it 'should fail to register without parameter', ->
+      # await agent
+        # .post '/api/v1/users/new'
+        # .expect 500, {
+          # name:     'NodesworkError'
+          # message:  'Required parameter is missing'
+          # meta:
+            # path:   'userType'
+        # }
 
-  describe '#login', ->
+    # it 'should fail to register without email and password', ->
+      # await agent
+        # .post '/api/v1/users/new'
+        # .send {
+          # userType: 'EmailUser'
+        # }
+        # .expect 500, {
+          # name:     'NodesworkError'
+          # message:  'Validation error'
+          # meta:
+            # errors:
+              # email:
+                # kind: 'required'
+                # message: 'email is required.'
+              # password:
+                # kind: 'required'
+                # message: 'password is required.'
+        # }
 
-    it 'should allow user to login', ->
-      await activeUser users.user1
-      res = await agent
-        .post '/api/v1/users/login'
-        .send users.user1
-        .expect 200
+    # it 'should fail when email format is wrong', ->
+      # await agent
+        # .post '/api/v1/users/new'
+        # .send {
+          # userType: 'EmailUser'
+          # email:    'hello world'
+          # password: '12354'
+        # }
+        # .expect 500, {
+          # name:     'NodesworkError'
+          # message:  'Validation error'
+          # meta:
+            # errors:
+              # email:
+                # kind: "user defined"
+                # message: "invalid email address"
+        # }
 
-      verifyUserInfo res.body
+    # it 'should create email user successfully', ->
+      # res = await agent
+        # .post '/api/v1/users/new'
+        # .send users.user1
+        # .expect 200
 
-    it 'should not allow user to login', ->
-      await agent
-        .post '/api/v1/users/login'
-        .send _.extend {}, users.user1, {
-          password: 'wrong password'
-        }
-        .expect 401, {}
+      # verifyUserInfo res.body
 
-  describe '#logout', ->
+    # it 'should failed when create duplicate user', ->
+      # await agent
+        # .post '/api/v1/users/new'
+        # .send users.user2
+        # .expect 200
 
-    it 'should allow user to logout', ->
-      res = await agent
-        .post '/api/v1/users/login'
-        .send users.user1
-        .expect 200
+      # err = await agent
+        # .post '/api/v1/users/new'
+        # .send users.user2
+        # .expect 500
 
-      verifyUserInfo res.body
+      # err.body.should.have.properties {
+        # name: 'NodesworkError'
+        # message: 'Duplicate record'
+      # }
 
-      res = await agent
-        .get '/api/v1/users/current'
-        .expect 200
+  # describe '#login', ->
 
-      verifyUserInfo res.body
+    # it 'should allow user to login', ->
+      # await activeUser users.user1
+      # res = await agent
+        # .post '/api/v1/users/login'
+        # .send users.user1
+        # .expect 200
 
-      await agent
-        .get '/api/v1/users/logout'
-        .expect 200, status: 'ok'
+      # verifyUserInfo res.body
 
-      res = await agent
-        .get '/api/v1/users/current'
-        .expect 200, {}
+    # it 'should not allow user to login', ->
+      # await agent
+        # .post '/api/v1/users/login'
+        # .send _.extend {}, users.user1, {
+          # password: 'wrong password'
+        # }
+        # .expect 401, {}
+
+  # describe '#logout', ->
+
+    # it 'should allow user to logout', ->
+      # res = await agent
+        # .post '/api/v1/users/login'
+        # .send users.user1
+        # .expect 200
+
+      # verifyUserInfo res.body
+
+      # res = await agent
+        # .get '/api/v1/users/current'
+        # .expect 200
+
+      # verifyUserInfo res.body
+
+      # await agent
+        # .get '/api/v1/users/logout'
+        # .expect 200, status: 'ok'
+
+      # res = await agent
+        # .get '/api/v1/users/current'
+        # .expect 200, {}
