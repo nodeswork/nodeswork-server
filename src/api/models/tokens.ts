@@ -65,7 +65,7 @@ export class Token extends sbase.mongoose.NModel {
   ): Promise<Token> {
     let self = this.cast<Token>();
     let expireAt = !expireInMs ? MAX_DATE : moment().add(expireInMs, 'ms');
-    let kind: string = (payload.constructor as any).modelName;
+    let kind: string = payload && (payload.constructor as any).modelName;
 
     let doc = {
       purpose,
@@ -80,7 +80,10 @@ export class Token extends sbase.mongoose.NModel {
     return self.create(doc);
   }
 
-  static async redeemToken(token: string): Promise<Token> {
+  static async redeemToken(
+    token: string,
+    { populate }: { populate?: object } = {}
+  ): Promise<Token> {
     let self = this.cast<Token>();
     let query = {
       token,
@@ -95,7 +98,10 @@ export class Token extends sbase.mongoose.NModel {
       .findOneAndUpdate(query, {
         $inc: { maxRedeemTimes: -1 },
       }, { new: true })
-      .populate('payload.data');
+      .populate({
+        path: 'payload.data',
+        options: populate,
+      });
   }
 
   get redeemTimesLeft(): number {

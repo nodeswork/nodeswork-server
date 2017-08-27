@@ -83,12 +83,14 @@ export class User extends sbase.mongoose.NModel {
   async verifyUserEmail(
     @sbase.koa.params('request.query.token') token: string
   ): Promise<void> {
-    let tokenDoc = await Token.redeemToken(token);
+    let tokenDoc = await Token.redeemToken(token, {
+      populate: { withUnActive: true }
+    });
     if (tokenDoc == null || tokenDoc.purpose !== VERIFY_EMAIL_TOKEN_PURPOSE) {
       throw new NodesworkError('Unrecognized token', { responseCode: 422 });
     }
 
-    let user: User = tokenDoc.payload.data as User;
+    let user: User = await tokenDoc.payload.data as User;
     user.status = USER_STATUS.ACTIVE;
     await user.save();
   }
@@ -107,3 +109,17 @@ User.Pre({
   name:  'save',
   fn:    User.prototype._hashPasswordPreSave,
 });
+
+for (let name of sbase.mongoose.preQueries) {
+  User.Pre({ name, fn: patchStatus });
+}
+
+function patchStatus() {
+  if (this._conditions == null) {
+    this._conditions = {};
+  }
+
+  if (this._conditions.status === undefined && !this.options.withUnActive) {
+    this._conditions.status = USER_STATUS.ACTIVE;
+  }
+}
