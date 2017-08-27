@@ -29,7 +29,7 @@ export class User extends sbase.mongoose.NModel {
   static $CONFIG: sbase.mongoose.ModelConfig = {
     collection:        'users',
     discriminatorKey:  'userType',
-    // levels:            [],
+    levels:            [ DETAIL, CREDENTIAL ],
   }
 
   static $SCHEMA = {
