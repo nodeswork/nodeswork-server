@@ -3,8 +3,7 @@ import * as mongoose from 'mongoose'
 import * as sbase from '@nodeswork/sbase'
 
 import { generateToken } from '../../utils/tokens'
-
-const MAX_DATE = new Date(8640000000000000)
+import { MAX_DATE } from '../../utils/time'
 
 export interface TokenType extends TokenTypeT {}
 export type TokenTypeT = typeof Token & sbase.mongoose.NModelType
@@ -44,23 +43,30 @@ export class Token extends sbase.mongoose.NModel {
     },
   }
 
+  token:           string
+  maxRedeemTimes:  number
+  payload:         null | { kind:  string, data:  sbase.mongoose.NModel }
+  expireAt:        Date
+
   static async createToken(
     payload: sbase.mongoose.NModel,
     {
       expireInMs = 0,
       maxRedeemTimes = -1,
-    }: TokenOptions
+      tokenSize = 16,
+    }: TokenOptions = {}
   ): Promise<Token> {
     let self = this.cast<Token>();
     let expireAt = !expireInMs ? MAX_DATE : moment().add(expireInMs, 'ms');
 
     let doc = {
       maxRedeemTimes,
-      payload: {
+      payload: payload == null ? null : {
         kind: payload.baseModelName,
         data: payload._id,
       },
       expireAt,
+      token: generateToken(tokenSize),
     };
     return self.create(doc);
   }
@@ -73,16 +79,24 @@ export class Token extends sbase.mongoose.NModel {
         $ne: 0,
       },
       expireAt: {
-        $lt: Date.now(),
+        $gt: Date.now(),
       },
     };
     return self
-      .findOneAndUpdate(query, { maxRedeemTimes: { $dec: 1 }})
+      .findOneAndUpdate(query, {
+        $inc: { maxRedeemTimes: -1 },
+      }, { new: true })
       .populate('payload.data');
+  }
+
+  get redeemTimesLeft(): number {
+    return this.maxRedeemTimes < 0 ?
+      Number.MAX_SAFE_INTEGER : this.maxRedeemTimes;
   }
 }
 
 export interface TokenOptions {
-  expireInMs:      number   // 0 means no expiration
-  maxRedeemTimes:  number   // -1 means no limitation
+  expireInMs?:      number   // 0 means no expiration
+  maxRedeemTimes?:  number   // -1 means no limitation
+  tokenSize?:       number
 }

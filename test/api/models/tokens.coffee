@@ -1,14 +1,40 @@
-should      = require 'should'
+should        = require 'should'
 
-models      = require '../../../dist/api/models/models'
+models        = require '../../../dist/api/models/models'
+{ MAX_DATE }  = require '../../../dist/utils/time'
 
 describe 'TokenModel', ->
 
   beforeEach ->
-    console.log 'before each', models.Token
     await models.Token.remove({})
-    console.log 'before each finished'
 
-  it 'can create with empty payload', ->
-    token = await models.Token.createToken(null, {})
-    console.log token
+  describe 'createToken', ->
+
+    it 'creates with empty payload', ->
+      token = await models.Token.createToken(null)
+      token.should.have.properties {
+        maxRedeemTimes:  -1
+        expireAt:        MAX_DATE
+      }
+
+      token.token.should.be.ok()
+      token.token.should.have.length 16
+
+      obj = await models.Token.redeemToken(token.token)
+      obj.maxRedeemTimes.should.be.equal -2
+
+    it 'creates with one time redeem', ->
+      token = await models.Token.createToken(null, maxRedeemTimes: 1)
+      token.should.have.properties {
+        maxRedeemTimes:  1
+        expireAt:        MAX_DATE
+      }
+
+      token.token.should.be.ok()
+      token.token.should.have.length 16
+
+      obj = await models.Token.redeemToken(token.token)
+      obj.maxRedeemTimes.should.be.equal 0
+
+      obj = await models.Token.redeemToken(token.token)
+      should(obj).be.null()
