@@ -76,7 +76,6 @@ export class User extends sbase.mongoose.NModel {
       VERIFY_EMAIL_TOKEN_PURPOSE, this, { maxRedeemTimes: 1 }
     );
     await sendMail(VERIFY_EMAIL_TEMPLATE, this.email, {
-      userId:  this._id,
       host:    config.app.publicHost,
       token:   token.token,
     })
