@@ -11,7 +11,7 @@ describe 'TokenModel', ->
   describe 'createToken', ->
 
     it 'creates with empty payload', ->
-      token = await models.Token.createToken(null)
+      token = await models.Token.createToken('test', null)
       token.should.have.properties {
         maxRedeemTimes:  -1
         expireAt:        MAX_DATE
@@ -24,7 +24,7 @@ describe 'TokenModel', ->
       obj.maxRedeemTimes.should.be.equal -2
 
     it 'creates with one time redeem', ->
-      token = await models.Token.createToken(null, maxRedeemTimes: 1)
+      token = await models.Token.createToken('test', null, maxRedeemTimes: 1)
       token.should.have.properties {
         maxRedeemTimes:  1
         expireAt:        MAX_DATE

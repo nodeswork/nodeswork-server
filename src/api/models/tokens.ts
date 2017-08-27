@@ -29,6 +29,11 @@ export class Token extends sbase.mongoose.NModel {
       default:        0,
     },
 
+    purpose:          {
+      type:           String,
+      maxlength:      30,
+    },
+
     payload:          {
       kind:           String,
       data:           {
@@ -49,6 +54,7 @@ export class Token extends sbase.mongoose.NModel {
   expireAt:        Date
 
   static async createToken(
+    purpose: string,
     payload: sbase.mongoose.NModel,
     {
       expireInMs = 0,
@@ -60,13 +66,14 @@ export class Token extends sbase.mongoose.NModel {
     let expireAt = !expireInMs ? MAX_DATE : moment().add(expireInMs, 'ms');
 
     let doc = {
+      purpose,
       maxRedeemTimes,
-      payload: payload == null ? null : {
-        kind: payload.baseModelName,
-        data: payload._id,
+      payload:         payload == null ? null :   {
+        kind:          payload.baseModelName,
+        data:          payload._id,
       },
       expireAt,
-      token: generateToken(tokenSize),
+      token:           generateToken(tokenSize),
     };
     return self.create(doc);
   }
