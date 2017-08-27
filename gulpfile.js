@@ -10,12 +10,12 @@ gulp.task("coffee", function() {
     .pipe(gulp.dest('dist'));
 });
 
-gulp.task("json", function() {
-  gulp.src('src/**/*.json')
+gulp.task("resources", function() {
+  gulp.src(['src/**/*.json', 'src/**/*.pug', ])
     .pipe(gulp.dest('dist'));
 });
 
-gulp.task("default", ['coffee', 'json'], function () {
+gulp.task("default", ['coffee', 'resources'], function () {
 
   var tsResult = gulp.src('src/**/*.ts')
     .pipe(sourcemaps.init())

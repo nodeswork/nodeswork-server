@@ -7,5 +7,5 @@ describe 'mailer', ->
     it 'sends mail successfully', ->
 
       to = '"Andy Zhau" <andy+test+server+unittest@nodeswork.com>'
-      object = await sendMail(to)
+      object = await sendMail('email-verification', to)
       object.messageId.should.be.ok()
