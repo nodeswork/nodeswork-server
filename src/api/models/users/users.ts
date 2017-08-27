@@ -5,6 +5,7 @@ import * as mongoose from 'mongoose'
 import * as sbase from '@nodeswork/sbase'
 import { NodesworkError } from '@nodeswork/utils'
 
+import { config } from '../../../config'
 import { Token } from '../models'
 import { sendMail } from '../../../mail/mailer'
 
@@ -75,7 +76,9 @@ export class User extends sbase.mongoose.NModel {
       VERIFY_EMAIL_TOKEN_PURPOSE, this, { maxRedeemTimes: 1 }
     );
     await sendMail(VERIFY_EMAIL_TEMPLATE, this.email, {
-      token: token.token
+      userId:  this._id,
+      host:    config.app.publicHost,
+      token:   token.token,
     })
   }
 

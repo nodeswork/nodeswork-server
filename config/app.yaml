@@ -1,1 +1,2 @@
 env: 'base'
+publicHost: 'http://localhost:3000'
