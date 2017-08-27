@@ -5,7 +5,12 @@ export interface Config {
     env:                    string
   }
 
+  mailer:                   {
+    sender:                 string
+  }
+
   secrets:                  {
+    mailerUsername:         string
     mailerSMPTTransporter:  string
   }
 }

@@ -6,5 +6,6 @@ describe 'mailer', ->
 
     it 'sends mail successfully', ->
 
-      object = await sendMail()
-      console.log object
+      to = '"Andy Zhau" <andy+test+server+unittest@nodeswork.com>'
+      object = await sendMail(to)
+      object.messageId.should.be.ok()
