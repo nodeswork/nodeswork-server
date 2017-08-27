@@ -1,6 +1,9 @@
 import * as _ from 'underscore'
+import * as bcrypt from 'bcrypt'
 import * as mongoose from 'mongoose'
 import * as sbase from '@nodeswork/sbase'
+
+import 'mongoose-type-email'
 
 export const DETAIL      = 'DETAIL';
 export const CREDENTIAL  = 'CREDENTIAL';
@@ -10,7 +13,8 @@ export const USER_STATUS = {
   UNVERIFIED:  'UNVERIFIED',
 }
 
-export type UserType = typeof User & sbase.mongoose.NModelType
+export type UserTypeT = typeof User & sbase.mongoose.NModelType
+export interface UserType extends UserTypeT {}
 
 export class User extends sbase.mongoose.NModel {
 
@@ -47,6 +51,10 @@ export class User extends sbase.mongoose.NModel {
     },
   }
 
+  email:     string
+  password:  string
+  status:    string
+
   @sbase.koa.bind('POST')
   static async forgotPassword(
     @sbase.koa.params('request.body.email') email: string
@@ -62,4 +70,18 @@ export class User extends sbase.mongoose.NModel {
     @sbase.koa.params('request.query.token') token: string
   ): Promise<void> {
   }
+
+  async _hashPasswordPreSave(next: Function) {
+    if (!this.isModified('password')) {
+      return next();
+    }
+    let salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next()
+  }
 }
+
+User.Pre({
+  name:  'save',
+  fn:    User.prototype._hashPasswordPreSave,
+});
