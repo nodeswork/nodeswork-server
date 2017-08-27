@@ -1,10 +1,6 @@
-_          = require 'underscore'
+mongoose = require 'mongoose'
 
-{ app }    = require '../src/server'
-
-
-before ->
-  await app.isReady()
-
-module.exports = {
+mongoose.Promise = global.Promise
+mongoose.connect 'mongodb://localhost:27017/nodeswork-test', {
+  useMongoClient: true
 }

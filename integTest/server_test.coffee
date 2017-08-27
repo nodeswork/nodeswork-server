@@ -1,6 +1,6 @@
 request = require 'supertest'
 
-{ app } = require '../../src/server'
+{ app } = require '../dist/server'
 
 
 describe 'server', () ->
