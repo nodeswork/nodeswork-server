@@ -3,6 +3,7 @@ var ts = require("gulp-typescript");
 var tsProject = ts.createProject("tsconfig.json");
 var coffeescript = require('gulp-coffeescript');
 var sourcemaps = require('gulp-sourcemaps');
+var less = require('gulp-less');
 
 gulp.task("coffee", function() {
   gulp.src('src/**/*.coffee')
@@ -10,8 +11,16 @@ gulp.task("coffee", function() {
     .pipe(gulp.dest('dist'));
 });
 
+gulp.task("less", function() {
+  gulp.src('src/**/*.less')
+    .pipe(sourcemaps.init())
+    .pipe(less())
+    .pipe(sourcemaps.write('./maps'))
+    .pipe(gulp.dest('dist/public/css'));
+});
+
 gulp.task("resources", function() {
-  gulp.src(['src/**/*.json', 'src/**/*.pug', ])
+  gulp.src(['src/**/*.json', 'src/**/*.pug', 'src/**/*.less', ])
     .pipe(gulp.dest('dist'));
 });
 

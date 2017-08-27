@@ -4,7 +4,6 @@ KoaRouter             = require 'koa-router'
 Pug                   = require 'koa-pug'
 bodyParser            = require 'koa-bodyparser'
 coffeescript          = require 'coffeescript'
-connectCoffeeScript   = require 'connect-coffee-script'
 convert               = require 'koa-convert'
 csrf                  = require 'koa-csrf'
 error                 = require 'koa-error'
@@ -20,7 +19,7 @@ winston               = require 'winston'
 
 nwLogger              = require '@nodeswork/logger'
 
-config                = require './config'
+{ config }            = require './config'
 
 if config.env == 'test'
   # mongoose.set 'debug', true
@@ -40,7 +39,7 @@ app = new Koa
 do () ->
   mongoose.Promise = global.Promise
 
-  await mongoose.connect config.db, useMongoClient: true
+  await mongoose.connect config.app.db, useMongoClient: true
 
   db               = mongoose.connections[0].db
   logCollection    = 'logs'
@@ -101,20 +100,12 @@ do () ->
       maxAge:   3600
       dynamic:  true
     }
-    .use koaConnect connectCoffeeScript {
-      src:     __dirname + '/coffee'
-      prefix:  '/js'
-      dest:    './public/js'
-      bare:    true
-      compile: (str, options, coffeePath) ->
-        coffeescript.compile str, options
-    }
     .use koaConnect lessMiddleware __dirname + '/less', {
       preprocess:
         path:      (lessPath, req) -> lessPath.replace '/styles', ''
       dest:        './public'
     }
-    .use staticCache './public', dynamic: true
+    .use staticCache './dist/public', dynamic: true
     .use router.routes()
     .use router.allowedMethods()
     .use (ctx) ->
@@ -127,8 +118,8 @@ do () ->
   server = http.Server app.callback()
   api.attachIO IO server
 
-  server.listen config.port, ->
-    logger.info "server is started at http://localhost:#{config.port}."
+  server.listen config.app.port, ->
+    logger.info "server is started at http://localhost:#{config.app.port}."
     app._ready = true
     app.server = server
 
