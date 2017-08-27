@@ -10,5 +10,5 @@ describe 'TokenModel', ->
     console.log 'before each finished'
 
   it 'can create with empty payload', ->
-    token = await models.Token.createToken(null)
+    token = await models.Token.createToken(null, {})
     console.log token

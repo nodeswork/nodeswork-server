@@ -29,6 +29,7 @@
     "cron": "^1.2.1",
     "fut-api": "git+https://github.com/nodeswork/fut-api.git",
     "gulp-coffeescript": "0.0.15",
+    "gulp-sourcemaps": "^2.6.1",
     "koa": "2.2.0",
     "koa-bodyparser": "^4.2.0",
     "koa-connect": "^2.0.0",
@@ -62,6 +63,7 @@
     "mocha": "^3.3.0",
     "should": "^11.2.1",
     "sleep-promise": "^2.0.0",
+    "source-map-support": "^0.4.16",
     "supertest": "^3.0.0"
   },
   "keywords": [

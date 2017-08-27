@@ -1,3 +1,5 @@
+require('source-map-support').install()
+
 mongoose = require 'mongoose'
 
 mongoose.Promise = global.Promise
