@@ -1,7 +1,12 @@
 import * as _ from 'underscore'
 import * as bcrypt from 'bcrypt'
 import * as mongoose from 'mongoose'
+
 import * as sbase from '@nodeswork/sbase'
+import { NodesworkError } from '@nodeswork/utils'
+
+import { Token } from '../models'
+import { sendMail } from '../../../mail/mailer'
 
 import 'mongoose-type-email'
 
@@ -12,6 +17,9 @@ export const USER_STATUS = {
   INACTIVE:    'INACTIVE',
   UNVERIFIED:  'UNVERIFIED',
 }
+
+const VERIFY_EMAIL_TOKEN_PURPOSE = 'verifyEmail'
+const VERIFY_EMAIL_TEMPLATE = 'email-verification'
 
 export type UserTypeT = typeof User & sbase.mongoose.NModelType
 export interface UserType extends UserTypeT {}
@@ -63,12 +71,26 @@ export class User extends sbase.mongoose.NModel {
 
   @sbase.koa.bind('POST')
   async sendVerifyEmail(): Promise<void> {
+    let token = await Token.createToken(
+      VERIFY_EMAIL_TOKEN_PURPOSE, this, { maxRedeemTimes: 1 }
+    );
+    await sendMail(VERIFY_EMAIL_TEMPLATE, this.email, {
+      token: token.token
+    })
   }
 
   @sbase.koa.bind('GET')
   async verifyUserEmail(
     @sbase.koa.params('request.query.token') token: string
   ): Promise<void> {
+    let tokenDoc = await Token.redeemToken(token);
+    if (tokenDoc == null || tokenDoc.purpose !== VERIFY_EMAIL_TOKEN_PURPOSE) {
+      throw new NodesworkError('Unrecognized token', { responseCode: 422 });
+    }
+
+    let user: User = tokenDoc.payload.data as User;
+    user.status = USER_STATUS.ACTIVE;
+    await user.save();
   }
 
   async _hashPasswordPreSave(next: Function) {

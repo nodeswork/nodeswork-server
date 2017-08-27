@@ -1,9 +1,10 @@
-{ User } = require '../../../../dist/api/models/models'
+{ User, Token } = require '../../../../dist/api/models/models'
 
 describe 'UserModel', ->
 
   beforeEach ->
     await User.remove({})
+    await Token.remove({})
 
   describe 'create', ->
 
@@ -17,3 +18,17 @@ describe 'UserModel', ->
         status: 'UNVERIFIED'
       }
       user.password.should.not.equal '1234'
+
+  describe '#sendVerifyEmail', ->
+
+    it 'send email to registered email', ->
+      user = await User.create({
+        email:     'andy+nodeswork+unittest@nodeswork.com'
+        password:  '1234'
+      })
+      user.should.be.ok()
+      await user.sendVerifyEmail()
+      token = await Token.findOne()
+      await user.verifyUserEmail(token.token)
+      user = await User.findById(user._id)
+      user.status.should.be.equal 'ACTIVE'
