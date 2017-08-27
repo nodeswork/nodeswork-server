@@ -20,7 +20,7 @@
   "dependencies": {
     "@nodeswork/logger": "0.0.6",
     "@nodeswork/mongoose": "0.0.2",
-    "@nodeswork/sbase": "0.0.1",
+    "@nodeswork/sbase": "0.0.2",
     "@nodeswork/utils": "0.0.5",
     "bcrypt": "^1.0.2",
     "coffeescript": "^2.0.0-beta1",
