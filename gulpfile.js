@@ -12,7 +12,7 @@ gulp.task("coffee", function() {
 });
 
 gulp.task("less", function() {
-  gulp.src('src/**/*.less')
+  gulp.src('src/public/less/**/*.less')
     .pipe(sourcemaps.init())
     .pipe(less())
     .pipe(sourcemaps.write('./maps'))
@@ -24,7 +24,7 @@ gulp.task("resources", function() {
     .pipe(gulp.dest('dist'));
 });
 
-gulp.task("default", ['coffee', 'resources'], function () {
+gulp.task("default", ['coffee', 'less', 'resources'], function () {
 
   var tsResult = gulp.src('src/**/*.ts')
     .pipe(sourcemaps.init())

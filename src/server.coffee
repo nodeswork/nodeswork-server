@@ -8,8 +8,6 @@ convert               = require 'koa-convert'
 csrf                  = require 'koa-csrf'
 error                 = require 'koa-error'
 http                  = require 'http'
-koaConnect            = require 'koa-connect'
-lessMiddleware        = require 'less-middleware'
 mongoose              = require 'mongoose'
 mongooseStore         = require 'koa-session-mongoose'
 session               = require 'koa-generic-session'
@@ -99,11 +97,6 @@ do () ->
       prefix:   '/bower_components'
       maxAge:   3600
       dynamic:  true
-    }
-    .use koaConnect lessMiddleware __dirname + '/less', {
-      preprocess:
-        path:      (lessPath, req) -> lessPath.replace '/styles', ''
-      dest:        './public'
     }
     .use staticCache './dist/public', dynamic: true
     .use router.routes()
