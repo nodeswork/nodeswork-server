@@ -1,6 +1,7 @@
 import * as sbase from "@nodeswork/sbase";
 
 import { User } from "../../models/models";
+import { DETAIL } from "../../models/users/users";
 
 export class NRouter extends sbase.koa.NRouter {}
 
@@ -10,8 +11,10 @@ export const router = new NRouter({
 
 router
 
-  .post("/register", catchMiddleware, User.createMiddleware({
-    allowCreateFromParentModel: true,
+  .post("/register", sendVerifyEmail, User.createMiddleware({
+    target:                      "user",
+    allowCreateFromParentModel:  true,
+    noBody:                      true,
   }))
 
   .post("/login")
@@ -23,6 +26,11 @@ router
   })
 ;
 
-async function catchMiddleware(ctx: any, next: () => void) {
+async function sendVerifyEmail(ctx: any, next: () => void) {
   await next();
+  await ctx.user.sendVerifyEmail();
+  ctx.body = {
+    status: "ok",
+    message: "A verification email has been sent to your registered email address",
+  };
 }

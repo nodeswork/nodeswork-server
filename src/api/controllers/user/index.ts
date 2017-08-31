@@ -34,14 +34,28 @@ async function handleApiRequest(ctx: any, next: () => void) {
 class MongooseErrorCaster implements ErrorCaster {
 
   public filter(error: any, options: ErrorOptions): boolean {
-    return error.name === "ValidationError" && error.errors != null;
+    if (error.name === "ValidationError" && error.errors != null) {
+      return true;
+    }
+    if (error.name === "MongoError" && error.code === 11000) {
+      return true;
+    }
+    return false;
   }
 
   public cast(error: any, options: ErrorOptions, cls: NodesworkErrorClass): NodesworkError {
-    return new NodesworkError("invalid value", {
-      errors: _.mapObject(error.errors, mapMongooseError),
-      responseCode: 422,
-    });
+    if (error.errors) {
+      return new NodesworkError("invalid value", {
+        errors: _.mapObject(error.errors, mapMongooseError),
+        responseCode: 422,
+      });
+    }
+    if (error.code === 11000) {
+      return new NodesworkError("duplicate record", {
+        responseCode: 422,
+      });
+    }
+    return null;
   }
 }
 
