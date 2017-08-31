@@ -18,3 +18,15 @@ export const EMAIL_ADDRESS_IS_ALREADY_VERIFIED = new UrlParameterError(
 export const UNRECOGNIZED_TOKEN_ERROR = new UrlParameterError(
   "Unrecognized token",
 );
+
+export const PASSWORD_TOO_SHORT_ERROR = new UrlParameterError(
+  "invalid value",
+  {
+    errors: {
+      password: {
+        path: "password",
+        kind: "password should contain at least 6 characters",
+      },
+    },
+  },
+);

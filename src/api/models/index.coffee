@@ -26,10 +26,10 @@ KoaMiddlewares.defaults.omits = [
   '_id', 'createdAt', 'lastUpdateTime'
 ]
 
-mongoose.plugin TimestampModelPlugin
-mongoose.plugin DataLevel
-mongoose.plugin KoaMiddlewares, middlwares: []
-mongoose.plugin HandleMongooseError
+# mongoose.plugin TimestampModelPlugin
+# mongoose.plugin DataLevel
+# mongoose.plugin KoaMiddlewares, middlwares: []
+# mongoose.plugin HandleMongooseError
 
 
 _.extend module.exports, users
@@ -44,9 +44,9 @@ exports.registerModels = (mongooseInstance = mongoose) ->
     exports[modelName] = mongooseInstance.model modelName, modelSchema
 
   registerModel modelName, modelSchema for [modelName, modelSchema] in [
-    ['User',                     users.UserSchema]
-    ['EmailUser',                users.EmailUserSchema]
-    ['SystemUser',               users.SystemUserSchema]
+    # ['User',                     users.UserSchema]
+    # ['EmailUser',                users.EmailUserSchema]
+    # ['SystemUser',               users.SystemUserSchema]
     ['AccountCategory',          accountCategories.AccountCategorySchema]
     ['Account',                  accounts.AccountSchema]
     ['OAuthAccount',             accounts.OAuthAccountSchema]
@@ -65,19 +65,19 @@ exports.registerModels = (mongooseInstance = mongoose) ->
     ['ContainerExecutionEvent',  events.ContainerExecutionEventSchema]
   ]
 
-  containerAppletOwner = await mongoose.models.SystemUser.containerAppletOwner()
-  logger.info(
-    'Ensure system user container applet exists:'
-    containerAppletOwner.toJSON()
-  )
+  # containerAppletOwner = await mongoose.models.SystemUser.containerAppletOwner()
+  # logger.info(
+    # 'Ensure system user container applet exists:'
+    # containerAppletOwner.toJSON()
+  # )
 
-  containerApplet = await mongoose.models.SystemApplet.containerApplet()
-  logger.info(
-    'Ensure system applet container exists:'
-    containerAppletOwner.toJSON()
-  )
+  # containerApplet = await mongoose.models.SystemApplet.containerApplet()
+  # logger.info(
+    # 'Ensure system applet container exists:'
+    # containerAppletOwner.toJSON()
+  # )
 
-  await ensureAccountCategories()
+  # await ensureAccountCategories()
 
   return
 

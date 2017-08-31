@@ -19,7 +19,8 @@ nwLogger              = require '@nodeswork/logger'
 
 { config }            = require './config'
 
-if config.env == 'test'
+if config.app.env == 'test'
+  nwLogger.level = 'warn'
   # mongoose.set 'debug', true
   nwLogger.transports = [
     nwLogger.transport winston.transports.File, {

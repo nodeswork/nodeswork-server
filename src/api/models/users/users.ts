@@ -111,9 +111,12 @@ export class User extends sbase.mongoose.NModel {
     await user.save();
   }
 
-  public async _hashPasswordPreSave(next: () => void) {
+  public async _hashPasswordPreSave(next: (err?: any) => void) {
     if (!this.isModified("password")) {
       return next();
+    }
+    if (this.password.length < 6) {
+      return next(errors.PASSWORD_TOO_SHORT_ERROR);
     }
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);

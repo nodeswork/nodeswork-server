@@ -6,5 +6,9 @@ _          = require 'underscore'
 before ->
   await app.isReady()
 
+describe 'app', ->
+
+  it 'should be ready', ->
+
 module.exports = {
 }

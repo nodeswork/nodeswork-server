@@ -10,25 +10,28 @@ KoaRouter                      = require 'koa-router'
 { executionRouter }            = require './executions'
 { exploreRouter }              = require './explore'
 { messageRouter }              = require './messages'
-{ userRouter }                 = require './users'
+# { userRouter }                 = require './users'
 { userRole, deviceRole }       = require './middlewares/roles'
 { systemRouter }               = require './systems'
 { resourceRouter }             = require './resources'
 { deviceApiRouter }            = require './device-api'
 { userDeviceRouter }           = require './users-devices'
 
+user                           = require './user'
+
 exports.router = router = new KoaRouter prefix: '/api'
 
 router
 
-  .use handleRequestMiddleware
+  # .use handleRequestMiddleware
   .use userRole
   .use deviceRole
 
+  .use user.router.routes(), user.router.allowedMethods()
   .use devRouter.routes(), devRouter.allowedMethods()
   .use appletApiRouter.routes(), appletApiRouter.allowedMethods()
   .use accountRouter.routes(), accountRouter.allowedMethods()
-  .use userRouter.routes(), userRouter.allowedMethods()
+  # .use userRouter.routes(), userRouter.allowedMethods()
   .use exploreRouter.routes(), exploreRouter.allowedMethods()
   .use deviceApiRouter.routes(), deviceApiRouter.allowedMethods()
   .use usersAppletsRouter.routes(), usersAppletsRouter.allowedMethods()
