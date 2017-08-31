@@ -27,8 +27,7 @@ describe 'UserModel', ->
         password:  '1234'
       })
       user.should.be.ok()
-      await user.sendVerifyEmail()
-      token = await Token.findOne()
-      await user.verifyUserEmail(token.token)
+      { token } = await user.sendVerifyEmail()
+      await user.verifyUserEmail(token)
       user = await User.findById(user._id)
       user.status.should.be.equal 'ACTIVE'

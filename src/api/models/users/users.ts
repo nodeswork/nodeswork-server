@@ -29,13 +29,13 @@ export interface UserType extends UserTypeT {}
 
 export class User extends sbase.mongoose.NModel {
 
-  protected static $CONFIG: sbase.mongoose.ModelConfig = {
+  public static $CONFIG: sbase.mongoose.ModelConfig = {
     collection:        "users",
     discriminatorKey:  "userType",
     levels:            [ DETAIL, CREDENTIAL ],
   };
 
-  protected static $SCHEMA = {
+  public static $SCHEMA = {
 
     email:       {
       type:      (mongoose.SchemaTypes as any).Email,
