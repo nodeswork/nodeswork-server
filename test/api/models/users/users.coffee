@@ -11,20 +11,20 @@ describe 'UserModel', ->
     it 'creates with valid email address', ->
       user = await User.create({
         email:     'test1@gmail.com'
-        password:  '1234'
+        password:  '123456'
       })
       user.should.have.properties {
         email: 'test1@gmail.com'
         status: 'UNVERIFIED'
       }
-      user.password.should.not.equal '1234'
+      user.password.should.not.equal '123456'
 
   describe '#sendVerifyEmail', ->
 
     it 'send email to registered email', ->
       user = await User.create({
         email:     'andy+nodeswork+unittest@nodeswork.com'
-        password:  '1234'
+        password:  '123456'
       })
       user.should.be.ok()
       { token } = await user.sendVerifyEmail()
