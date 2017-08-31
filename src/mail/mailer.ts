@@ -1,23 +1,23 @@
-import * as path from 'path'
-import * as _ from 'underscore'
-import { EmailTemplate } from 'email-templates'
-import * as nodemailer from 'nodemailer'
+import { EmailTemplate } from "email-templates";
+import * as nodemailer from "nodemailer";
+import * as path from "path";
+import * as _ from "underscore";
 
-import { config } from '../config'
+import { config } from "../config";
 
-let transporter = nodemailer.createTransport(
-  `smtps://${config.secrets.mailerUsername}:${config.secrets.mailerSMPTTransporter}@smtp.gmail.com`
+const transporter = nodemailer.createTransport(
+  `smtps://${config.secrets.mailerUsername}:${config.secrets.mailerSMPTTransporter}@smtp.gmail.com`,
 );
 
 export async function sendMail(
   template:  string,
   to:        string,
-  data:      object = {}
+  data:      object = {},
 ): Promise<nodemailer.SentMessageInfo> {
 
-  let emailTemplate = cashedEmailTemplate(template);
+  const emailTemplate = cashedEmailTemplate(template);
 
-  let result = await emailTemplate.render(data);
+  const result = await emailTemplate.render(data);
 
   return transporter.sendMail({
     from: config.mailer.sender,
@@ -28,15 +28,12 @@ export async function sendMail(
   });
 }
 
-
 function getEmailTemplate(template: string): EmailTemplate {
-  return new EmailTemplate(path.join(__dirname, 'templates', template));
+  return new EmailTemplate(path.join(__dirname, "templates", template));
 }
 
-interface IGetEmailTemplate {
-  (template: string): EmailTemplate
-}
+type IGetEmailTemplate = (template: string) => EmailTemplate;
 
-let cashedEmailTemplate: IGetEmailTemplate = (
+const cashedEmailTemplate: IGetEmailTemplate = (
   _.memoize(getEmailTemplate) as any as IGetEmailTemplate
 );

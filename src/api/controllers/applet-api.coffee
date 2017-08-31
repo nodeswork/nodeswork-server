@@ -13,7 +13,7 @@ KoaRouter                   = require 'koa-router'
   User
   UserApplet
 }                           = require '../models'
-{ParameterValidationError}  = require '../errors'
+{ParameterValidationError}  = require '../errors_old'
 
 
 # Fetch applet and verify applet token.

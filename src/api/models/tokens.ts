@@ -1,21 +1,22 @@
-import * as moment from 'moment'
-import * as mongoose from 'mongoose'
-import * as sbase from '@nodeswork/sbase'
+import * as moment from "moment";
+import * as mongoose from "mongoose";
 
-import { generateToken } from '../../utils/tokens'
-import { MAX_DATE } from '../../utils/time'
+import * as sbase from "@nodeswork/sbase";
+
+import { MAX_DATE } from "../../utils/time";
+import { generateToken } from "../../utils/tokens";
 
 export interface TokenType extends TokenTypeT {}
-export type TokenTypeT = typeof Token & sbase.mongoose.NModelType
+export type TokenTypeT = typeof Token & sbase.mongoose.NModelType;
 
 export class Token extends sbase.mongoose.NModel {
 
-  static $CONFIG: sbase.mongoose.ModelConfig = {
-    collection:        'tokens',
-    discriminatorKey:  'kind',
-  }
+  public static $CONFIG: sbase.mongoose.ModelConfig = {
+    collection:        "tokens",
+    discriminatorKey:  "kind",
+  };
 
-  static $SCHEMA = {
+  public static $SCHEMA = {
 
     token:            {
       type:           String,
@@ -38,40 +39,40 @@ export class Token extends sbase.mongoose.NModel {
       kind:           String,
       data:           {
         type:         mongoose.Schema.Types.ObjectId,
-        refPath:      'payload.kind',
-      }
+        refPath:      "payload.kind",
+      },
     },
 
     expireAt:         {
       type:           Date,
       required:       true,
     },
-  }
+  };
 
-  purpose:         string
-  token:           string
-  maxRedeemTimes:  number
-  payload:         null | { kind:  string, data:  sbase.mongoose.NModel }
-  expireAt:        Date
+  public purpose:         string;
+  public token:           string;
+  public maxRedeemTimes:  number;
+  public payload:         null | { kind:  string, data:  sbase.mongoose.NModel };
+  public expireAt:        Date;
 
-  static async createToken(
+  public static async createToken(
     purpose: string,
     payload: sbase.mongoose.NModel,
     {
       expireInMs = 0,
       maxRedeemTimes = -1,
       tokenSize = 16,
-    }: TokenOptions = {}
+    }: TokenOptions = {},
   ): Promise<Token> {
-    let self = this.cast<Token>();
-    let expireAt = !expireInMs ? MAX_DATE : moment().add(expireInMs, 'ms');
-    let kind: string = payload && (payload.constructor as any).modelName;
+    const self = this.cast<Token>();
+    const expireAt = !expireInMs ? MAX_DATE : moment().add(expireInMs, "ms");
+    const kind: string = payload && (payload.constructor as any).modelName;
 
-    let doc = {
+    const doc = {
       purpose,
       maxRedeemTimes,
-      payload:         payload == null ? null :   {
-        kind:          kind,
+      payload:         payload == null ? null : {
+        kind,
         data:          payload._id,
       },
       expireAt,
@@ -80,12 +81,12 @@ export class Token extends sbase.mongoose.NModel {
     return self.create(doc);
   }
 
-  static async redeemToken(
+  public static async redeemToken(
     token: string,
-    { populate }: { populate?: object } = {}
+    { populate }: { populate?: object } = {},
   ): Promise<Token> {
-    let self = this.cast<Token>();
-    let query = {
+    const self = this.cast<Token>();
+    const query = {
       token,
       maxRedeemTimes: {
         $ne: 0,
@@ -99,7 +100,7 @@ export class Token extends sbase.mongoose.NModel {
         $inc: { maxRedeemTimes: -1 },
       }, { new: true })
       .populate({
-        path: 'payload.data',
+        path: "payload.data",
         options: populate,
       });
   }
@@ -111,7 +112,7 @@ export class Token extends sbase.mongoose.NModel {
 }
 
 export interface TokenOptions {
-  expireInMs?:      number   // 0 means no expiration
-  maxRedeemTimes?:  number   // -1 means no limitation
-  tokenSize?:       number
+  expireInMs?:      number;   // 0 means no expiration
+  maxRedeemTimes?:  number;   // -1 means no limitation
+  tokenSize?:       number;
 }

@@ -14,7 +14,7 @@ KoaRouter                      = require 'koa-router'
   UserApplet
 }                              = require '../models'
 { params, rules }              = require './params'
-{ ParameterValidationError }   = require '../errors'
+{ ParameterValidationError }   = require '../errors_old'
 { MINIMAL_DATA_LEVEL }         = require '../constants'
 
 

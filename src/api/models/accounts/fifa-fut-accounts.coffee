@@ -3,7 +3,7 @@ LRU                          = require 'lru-cache'
 
 { AccountSchema }            = require './accounts'
 { ExcludeFieldsToJSON }      = require '../plugins/exclude-fields'
-errors                       = require '../../errors'
+errors                       = require '../../errors_old'
 
 
 class FifaFutAccountSchema extends AccountSchema

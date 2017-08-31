@@ -12,7 +12,7 @@ KoaRouter                      = require 'koa-router'
   AccountCategory
   TwitterAccount
 }                              = require '../models'
-errors                         = require '../errors'
+errors                         = require '../errors_old'
 { params, rules }              = require './params'
 
 
