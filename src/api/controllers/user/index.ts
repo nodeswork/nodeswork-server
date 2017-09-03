@@ -8,4 +8,4 @@ export const apiRouter = new Router({
 });
 
 apiRouter
-  .use(auth.router.routes(), auth.router.allowedMethods());
+  .use(auth.apiRouter.routes(), auth.apiRouter.allowedMethods());

@@ -96,7 +96,7 @@ export class User extends sbase.mongoose.NModel {
   }
 
   @sbase.koa.bind("GET")
-  public async verifyUserEmail(
+  public static async verifyUserEmail(
     @sbase.koa.params("request.query.token") token: string,
   ): Promise<void> {
     const tokenDoc = await Token.redeemToken(token, {

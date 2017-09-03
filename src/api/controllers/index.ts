@@ -1,4 +1,29 @@
 import * as Router from 'koa-router';
+
+import * as user from './user';
+
+import { router } from './router';
+
+export {
+  router,
+}
+
+const apiRouter = new Router({
+  prefix: '/api',
+});
+
+apiRouter
+  .use(handleApiRequest)
+  .use(user.apiRouter.routes(), user.apiRouter.allowedMethods());
+
+router
+  .use(apiRouter.routes(), apiRouter.allowedMethods());
+
+
+
+
+// -------------------------------------------------------------------------
+
 import * as _ from "underscore";
 
 import {
@@ -7,23 +32,6 @@ import {
   NodesworkError,
   NodesworkErrorClass,
 } from "@nodeswork/utils";
-
-
-import * as user from './user';
-
-export const apiRouter = new Router({
-  prefix: '/api',
-});
-
-apiRouter
-  .use(handleApiRequest)
-  .use(user.apiRouter.routes(), user.apiRouter.allowedMethods());
-
-export const router = new Router();
-
-router
-  .use(apiRouter.routes(), apiRouter.allowedMethods());
-
 
 // TODO: Find a better place for these helper functions.
 async function handleApiRequest(ctx: any, next: () => void) {

@@ -1,15 +1,17 @@
 import * as sbase from "@nodeswork/sbase";
 
+import { router } from '../router';
+
 import { User } from "../../models/models";
 import { DETAIL } from "../../models/users/users";
 
 export class NRouter extends sbase.koa.NRouter {}
 
-export const router = new NRouter({
+export const apiRouter = new NRouter({
   prefix: "/user",
 });
 
-router
+apiRouter
 
   .post("/register", sendVerifyEmail, User.createMiddleware({
     target:                      "user",
@@ -24,6 +26,10 @@ router
   .get("/", (ctx) => {
     ctx.body = { hello: "world" };
   })
+;
+
+router
+  .get('/users/verifyUserEmail', User.verifyUserEmail as any)
 ;
 
 async function sendVerifyEmail(ctx: any, next: () => void) {

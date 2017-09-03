@@ -20,7 +20,7 @@
   "dependencies": {
     "@nodeswork/logger": "0.0.6",
     "@nodeswork/mongoose": "0.0.2",
-    "@nodeswork/sbase": "0.0.5",
+    "@nodeswork/sbase": "0.0.6",
     "@nodeswork/utils": "0.0.5",
     "@types/bcrypt": "^1.0.0",
     "@types/email-templates": "^2.6.0",

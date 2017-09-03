@@ -1,11 +1,12 @@
 request         = require 'supertest'
 
-{ User }        = require '../../../dist/api/models/models'
+{ User, Token } = require '../../../dist/api/models/models'
 
 describe 'user auth', ->
 
   beforeEach ->
     await User.remove({})
+    await Token.remove({})
 
   agent = request.agent 'http://localhost:3001'
 
@@ -98,3 +99,23 @@ describe 'user auth', ->
           message: 'duplicate record'
           responseCode:  422
         }
+
+  describe 'verifyEmailAddress', ->
+
+    it 'verified email address successfully', ->
+      await agent
+        .post '/api/v1/u/user/register'
+        .send {
+          email:     'andy+nodeswork+test@nodeswork.com'
+          password:  '123456'
+        }
+        .expect 200
+        .expect {
+          message: 'A verification email has been sent to your registered email address'
+          status: 'ok'
+        }
+      { token } = await Token.findOne({})
+      await agent
+        .get "/users/verifyUserEmail?token=#{token}"
+        .expect 204
+        .expect {}
