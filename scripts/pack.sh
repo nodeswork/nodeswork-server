@@ -12,6 +12,7 @@ tar -xvzf $zipPath -C $tmpDir
 
 cp ./config/secrets.yaml $tmpDir/package/config
 cp ./config/prod/secrets.yaml $tmpDir/package/config/prod
+cp ./package-lock.json $tmpDir/package
 
 rm $zipPath
 finalPath="$(basename $zipPath .tgz).zip"
