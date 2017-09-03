@@ -23,7 +23,11 @@ cur=`pwd`
 
 cd $tmpDir/package
 
-zip -r $cur/$finalPath *
+npm install
+npm run build
+
+zip -r $cur/$finalPath config/ dist/ bower.json Dockerfile Dockerrun.aws.json \
+  package-lock.json package.json
 
 cd $cur
 
