@@ -81,7 +81,10 @@ do () ->
       ctx.render ctx.params[0]
     .get '/sstats', (ctx) ->
       ctx.body = {
-        config
+        config:
+          env: config.app.env
+          port: config.app.port
+          publicHost: config.app.publicHost
       }
 
   app
