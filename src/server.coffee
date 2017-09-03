@@ -1,3 +1,4 @@
+_                     = require 'underscore'
 IO                    = require 'socket.io'
 Koa                   = require 'koa'
 KoaRouter             = require 'koa-router'
@@ -38,15 +39,16 @@ app = new Koa
 do () ->
   mongoose.Promise = global.Promise
 
-  await mongoose.connect config.app.db, useMongoClient: true
+  await mongoose.connect config.app.db, _.extend(
+    useMongoClient: true #, config.secrets.db,
+  )
 
-  db               = mongoose.connections[0].db
-  logCollection    = 'logs'
-
-  nwLogger.transports.push nwLogger.transport winston.transports.MongoDB, {
-    db:          db
-    collection:  logCollection
-  }
+  # db               = mongoose.connections[0].db
+  # logCollection    = 'logs.instances'
+  # nwLogger.transports.push nwLogger.transport winston.transports.MongoDB, {
+    # db:          db
+    # collection:  logCollection
+  # }
   # Log              = nwLogger.registerMongooseModel {
     # collections: logCollection
     # mongoose:    mongoose
