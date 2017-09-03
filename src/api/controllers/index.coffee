@@ -27,7 +27,7 @@ router
   .use userRole
   .use deviceRole
 
-  .use user.router.routes(), user.router.allowedMethods()
+  .use user.apiRouter.routes(), user.apiRouter.allowedMethods()
   .use devRouter.routes(), devRouter.allowedMethods()
   .use appletApiRouter.routes(), appletApiRouter.allowedMethods()
   .use accountRouter.routes(), accountRouter.allowedMethods()

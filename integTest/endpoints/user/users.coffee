@@ -73,3 +73,28 @@ describe 'user auth', ->
           message: 'A verification email has been sent to your registered email address'
           status: 'ok'
         }
+
+    it 'fails with duplicate email', ->
+      await agent
+        .post '/api/v1/u/user/register'
+        .send {
+          email:     'andy+nodeswork+test@nodeswork.com'
+          password:  '123456'
+        }
+        .expect 200
+        .expect {
+          message: 'A verification email has been sent to your registered email address'
+          status: 'ok'
+        }
+
+      await agent
+        .post '/api/v1/u/user/register'
+        .send {
+          email:     'andy+nodeswork+test@nodeswork.com'
+          password:  '123456'
+        }
+        .expect 422
+        .expect {
+          message: 'duplicate record'
+          responseCode:  422
+        }
