@@ -1,4 +1,5 @@
 env:         prod
+port:        3000
 # db:          mongodb://ds119014.mlab.com:19014/nodeswork-prod
 db:          mongodb://nwins:awgh1241hi2j3@ds119014.mlab.com:19014/nodeswork-prod
 publicHost:  http://nodeswork.com

@@ -11,6 +11,7 @@
     "build": "rm -rf dist/ && ./node_modules/.bin/gulp",
     "integTest": "npm run build && NODE_ENV=test mocha integTest/ --timeout=10000 --trace-warnings",
     "start": "node --trace-warnings dist/server.js",
+    "startProd": "npm run build && NODE_ENV=prod node --trace-warnings dist/server.js",
     "docs": "codo",
     "test": "npm run build && NODE_ENV=test mocha --timeout=10000 --trace-warnings"
   },
