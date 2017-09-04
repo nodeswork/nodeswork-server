@@ -79,13 +79,6 @@ do () ->
       ctx.render 'index'
     .get /\/views\/(.*)\.html/, (ctx) ->
       ctx.render ctx.params[0]
-    .get '/sstats', (ctx) ->
-      ctx.body = {
-        config:
-          env: config.app.env
-          port: config.app.port
-          publicHost: config.app.publicHost
-      }
 
   app
     .use error {

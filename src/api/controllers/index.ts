@@ -1,35 +1,37 @@
-import * as Router from 'koa-router';
+import * as Router    from 'koa-router';
 
-import * as user from './user';
+import { userRouter } from './user';
+import { config }     from '../../config';
 
-import { router } from './router';
+const packageConfig = require('../../../package.json');
 
-export {
-  router,
-}
-
-const apiRouter = new Router();
-
-apiRouter
+export const router = new Router()
   .use(handleApiRequest)
-  .use(user.apiRouter.routes(), user.apiRouter.allowedMethods());
+  .use(userRouter.routes(), userRouter.allowedMethods())
+  .get('/sstats', sstats)
+;
 
-router
-  .use(apiRouter.routes(), apiRouter.allowedMethods());
-
-
-
+async function sstats(ctx: Router.IRouterContext) {
+  ctx.body = {
+    app:        {
+      env:         config.app.env,
+      port:        config.app.port,
+      publicHost:  config.app.publicHost,
+      version:     packageConfig.version,
+    },
+  };
+}
 
 // -------------------------------------------------------------------------
 
-import * as _ from "underscore";
+import * as _ from 'underscore';
 
 import {
   ErrorCaster,
   ErrorOptions,
   NodesworkError,
   NodesworkErrorClass,
-} from "@nodeswork/utils";
+} from '@nodeswork/utils';
 
 // TODO: Find a better place for these helper functions.
 async function handleApiRequest(ctx: any, next: () => void) {
@@ -47,10 +49,10 @@ async function handleApiRequest(ctx: any, next: () => void) {
 class MongooseErrorCaster implements ErrorCaster {
 
   public filter(error: any, options: ErrorOptions): boolean {
-    if (error.name === "ValidationError" && error.errors != null) {
+    if (error.name === 'ValidationError' && error.errors != null) {
       return true;
     }
-    if (error.name === "MongoError" && error.code === 11000) {
+    if (error.name === 'MongoError' && error.code === 11000) {
       return true;
     }
     return false;
@@ -58,13 +60,13 @@ class MongooseErrorCaster implements ErrorCaster {
 
   public cast(error: any, options: ErrorOptions, cls: NodesworkErrorClass): NodesworkError {
     if (error.errors) {
-      return new NodesworkError("invalid value", {
+      return new NodesworkError('invalid value', {
         errors: _.mapObject(error.errors, mapMongooseError),
         responseCode: 422,
       });
     }
     if (error.code === 11000) {
-      return new NodesworkError("duplicate record", {
+      return new NodesworkError('duplicate record', {
         responseCode: 422,
       });
     }
@@ -73,13 +75,13 @@ class MongooseErrorCaster implements ErrorCaster {
 }
 
 function mapMongooseError(error: any) {
-  if (error && error.kind === "user defined") {
+  if (error && error.kind === 'user defined') {
     return {
       kind: error.message,
       path: error.path,
     };
   }
-  return _.pick(error, "kind", "path");
+  return _.pick(error, 'kind', 'path');
 }
 
 NodesworkError.addErrorCaster(new MongooseErrorCaster());

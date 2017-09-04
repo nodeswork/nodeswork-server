@@ -7,4 +7,4 @@ export const attachIO = sockets.attachIO;
 
 export {
   router,
-}
+};

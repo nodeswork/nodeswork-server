@@ -1,42 +1,40 @@
-import * as sbase from "@nodeswork/sbase";
+import * as sbase from '@nodeswork/sbase';
 
-import { router } from '../router';
+import { NRouter } from '../router';
+import { User }    from '../../models/models';
+import { DETAIL }  from '../../models/users/users';
 
-import { User } from "../../models/models";
-import { DETAIL } from "../../models/users/users";
-
-export class NRouter extends sbase.koa.NRouter {}
-
-export const apiRouter = new NRouter({
-  prefix: "/user",
+export const userAuthRouter = new NRouter({
+  prefix: '/user',
 });
 
-apiRouter
+userAuthRouter
 
-  .post("/register", sendVerifyEmail, User.createMiddleware({
-    target:                      "user",
+  .post('/register', sendVerifyEmail, User.createMiddleware({
+    target:                      'user',
     allowCreateFromParentModel:  true,
     noBody:                      true,
   }))
 
-  .post("/login")
+  .get('/verifyUserEmail', User.verifyUserEmail as any)
 
-  .get("/logout")
+  .post('/login')
 
-  .get("/", (ctx) => {
-    ctx.body = { hello: "world" };
+  .get('/logout')
+
+  .get('/', (ctx) => {
+    ctx.body = { hello: 'world' };
   })
 ;
 
-router
-  .get('/users/verifyUserEmail', User.verifyUserEmail as any)
-;
+const SEND_VERIFY_EMAIL_MESSAGE =
+  'A verification email has been sent to your registered email address';
 
 async function sendVerifyEmail(ctx: any, next: () => void) {
   await next();
   await ctx.user.sendVerifyEmail();
   ctx.body = {
-    status: "ok",
-    message: "A verification email has been sent to your registered email address",
+    status: 'ok',
+    message: SEND_VERIFY_EMAIL_MESSAGE,
   };
 }

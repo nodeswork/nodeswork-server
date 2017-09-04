@@ -10,7 +10,10 @@
       "no-empty-interface": false,
       "typedef-whitespace": false,
       "member-ordering": false,
-      "no-var-requires": false
+      "no-var-requires": false,
+      "quotemark": false,
+      "ordered-imports": false,
+      "import-spacing": false
     },
     "rulesDirectory": []
 }
