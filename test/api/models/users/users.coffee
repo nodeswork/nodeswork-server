@@ -28,6 +28,6 @@ describe 'UserModel', ->
       })
       user.should.be.ok()
       { token } = await user.sendVerifyEmail()
-      await user.verifyUserEmail(token)
+      await User.verifyUserEmail(token)
       user = await User.findById(user._id)
       user.status.should.be.equal 'ACTIVE'
