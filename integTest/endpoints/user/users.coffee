@@ -14,7 +14,7 @@ describe 'user auth', ->
 
     it 'failes without email or password', ->
       await agent
-        .post '/api/v1/u/user/register'
+        .post '/v1/u/user/register'
         .expect 422
         .expect {
           message:       'invalid value'
@@ -30,7 +30,7 @@ describe 'user auth', ->
 
     it 'failes with invalid email', ->
       await agent
-        .post '/api/v1/u/user/register'
+        .post '/v1/u/user/register'
         .send {
           email:     'notalivademail'
           password:  'pp'
@@ -47,7 +47,7 @@ describe 'user auth', ->
 
     it 'failes with invalid password', ->
       await agent
-        .post '/api/v1/u/user/register'
+        .post '/v1/u/user/register'
         .send {
           email:     'valid@email.com'
           password:  'pp'
@@ -64,7 +64,7 @@ describe 'user auth', ->
 
     it 'succeeds with valid email and password', ->
       await agent
-        .post '/api/v1/u/user/register'
+        .post '/v1/u/user/register'
         .send {
           email:     'andy+nodeswork+test@nodeswork.com'
           password:  '123456'
@@ -77,7 +77,7 @@ describe 'user auth', ->
 
     it 'fails with duplicate email', ->
       await agent
-        .post '/api/v1/u/user/register'
+        .post '/v1/u/user/register'
         .send {
           email:     'andy+nodeswork+test@nodeswork.com'
           password:  '123456'
@@ -89,7 +89,7 @@ describe 'user auth', ->
         }
 
       await agent
-        .post '/api/v1/u/user/register'
+        .post '/v1/u/user/register'
         .send {
           email:     'andy+nodeswork+test@nodeswork.com'
           password:  '123456'
@@ -104,7 +104,7 @@ describe 'user auth', ->
 
     it 'verified email address successfully', ->
       await agent
-        .post '/api/v1/u/user/register'
+        .post '/v1/u/user/register'
         .send {
           email:     'andy+nodeswork+test@nodeswork.com'
           password:  '123456'

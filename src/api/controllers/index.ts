@@ -8,9 +8,7 @@ export {
   router,
 }
 
-const apiRouter = new Router({
-  prefix: '/api',
-});
+const apiRouter = new Router();
 
 apiRouter
   .use(handleApiRequest)
