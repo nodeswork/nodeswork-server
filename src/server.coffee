@@ -1,7 +1,6 @@
 _                     = require 'underscore'
 IO                    = require 'socket.io'
 Koa                   = require 'koa'
-KoaRouter             = require 'koa-router'
 Pug                   = require 'koa-pug'
 bodyParser            = require 'koa-bodyparser'
 convert               = require 'koa-convert'
@@ -71,19 +70,10 @@ do () ->
     app:         app
   }
 
-  router = new KoaRouter
-
-  router
-    .use api.router.routes(), api.router.allowedMethods()
-    .get /^\/($|accounts|my-applets|preferences|explore|devices|messages|register|dev)(.*)/, (ctx) ->
-      ctx.render 'index'
-    .get /\/views\/(.*)\.html/, (ctx) ->
-      ctx.render ctx.params[0]
-
   app
     .use error {
       engine: 'pug'
-      template: './src/views/errors.pug'
+      template: './dist/views/errors.pug'
     }
     .use cors({
       origin: (ctx) -> config.app.CORS
@@ -101,8 +91,8 @@ do () ->
       dynamic:  true
     }
     .use staticCache './dist/public', dynamic: true
-    .use router.routes()
-    .use router.allowedMethods()
+    .use api.router.routes()
+    .use api.router.allowedMethods()
     .use (ctx) ->
       logger.warn 'Uncatched request', {
         url:      ctx.request.url

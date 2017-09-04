@@ -11,5 +11,5 @@ describe 'server', () ->
   it 'should start', () ->
 
     await request(app.server)
-      .get '/'
-      .expect 200, {}
+      .get '/sstats'
+      .expect 200

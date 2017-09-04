@@ -116,6 +116,6 @@ describe 'user auth', ->
         }
       { token } = await Token.findOne({})
       await agent
-        .get "/users/verifyUserEmail?token=#{token}"
+        .get "/v1/u/user/verifyUserEmail?token=#{token}"
         .expect 204
         .expect {}
