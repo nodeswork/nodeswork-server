@@ -6,6 +6,7 @@ Pug                   = require 'koa-pug'
 bodyParser            = require 'koa-bodyparser'
 convert               = require 'koa-convert'
 # csrf                  = require 'koa-csrf'
+cors                  = require 'koa2-cors'
 error                 = require 'koa-error'
 http                  = require 'http'
 mongoose              = require 'mongoose'
@@ -73,6 +74,9 @@ do () ->
   router = new KoaRouter
 
   router
+    .use cors({
+      origin: (ctx) -> config.app.CORS
+    })
     .use api.router.routes(), api.router.allowedMethods()
     .get /^\/($|accounts|my-applets|preferences|explore|devices|messages|register|dev)(.*)/, (ctx) ->
       ctx.render 'index'

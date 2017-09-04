@@ -2,3 +2,4 @@ env:         dev
 port:        3000
 db:          mongodb://localhost:27017/nodeswork-dev
 publicHost:  http://localhost:3000
+CORS:        http://localhost:4200

@@ -6,6 +6,7 @@ export interface Config {
     port:                   number,
     db:                     string,
     publicHost:             string,
+    CORS:                   string,
   };
 
   mailer:                   {
