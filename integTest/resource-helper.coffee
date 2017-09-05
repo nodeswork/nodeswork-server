@@ -21,8 +21,14 @@ class AgentSession
     @agent    = request.agent 'http://localhost:3001'
     @headers  = options.headers ? {}
 
-  createUser: (email, password, status='UNVERIFIED') ->
+  createUser: ({email, password, status='UNVERIFIED'}) ->
     User.create({ email, password, status })
+
+  createUserAndLogin: ({email, password, status='UNVERIFIED'}) ->
+    await @createUser({email, password, status})
+    await @agent.post('/v1/u/user/login').send({
+      email, password
+    })
 
   # createUser: (options={}) ->
     # { suffix    = '1'

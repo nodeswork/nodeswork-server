@@ -1,10 +1,11 @@
-import * as sbase  from '@nodeswork/sbase';
-import * as Router from 'koa-router';
+import * as _                  from 'underscore';
+import * as sbase              from '@nodeswork/sbase';
+import * as Router             from 'koa-router';
 
-import * as errors from '../../errors';
-import { NRouter } from '../router';
-import { User }    from '../../models/models';
-import { DETAIL }  from '../../models/users/users';
+import * as errors             from '../../errors';
+import { NRouter }             from '../router';
+import { User }                from '../../models/models';
+import { DETAIL, USER_STATUS } from '../../models/users/users';
 
 export const userAuthRouter = new NRouter({
   prefix: '/user',
@@ -27,14 +28,37 @@ userAuthRouter
   .get('/', requireUserLogin, (ctx) => {
     ctx.body = ctx.user;
   })
+
+  .post('/sendVerifyEmail', sendVerifyEmail, requireUnActiveUserLogin, _.noop)
 ;
 
 export async function requireUserLogin(
   ctx: Router.IRouterContext, next: () => void,
 ) {
+  if (ctx.session.userId) {
+    ctx.user = await User.findById(ctx.session.userId);
+  }
+
   if (ctx.user == null) {
     throw errors.REQUIRE_LOGIN_ERROR;
   }
+
+  await next();
+}
+
+async function requireUnActiveUserLogin(
+  ctx: Router.IRouterContext, next: () => void,
+) {
+  if (ctx.session.userId) {
+    ctx.user = await User.findById(ctx.session.userId, null, {
+      withUnActive: true,
+    });
+  }
+
+  if (ctx.user == null) {
+    throw errors.REQUIRE_LOGIN_ERROR;
+  }
+
   await next();
 }
 
@@ -54,9 +78,13 @@ async function login(ctx: Router.IRouterContext) {
   const user = await User.verifyEmailPassword(
     ctx.request.body.email, ctx.request.body.password,
   );
+  ctx.session.userId  = user._id;
+
+  if (user.status === USER_STATUS.UNVERIFIED) {
+    throw errors.USER_NOT_ACTIVE_ERROR;
+  }
 
   ctx.body            = user.toJSON({ level: DETAIL });
-  ctx.session.userId  = user._id;
 }
 
 async function logout(ctx: Router.IRouterContext) {

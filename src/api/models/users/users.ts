@@ -124,9 +124,6 @@ export class User extends sbase.mongoose.NModel {
       if (user == null) {
         throw errors.USER_NOT_EXISTS_ERROR;
       }
-      if (user.status === USER_STATUS.UNVERIFIED) {
-        throw errors.USER_NOT_ACTIVE_ERROR;
-      }
       if (!await bcrypt.compare(password, user.password)) {
         throw errors.INVALID_PASSWORD_ERROR;
       }
