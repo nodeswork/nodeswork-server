@@ -32,7 +32,10 @@ export class User extends sbase.mongoose.NModel {
   public static $CONFIG: sbase.mongoose.ModelConfig = {
     collection:        "users",
     discriminatorKey:  "userType",
-    levels:            [ DETAIL, CREDENTIAL ],
+    dataLevel:         {
+      levels:          [ DETAIL, CREDENTIAL ],
+      default:         DETAIL,
+    },
   };
 
   public static $SCHEMA = {
@@ -109,6 +112,25 @@ export class User extends sbase.mongoose.NModel {
     const user: User = await tokenDoc.payload.data as User;
     user.status = USER_STATUS.ACTIVE;
     await user.save();
+  }
+
+  public static async verifyEmailPassword(email: string, password: string)
+    : Promise<User> {
+      const self = this.cast<User>();
+      const user = await self.findOne({ email }, null, {
+        withUnActive:  true,
+        level:         CREDENTIAL,
+      });
+      if (user == null) {
+        throw errors.USER_NOT_EXISTS_ERROR;
+      }
+      if (user.status === USER_STATUS.UNVERIFIED) {
+        throw errors.USER_NOT_ACTIVE_ERROR;
+      }
+      if (!await bcrypt.compare(password, user.password)) {
+        throw errors.INVALID_PASSWORD_ERROR;
+      }
+      return user;
   }
 
   public async _hashPasswordPreSave(next: (err?: any) => void) {

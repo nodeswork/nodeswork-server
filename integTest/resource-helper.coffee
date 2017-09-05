@@ -1,5 +1,8 @@
-# _               = require 'underscore'
-# request         = require 'supertest'
+_               = require 'underscore'
+
+{ User, Token } = require '../dist/api/models/models'
+
+request         = require 'supertest'
 
 # { USER_STATUS } = require '../../src/api/constants'
 # { app }         = require '../../src/server'
@@ -7,28 +10,19 @@
 # PASSWORD = '12345'
 
 
-# clearDB = () ->
-  # { User
-    # Account
-    # Device
-    # UserApplet
-    # Execution
-    # ExecutionAction
-    # Applet } = require '../../src/api/models'
-  # await Account.remove {}
-  # await Device.remove {}
-  # await User.remove userType: 'EmailUser'
-  # await Applet.remove appletType: 'NpmApplet'
-  # await UserApplet.remove {}
-  # await Execution.remove {}
-  # await ExecutionAction.remove {}
+clearDB = () ->
+  await User.remove {}
+  await Token.remove {}
 
 
-# class AgentSession
+class AgentSession
 
-  # constructor: (options={}) ->
-    # @agent    = request.agent app.server
-    # @headers  = options.headers ? {}
+  constructor: (options={}) ->
+    @agent    = request.agent 'http://localhost:3001'
+    @headers  = options.headers ? {}
+
+  createUser: (email, password, status='UNVERIFIED') ->
+    User.create({ email, password, status })
 
   # createUser: (options={}) ->
     # { suffix    = '1'
@@ -163,17 +157,7 @@
     # res.body
 
 
-# activeUser = (user) ->
-  # { EmailUser } = require '../../src/api/models'
-
-  # u = await EmailUser.findOne email: user.email
-  # u.status = USER_STATUS.ACTIVE
-  # await u.save()
-  # u
-
-
-# module.exports = {
-  # activeUser
-  # clearDB
-  # AgentSession
-# }
+module.exports = {
+  clearDB
+  AgentSession
+}
