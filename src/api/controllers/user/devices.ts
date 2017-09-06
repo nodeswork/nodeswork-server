@@ -16,7 +16,7 @@ export const deviceRouter = new Router({
   .post(
     '/',
     findExistingDevice,
-    overrides('user._id->user:doc', 'device._id->_id:doc'),
+    overrides('user._id->doc.user', 'device._id->doc._id'),
     Device.createMiddleware({}),
   )
 
@@ -40,18 +40,17 @@ async function findExistingDevice(
 }
 
 function overrides(...rules: string[]): Router.IMiddleware {
-  const rs: Array<{ src: string[], dst: string, target: string }> = [];
+  const rs: Array<{ src: string[], dst: string[] }> = [];
   for (const rule of rules) {
-    const [t, target] = rule.split(':');
-    const [os, od]    = t.split('->');
-    const src         = os.split('.');
-    const dst         = od || os;
-
-    rs.push({ src, dst, target });
+    const [os, od] = rule.split('->');
+    rs.push({ src: os.split('.'), dst: od.split('.') });
   }
   return async (ctx: Router.IRouterContext, next: () => void) => {
-    for (const { src, dst, target } of rs) {
-      (ctx.overrides as any)[target][dst] = dotty.get(ctx, src);
+    for (const { src, dst } of rs) {
+      const value = dotty.get(ctx, src);
+      if (value !== undefined) {
+        dotty.put(ctx.overrides, dst, value);
+      }
     }
     await next();
   };
