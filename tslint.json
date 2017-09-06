@@ -13,7 +13,8 @@
       "no-var-requires": false,
       "quotemark": false,
       "ordered-imports": false,
-      "import-spacing": false
+      "import-spacing": false,
+      "max-classes-per-file": false
     },
     "rulesDirectory": []
 }

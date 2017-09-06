@@ -7,6 +7,7 @@ const packageConfig = require('../../../package.json');
 
 export const router = new Router()
   .use(handleApiRequest)
+  .use(intializeOverrides)
   .use(userRouter.routes(), userRouter.allowedMethods())
   .get('/sstats', sstats)
 ;
@@ -44,6 +45,14 @@ async function handleApiRequest(ctx: any, next: () => void) {
       message: e.message,
     }, e.meta);
   }
+}
+
+async function intializeOverrides(ctx: any, next: () => void) {
+  ctx.overrides = {
+    query: {},
+    doc:   {},
+  };
+  await next();
 }
 
 class MongooseErrorCaster implements ErrorCaster {

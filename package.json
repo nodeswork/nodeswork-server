@@ -21,11 +21,12 @@
   "dependencies": {
     "@nodeswork/logger": "0.0.6",
     "@nodeswork/mongoose": "0.0.2",
-    "@nodeswork/sbase": "^0.1.2",
+    "@nodeswork/sbase": "^0.1.4",
     "@nodeswork/utils": "0.0.5",
     "bcrypt": "^1.0.3",
     "cookie": "^0.3.1",
     "cron": "^1.2.1",
+    "dotty": "0.0.2",
     "email-templates": "^2.7.1",
     "koa": "2.2.0",
     "koa-bodyparser": "^4.2.0",

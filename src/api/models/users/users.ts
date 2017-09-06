@@ -1,27 +1,27 @@
-import * as bcrypt from "bcrypt";
-import * as mongoose from "mongoose";
-import * as _ from "underscore";
+import * as bcrypt from 'bcrypt';
+import * as mongoose from 'mongoose';
+import * as _ from 'underscore';
 
-import * as sbase from "@nodeswork/sbase";
-import { NodesworkError } from "@nodeswork/utils";
+import * as sbase from '@nodeswork/sbase';
+import { NodesworkError } from '@nodeswork/utils';
 
-import { config } from "../../../config";
-import { sendMail } from "../../../mail/mailer";
-import * as errors from "../../errors";
-import { Token } from "../models";
+import { config } from '../../../config';
+import { sendMail } from '../../../mail/mailer';
+import * as errors from '../../errors';
+import { Token } from '../models';
 
-import "mongoose-type-email";
+import 'mongoose-type-email';
 
-export const DETAIL      = "DETAIL";
-export const CREDENTIAL  = "CREDENTIAL";
+export const DETAIL      = 'DETAIL';
+export const CREDENTIAL  = 'CREDENTIAL';
 export const USER_STATUS = {
-  ACTIVE:      "ACTIVE",
-  INACTIVE:    "INACTIVE",
-  UNVERIFIED:  "UNVERIFIED",
+  ACTIVE:      'ACTIVE',
+  INACTIVE:    'INACTIVE',
+  UNVERIFIED:  'UNVERIFIED',
 };
 
-const VERIFY_EMAIL_TOKEN_PURPOSE = "verifyEmail";
-const VERIFY_EMAIL_TEMPLATE = "email-verification";
+const VERIFY_EMAIL_TOKEN_PURPOSE = 'verifyEmail';
+const VERIFY_EMAIL_TEMPLATE = 'email-verification';
 const EMAIL_EXPIRATION_TIME_IN_MS = 10 * 60 * 1000;
 
 export type UserTypeT = typeof User & sbase.mongoose.NModelType;
@@ -30,8 +30,8 @@ export interface UserType extends UserTypeT {}
 export class User extends sbase.mongoose.NModel {
 
   public static $CONFIG: sbase.mongoose.ModelConfig = {
-    collection:        "users",
-    discriminatorKey:  "userType",
+    collection:        'users',
+    discriminatorKey:  'userType',
     dataLevel:         {
       levels:          [ DETAIL, CREDENTIAL ],
       default:         DETAIL,
@@ -52,8 +52,8 @@ export class User extends sbase.mongoose.NModel {
     password:    {
       type:      String,
       required:  true,
-      min:       [6,  "Password should be at least 6 charactors."],
-      max:       [80, "Password should be at most 80 charactors."],
+      min:       [6,  'Password should be at least 6 charactors.'],
+      max:       [80, 'Password should be at most 80 charactors.'],
       level:     CREDENTIAL,
     },
 
@@ -69,9 +69,9 @@ export class User extends sbase.mongoose.NModel {
   public password:  string;
   public status:    string;
 
-  @sbase.koa.bind("POST")
+  @sbase.koa.bind('POST')
   public static async forgotPassword(
-    @sbase.koa.params("request.body.email") email: string,
+    @sbase.koa.params('request.body.email') email: string,
   ) {
     // TODO
   }
@@ -79,7 +79,7 @@ export class User extends sbase.mongoose.NModel {
   /**
    * Send verification email for current user to verify the email address.
    */
-  @sbase.koa.bind("POST")
+  @sbase.koa.bind('POST')
   public async sendVerifyEmail(): Promise<{ token: string }> {
     if (this.status !== USER_STATUS.UNVERIFIED) {
       throw errors.EMAIL_ADDRESS_IS_ALREADY_VERIFIED;
@@ -98,9 +98,9 @@ export class User extends sbase.mongoose.NModel {
     return { token: token.token };
   }
 
-  @sbase.koa.bind("GET")
+  @sbase.koa.bind('GET')
   public static async verifyUserEmail(
-    @sbase.koa.params("request.body.token") token: string,
+    @sbase.koa.params('request.body.token') token: string,
   ): Promise<void> {
     const tokenDoc = await Token.redeemToken(token, {
       populate: { withUnActive: true },
@@ -131,7 +131,7 @@ export class User extends sbase.mongoose.NModel {
   }
 
   public async _hashPasswordPreSave(next: (err?: any) => void) {
-    if (!this.isModified("password")) {
+    if (!this.isModified('password')) {
       return next();
     }
     if (this.password.length < 6) {
@@ -144,7 +144,7 @@ export class User extends sbase.mongoose.NModel {
 }
 
 User.Pre({
-  name:  "save",
+  name:  'save',
   fn:    User.prototype._hashPasswordPreSave,
 });
 
