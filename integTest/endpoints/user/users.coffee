@@ -120,7 +120,8 @@ describe 'endpoints - user auth', ->
         }
       { token } = await Token.findOne({})
       await session.agent
-        .get "/v1/u/user/verifyUserEmail?token=#{token}"
+        .post "/v1/u/user/verifyUserEmail"
+        .send { token }
         .expect 204, {}
 
   describe 'login', ->

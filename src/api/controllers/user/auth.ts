@@ -19,7 +19,7 @@ userAuthRouter
     noBody:                      true,
   }))
 
-  .get('/verifyUserEmail', User.verifyUserEmail as any)
+  .post('/verifyUserEmail', User.verifyUserEmail as any)
 
   .post('/login', login)
 

@@ -77,6 +77,8 @@ do () ->
     }
     .use cors({
       origin: (ctx) -> config.app.CORS
+      maxAge:      3600
+      credentials: true
     })
     # .use new csrf.default()  # ES6 style
     .use convert(session store: mongooseStore.create {
