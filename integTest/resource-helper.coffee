@@ -1,6 +1,6 @@
 _               = require 'underscore'
 
-{ User, Token } = require '../dist/api/models/models'
+{ User, Device, Token } = require '../dist/api/models/models'
 
 request         = require 'supertest'
 
@@ -12,6 +12,7 @@ request         = require 'supertest'
 
 clearDB = () ->
   await User.remove {}
+  await Device.remove {}
   await Token.remove {}
 
 
@@ -25,10 +26,11 @@ class AgentSession
     User.create({ email, password, status })
 
   createUserAndLogin: ({email, password, status='UNVERIFIED'}) ->
-    await @createUser({email, password, status})
+    user = await @createUser({email, password, status})
     await @agent.post('/v1/u/user/login').send({
       email, password
     })
+    user
 
   # createUser: (options={}) ->
     # { suffix    = '1'

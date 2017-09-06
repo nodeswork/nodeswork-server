@@ -56,7 +56,7 @@ exports.registerModels = (mongooseInstance = mongoose) ->
     ['NpmApplet',                applets.NpmAppletSchema]
     ['SystemApplet',             applets.SystemAppletSchema]
     ['UserApplet',               usersApplets.UserAppletSchema]
-    ['Device',                   devices.DeviceSchema]
+    # ['Device',                   devices.DeviceSchema]
     ['Message',                  messages.MessageSchema]
     ['AppletMessage',            messages.AppletMessageSchema]
     ['Execution',                executions.ExecutionSchema]

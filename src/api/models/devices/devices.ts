@@ -1,5 +1,7 @@
-import * as mongoose from 'mongoose';
-import * as sbase from '@nodeswork/sbase';
+import * as mongoose     from 'mongoose';
+import * as sbase        from '@nodeswork/sbase';
+
+import { generateToken } from "../../../utils/tokens";
 
 export const DETAIL = 'DETAIL';
 export const TOKEN  = 'TOKEN';
@@ -25,12 +27,13 @@ export class Device extends sbase.mongoose.NModel {
       required:        true,
       index:           true,
       unique:          true,
+      default:         generateToken,
       api:             sbase.mongoose.AUTOGEN,
     },
 
     os:                {
       type:            String,
-      enum:            [ 'MaxOS', 'Linux', 'Windows' ],
+      enum:            [ 'MacOS', 'Linux', 'Windows' ],
       required:        true,
     },
 

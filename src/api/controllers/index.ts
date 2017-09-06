@@ -1,5 +1,7 @@
 import * as Router    from 'koa-router';
 
+import { logger }     from '@nodeswork/logger';
+
 import { userRouter } from './user';
 import { config }     from '../../config';
 
@@ -44,6 +46,9 @@ async function handleApiRequest(ctx: any, next: () => void) {
     ctx.body = _.extend({
       message: e.message,
     }, e.meta);
+    if (ctx.status === 500) {
+      logger.error(e.cause);
+    }
   }
 }
 

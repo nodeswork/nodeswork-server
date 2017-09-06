@@ -11,12 +11,12 @@ export const deviceRouter = new Router({
   prefix: '/devices',
 })
   .use(requireUserLogin)
-  .use(overrides('user:query'))
+  .use(overrides('user._id->query.user'))
 
   .post(
     '/',
-    findExistingDevice,
-    overrides('user._id->doc.user', 'device._id->doc._id'),
+    updateExistingDevice(Device.updateMiddleware({ field: 'deviceId' })),
+    overrides('user._id->doc.user'),
     Device.createMiddleware({}),
   )
 
@@ -28,21 +28,31 @@ export const deviceRouter = new Router({
 
 ;
 
-async function findExistingDevice(
-  ctx: Router.IRouterContext, next: () => void,
-) {
-  const query = {
-    user:             ctx.user,
-    deviceIdentifier: ctx.body.deviceIdentifier,
+function updateExistingDevice(
+  updateMiddleware: Router.IMiddleware,
+): Router.IMiddleware {
+  return async (ctx: Router.IRouterContext, next: () => void) => {
+    const query  = {
+      user:             ctx.user._id,
+      deviceIdentifier: ctx.request.body.deviceIdentifier,
+    };
+    const device = await Device.findOne(query);
+    if (device == null) {
+      await next();
+    } else {
+      ctx.params.deviceId = device._id;
+      await updateMiddleware(ctx, null);
+    }
   };
-  (ctx as any).device = await Device.findOne(query);
-  await next();
 }
 
 function overrides(...rules: string[]): Router.IMiddleware {
   const rs: Array<{ src: string[], dst: string[] }> = [];
   for (const rule of rules) {
     const [os, od] = rule.split('->');
+    if (!od) {
+      throw new Error(`Rule ${rule} is not correct`);
+    }
     rs.push({ src: os.split('.'), dst: od.split('.') });
   }
   return async (ctx: Router.IRouterContext, next: () => void) => {

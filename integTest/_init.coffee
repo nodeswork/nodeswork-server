@@ -1,3 +1,5 @@
+require('source-map-support').install()
+
 _          = require 'underscore'
 
 { app }    = require '../dist/server'

@@ -1,8 +1,6 @@
-request         = require 'supertest'
-
 { clearDB, AgentSession } = require '../../resource-helper'
 
-{ User, Token } = require '../../../dist/api/models/models'
+{ Token }                 = require '../../../dist/api/models/models'
 
 describe 'endpoints - user auth', ->
 
