@@ -10,6 +10,7 @@
   "scripts": {
     "build": "rm -rf dist/ && ./node_modules/.bin/gulp",
     "integTest": "npm run build && NODE_ENV=test mocha integTest/ --timeout=10000 --trace-warnings",
+    "prestart": "npm run build",
     "start": "NODE_ENV=dev node --trace-warnings dist/server.js",
     "startProd": "NODE_ENV=prod node --trace-warnings dist/server.js",
     "docs": "codo",
@@ -19,10 +20,13 @@
     "node": ">= 7.0"
   },
   "dependencies": {
-    "@nodeswork/logger": "0.0.6",
+    "@nodeswork/logger": "^0.1.0",
     "@nodeswork/mongoose": "0.0.2",
-    "@nodeswork/sbase": "^0.1.6",
+    "@nodeswork/nam": "0.0.4",
+    "@nodeswork/sbase": "^0.1.8",
     "@nodeswork/utils": "0.0.5",
+    "@types/socket.io": "^1.4.30",
+    "@types/winston": "^2.3.5",
     "bcrypt": "^1.0.3",
     "cookie": "^0.3.1",
     "cron": "^1.2.1",

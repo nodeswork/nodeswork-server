@@ -1,11 +1,15 @@
 import * as Router    from 'koa-router';
 
-import { logger }     from '@nodeswork/logger';
+import * as logger    from '@nodeswork/logger';
 
 import { userRouter } from './user';
 import { config }     from '../../config';
 
+import { deviceSocketMap } from '../sockets';
+
 const packageConfig = require('../../../package.json');
+
+const LOG = logger.getLogger();
 
 export const router = new Router()
   .use(handleApiRequest)
@@ -22,7 +26,13 @@ async function sstats(ctx: Router.IRouterContext) {
       publicHost:  config.app.publicHost,
       version:     packageConfig.version,
     },
+    devices: {
+      connected:   Object.keys(deviceSocketMap).length,
+    },
   };
+  for (const deviceId of Object.keys(deviceSocketMap)) {
+    ctx.body.devices[deviceId] = await deviceSocketMap[deviceId].ps();
+  }
 }
 
 // -------------------------------------------------------------------------
@@ -47,7 +57,7 @@ async function handleApiRequest(ctx: any, next: () => void) {
       message: e.message,
     }, e.meta);
     if (ctx.status === 500) {
-      logger.error(e.cause);
+      LOG.error(e.cause);
     }
   }
 }

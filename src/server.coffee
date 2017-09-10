@@ -1,5 +1,4 @@
 _                     = require 'underscore'
-IO                    = require 'socket.io'
 Koa                   = require 'koa'
 Pug                   = require 'koa-pug'
 bodyParser            = require 'koa-bodyparser'
@@ -103,7 +102,7 @@ do () ->
       }
 
   server = http.Server app.callback()
-  api.attachIO IO server
+  api.setupSockets server
 
   server.listen config.app.port, ->
     logger.info "server is started at http://localhost:#{config.app.port}."
