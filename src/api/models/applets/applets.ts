@@ -1,9 +1,10 @@
 import * as _            from 'underscore';
 import * as mongoose     from 'mongoose';
 import * as sbase        from '@nodeswork/sbase';
-import compareVersion    from 'compare-version';
 
 import { generateToken } from '../../../utils/tokens';
+
+import compareVersion = require('compare-version');
 
 export const DATA_LEVELS = {
   DETAIL:  'DETAIL',
