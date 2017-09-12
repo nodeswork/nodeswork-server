@@ -1,6 +1,6 @@
 { clearDB, AgentSession } = require '../../resource-helper'
 
-{ Token }                 = require '../../../dist/api/models/models'
+{ Token }                 = require '../../../dist/api/models'
 
 describe 'endpoints - user auth', ->
 

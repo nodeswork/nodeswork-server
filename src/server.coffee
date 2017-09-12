@@ -55,7 +55,7 @@ do () ->
 
   logger           = nwLogger.logger
 
-  await registerModels mongoose
+  # await registerModels mongoose
 
   api        = require './api'
 

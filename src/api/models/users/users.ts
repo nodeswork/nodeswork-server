@@ -8,7 +8,7 @@ import { NodesworkError } from '@nodeswork/utils';
 import { config } from '../../../config';
 import { sendMail } from '../../../mail/mailer';
 import * as errors from '../../errors';
-import { Token } from '../models';
+import { Token } from '../';
 
 import 'mongoose-type-email';
 

@@ -1,10 +1,9 @@
 import * as _                  from 'underscore';
-import * as sbase              from '@nodeswork/sbase';
 import * as Router             from 'koa-router';
 
 import * as errors             from '../../errors';
 import { NRouter }             from '../router';
-import { User }                from '../../models/models';
+import { User }                from '../../models';
 import { DETAIL, USER_STATUS } from '../../models/users/users';
 
 export const userAuthRouter = new NRouter({

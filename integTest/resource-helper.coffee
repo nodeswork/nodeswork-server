@@ -1,6 +1,6 @@
 _               = require 'underscore'
 
-{ User, Device, Token } = require '../dist/api/models/models'
+{ User, Device, Token } = require '../dist/api/models'
 
 request         = require 'supertest'
 

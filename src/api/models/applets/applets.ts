@@ -11,7 +11,6 @@ export const DATA_LEVELS = {
 export const PERMISSIONS = {
   PRIVATE:  'PRIVATE',
   PUBLIC:   'PUBLIC',
-  LIMIT:    'LIMIT',
 };
 
 export type AppletTypeT = typeof Applet & sbase.mongoose.NModelType;
@@ -105,6 +104,7 @@ export class Applet extends sbase.mongoose.NModel {
       ref:            'User',
       required:       true,
       index:          true,
+      api:            sbase.mongoose.READONLY,
     },
 
     name:             {
@@ -120,7 +120,7 @@ export class Applet extends sbase.mongoose.NModel {
 
     description:      {
       type:           String,
-      max:            [1400, 'Description should be at most 1400 charactors.'],
+      max:            [ 1400, 'description should be at most 1400 charactors' ],
       dataLevel:      DATA_LEVELS.DETAIL,
     },
 
@@ -141,6 +141,7 @@ export class Applet extends sbase.mongoose.NModel {
     configHistories:  {
       type:           [ AppletConfig ],
       dataLevel:      DATA_LEVELS.DETAIL,
+      min:            [1, 'config is missing'],
     },
   };
 
