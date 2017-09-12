@@ -14,7 +14,8 @@
       "quotemark": false,
       "ordered-imports": false,
       "import-spacing": false,
-      "max-classes-per-file": false
+      "max-classes-per-file": false,
+      "no-namespace": false
     },
     "rulesDirectory": []
 }

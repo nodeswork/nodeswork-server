@@ -11,7 +11,7 @@ export type TokenTypeT = typeof Token & sbase.mongoose.NModelType;
 
 export class Token extends sbase.mongoose.NModel {
 
-  public static $CONFIG: sbase.mongoose.ModelConfig = {
+  public static $CONFIG: mongoose.SchemaOptions = {
     collection:        "tokens",
     discriminatorKey:  "kind",
   };

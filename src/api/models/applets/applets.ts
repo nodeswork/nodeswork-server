@@ -64,7 +64,7 @@ const AppletConfig = new mongoose.Schema({
 
 export class Applet extends sbase.mongoose.NModel {
 
-  public static $CONFIG: sbase.mongoose.ModelConfig = {
+  public static $CONFIG: mongoose.SchemaOptions = {
     collection:        'applets',
     dataLevel:         {
       levels:          [ DATA_LEVELS.DETAIL, DATA_LEVELS.TOKEN ],

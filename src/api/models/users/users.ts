@@ -29,7 +29,7 @@ export interface UserType extends UserTypeT {}
 
 export class User extends sbase.mongoose.NModel {
 
-  public static $CONFIG: sbase.mongoose.ModelConfig = {
+  public static $CONFIG: mongoose.SchemaOptions = {
     collection:        'users',
     discriminatorKey:  'userType',
     dataLevel:         {

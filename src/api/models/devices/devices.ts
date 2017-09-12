@@ -11,7 +11,7 @@ export interface DeviceType extends DeviceTypeT {}
 
 export class Device extends sbase.mongoose.NModel {
 
-  public static $CONFIG: sbase.mongoose.ModelConfig = {
+  public static $CONFIG: mongoose.SchemaOptions = {
     collection:        'devices',
     discriminatorKey:  'deviceType',
     dataLevel:         {
