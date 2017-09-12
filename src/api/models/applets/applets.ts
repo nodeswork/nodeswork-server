@@ -1,5 +1,7 @@
+import * as _            from 'underscore';
 import * as mongoose     from 'mongoose';
 import * as sbase        from '@nodeswork/sbase';
+import compareVersion    from 'compare-version';
 
 import { generateToken } from '../../../utils/tokens';
 
@@ -34,7 +36,7 @@ const AppletTokens = new mongoose.Schema({
     required:        true,
     default:         generateToken,
   },
-});
+}, { _id: false });
 
 export interface AppletWorkerConfig {
   name:      string;
@@ -87,6 +89,10 @@ export class Applet extends sbase.mongoose.NModel {
       levels:          [ DATA_LEVELS.DETAIL, DATA_LEVELS.TOKEN ],
       default:         DATA_LEVELS.DETAIL,
     },
+    toObject:          {
+      virtuals:        true,
+    },
+    id: false,
   };
 
   public owner:            mongoose.Schema.Types.ObjectId;
@@ -141,7 +147,8 @@ export class Applet extends sbase.mongoose.NModel {
     configHistories:  {
       type:           [ AppletConfig ],
       dataLevel:      DATA_LEVELS.DETAIL,
-      min:            [1, 'config is missing'],
+      validate:       [ validateConfig, 'config is required' ],
+      api:            sbase.mongoose.AUTOGEN,
     },
   };
 
@@ -150,6 +157,23 @@ export class Applet extends sbase.mongoose.NModel {
   }
 
   set config(value: AppletConfig) {
-    this.configHistories.push(value);
+    if (value != null) {
+      const index = _.findIndex(
+        this.configHistories,
+        (c) => compareVersion(c.version, value.version) === 0,
+      );
+      if (index === -1) {
+        this.configHistories.push(value);
+        this.configHistories.sort(
+          (a, b) => compareVersion(a.version, b.version),
+        );
+      } else {
+        this.configHistories[index] = value;
+      }
+    }
   }
+}
+
+function validateConfig(configs: AppletConfig[]) {
+  return configs.length > 0;
 }

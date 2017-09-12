@@ -4,18 +4,17 @@ import * as sbase           from '@nodeswork/sbase';
 
 import { requireUserLogin } from './auth';
 import { Device }           from '../../models';
-import { overrides }        from '../middlewares';
 
 export const deviceRouter = new Router({
   prefix: '/devices',
 })
   .use(requireUserLogin)
-  .use(overrides('user._id->query.user'))
+  .use(sbase.koa.overrides('user._id->query.user'))
 
   .post(
     '/',
     updateExistingDevice(Device.updateMiddleware({ field: 'deviceId' })),
-    overrides('user._id->doc.user'),
+    sbase.koa.overrides('user._id->doc.user'),
     Device.createMiddleware({}),
   )
 

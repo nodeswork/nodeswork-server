@@ -1,19 +1,19 @@
 _               = require 'underscore'
-
-{ User, Device, Token } = require '../dist/api/models'
-
 request         = require 'supertest'
 
-# { USER_STATUS } = require '../../src/api/constants'
-# { app }         = require '../../src/server'
-
-# PASSWORD = '12345'
+{
+  User,
+  Device,
+  Token,
+  Applet,
+}               = require '../dist/api/models'
 
 
 clearDB = () ->
   await User.remove {}
   await Device.remove {}
   await Token.remove {}
+  await Applet.remove {}
 
 
 class AgentSession
