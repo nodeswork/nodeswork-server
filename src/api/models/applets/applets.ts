@@ -17,6 +17,11 @@ export const PERMISSIONS = {
 export type AppletTypeT = typeof Applet & sbase.mongoose.NModelType;
 export interface AppletType extends AppletTypeT {}
 
+export interface AppletTokens {
+  devToken:   string;
+  prodToken:  string;
+}
+
 const AppletTokens = new mongoose.Schema({
 
   devToken:             {
@@ -31,6 +36,19 @@ const AppletTokens = new mongoose.Schema({
     default:         generateToken,
   },
 });
+
+export interface AppletWorkerConfig {
+  name:      string;
+  schedule:  string;
+}
+
+export interface AppletConfig {
+  na:           string;
+  naVersion:    string;
+  packageName:  string;
+  version:      string;
+  workers:      AppletWorkerConfig[];
+}
 
 const AppletConfig = new mongoose.Schema({
 
@@ -72,6 +90,14 @@ export class Applet extends sbase.mongoose.NModel {
     },
   };
 
+  public owner:            mongoose.Schema.Types.ObjectId;
+  public name:             string;
+  public imageUrl:         string;
+  public description:      string;
+  public tokens:           AppletTokens;
+  public permission:       string;
+  public configHistories:  AppletConfig[];
+
   public static $SCHEMA: object = {
 
     owner:            {
@@ -112,9 +138,17 @@ export class Applet extends sbase.mongoose.NModel {
       dataLevel:      DATA_LEVELS.DETAIL,
     },
 
-    verionedConfigs:  {
+    configHistories:  {
       type:           [ AppletConfig ],
       dataLevel:      DATA_LEVELS.DETAIL,
     },
   };
+
+  get config(): AppletConfig {
+    return this.configHistories[this.configHistories.length - 1];
+  }
+
+  set config(value: AppletConfig) {
+    this.configHistories.push(value);
+  }
 }
