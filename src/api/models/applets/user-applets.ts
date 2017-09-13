@@ -40,7 +40,6 @@ export class UserApplet extends sbase.mongoose.NModel {
   public applet:           mongoose.Schema.Types.ObjectId | object;
   public config:           UserAppletConfig;
   public enabled:          boolean;
-  public errors:           { [reason: string]: object };
 
   public static $SCHEMA: object = {
 
@@ -67,10 +66,6 @@ export class UserApplet extends sbase.mongoose.NModel {
     enabled:          {
       type:           Boolean,
       default:        false,
-    },
-
-    errors:           {
-      type:           mongoose.Schema.Types.Mixed,
     },
   };
 }
