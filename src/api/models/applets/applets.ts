@@ -6,12 +6,12 @@ import { generateToken } from '../../../utils/tokens';
 
 import compareVersion = require('compare-version');
 
-export const DATA_LEVELS = {
+export const APPLET_DATA_LEVELS = {
   DETAIL:  'DETAIL',
   TOKEN:   'TOKEN',
 };
 
-export const PERMISSIONS = {
+export const APPLET_PERMISSIONS = {
   PRIVATE:  'PRIVATE',
   PUBLIC:   'PUBLIC',
 };
@@ -87,8 +87,8 @@ export class Applet extends sbase.mongoose.NModel {
   public static $CONFIG: mongoose.SchemaOptions = {
     collection:        'applets',
     dataLevel:         {
-      levels:          [ DATA_LEVELS.DETAIL, DATA_LEVELS.TOKEN ],
-      default:         DATA_LEVELS.DETAIL,
+      levels:          [ APPLET_DATA_LEVELS.DETAIL, APPLET_DATA_LEVELS.TOKEN ],
+      default:         APPLET_DATA_LEVELS.DETAIL,
     },
     toObject:          {
       virtuals:        true,
@@ -128,26 +128,26 @@ export class Applet extends sbase.mongoose.NModel {
     description:      {
       type:           String,
       max:            [ 1400, 'description should be at most 1400 charactors' ],
-      dataLevel:      DATA_LEVELS.DETAIL,
+      dataLevel:      APPLET_DATA_LEVELS.DETAIL,
     },
 
     tokens:           {
       type:           AppletTokens,
       default:        AppletTokens,
       api:            sbase.mongoose.AUTOGEN,
-      dataLevel:      DATA_LEVELS.TOKEN,
+      dataLevel:      APPLET_DATA_LEVELS.TOKEN,
     },
 
     permission:       {
       type:           String,
-      enum:           Object.keys(PERMISSIONS),
-      default:        PERMISSIONS.PRIVATE,
-      dataLevel:      DATA_LEVELS.DETAIL,
+      enum:           Object.keys(APPLET_PERMISSIONS),
+      default:        APPLET_PERMISSIONS.PRIVATE,
+      dataLevel:      APPLET_DATA_LEVELS.DETAIL,
     },
 
     configHistories:  {
       type:           [ AppletConfig ],
-      dataLevel:      DATA_LEVELS.DETAIL,
+      dataLevel:      APPLET_DATA_LEVELS.DETAIL,
       validate:       [ validateConfig, 'config is required' ],
       api:            sbase.mongoose.AUTOGEN,
     },

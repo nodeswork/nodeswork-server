@@ -1,7 +1,7 @@
-import * as logger             from '@nodeswork/logger';
-import { NAMSocketRpcClient }  from '@nodeswork/nam/dist/client';
+import * as logger            from '@nodeswork/logger';
+import { NAMSocketRpcClient } from '@nodeswork/nam/dist/client';
 
-import { Device, defs }        from '../models';
+import { Device }             from '../models';
 
 const LOG = logger.getLogger();
 
@@ -16,7 +16,7 @@ export const deviceSocketMap: {
 } = {};
 
 export interface DeviceSocket extends SocketIO.Socket {
-  device: defs.Device;
+  device: Device;
 }
 
 function onConnection(socket: DeviceSocket) {

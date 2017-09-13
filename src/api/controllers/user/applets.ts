@@ -55,5 +55,5 @@ function updateConfig(get: Router.IMiddleware): Router.IMiddleware {
 }
 
 interface UpdateContext extends Router.IRouterContext {
-  applet: models.defs.Applet;
+  applet: models.Applet;
 }
