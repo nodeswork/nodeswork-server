@@ -6,6 +6,7 @@ request         = require 'supertest'
   Device,
   Token,
   Applet,
+  UserApplet,
 }               = require '../dist/api/models'
 
 
@@ -14,6 +15,7 @@ clearDB = () ->
   await Device.remove {}
   await Token.remove {}
   await Applet.remove {}
+  await UserApplet.remove {}
 
 
 class AgentSession
@@ -27,71 +29,30 @@ class AgentSession
 
   createUserAndLogin: ({email, password, status='UNVERIFIED'}) ->
     user = await @createUser({email, password, status})
-    await @agent.post('/v1/u/user/login').send({
+    resp = await @agent.post('/v1/u/user/login').send({
       email, password
     })
-    user
+    resp.body
 
-  # createUser: (options={}) ->
-    # { suffix    = '1'
-      # developer = false
-      # status    = 'ACTIVE' } = options
-    # email = "test-user+#{suffix}@gmail.com"
-    # res = await @agent
-      # .post '/api/v1/users/new'
-      # .send {
-        # userType: 'EmailUser'
-        # email:    email
-        # password: PASSWORD
-      # }
-      # .expect 200
+  createDevice: (doc={
+    deviceType:        'UserDevice'
+    containerVersion:  '1234'
+    deviceIdentifier:  '1234'
+    os:                'MacOS'
+    osVersion:         '12345'
+    token:             '1234'
+  }) ->
+    res = await @agent.post('/v1/u/devices').send(doc)
+    res.body
 
-    # # Bypass the user email validation and developer setup.
-    # { EmailUser } = require '../../src/api/models'
-    # u = await EmailUser.findOne email: email
-    # u.status                = status
-    # u.attributes.developer  = developer
-    # u = await u.save()
-    # res.body.status = status
-
-    # res.body
-
-  # loginUser: (user) ->
-    # res = await @agent
-      # .post '/api/v1/users/login'
-      # .send {
-        # userType: 'EmailUser'
-        # email:    user.email
-        # password: PASSWORD
-      # }
-      # .expect 200
-    # res.body
-
-  # createApplet: (doc={}) ->
-    # res = await @agent
-      # .post '/api/v1/dev/applets'
-      # .send _.extend {
-        # appletType:   'NpmApplet'
-        # name:         'Applet'
-        # version:      '0.0'
-        # packageName:  'package'
-        # containers:
-          # userDevice: true
-      # }, doc
-      # .expect 200
-    # res.body
-
-  # createDevice: (doc={}) ->
-    # res = await @agent
-      # .post '/api/v1/my-devices'
-      # .send _.extend {
-        # deviceId:   'deviceId'
-        # osType:     'Mac OS X'
-        # platform:   'platform'
-        # release:    'release'
-      # }, doc
-      # .expect 200
-    # res.body
+  createApplet: (doc={
+    name: 'applet name'
+    config:
+      packageName: 'package name'
+      version: 'version'
+  }) ->
+    res = await @agent.post('/v1/u/applets').send(doc)
+    res.body
 
   # createUserApplet: (user, applet, device, accounts) ->
     # res = await @agent

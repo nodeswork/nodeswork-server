@@ -11,16 +11,21 @@ export const USER_APPLET_DATA_LEVELS = {
 export type UserAppletTypeT = typeof UserApplet & sbase.mongoose.NModelType;
 export interface UserAppletType extends UserAppletTypeT {}
 
-const UserAppletConfig = new mongoose.Schema({
-  refId:       {
-    type:      mongoose.Schema.Types.ObjectId,
-    required:  true,
-  },
-  devices:     [{
+const UserAppletDeviceConfig = new mongoose.Schema({
+  device:      {
     type:      mongoose.Schema.Types.ObjectId,
     ref:       'Device',
-  }],
-});
+    required:  true,
+  },
+}, { _id: false });
+
+const UserAppletConfig = new mongoose.Schema({
+  appletConfig:  {
+    type:        mongoose.Schema.Types.ObjectId,
+    required:    true,
+  },
+  devices:       [ UserAppletDeviceConfig ],
+}, { _id: false });
 
 export class UserApplet extends sbase.mongoose.NModel {
 
@@ -71,6 +76,10 @@ export class UserApplet extends sbase.mongoose.NModel {
 }
 
 export interface UserAppletConfig {
-  refId:    mongoose.Schema.Types.ObjectId;
-  devices:  models.Device[];
+  appletConfig:  mongoose.Schema.Types.ObjectId;
+  devices:       UserAppletDeviceConfig[];
+}
+
+export interface UserAppletDeviceConfig {
+  device: models.Device;
 }
