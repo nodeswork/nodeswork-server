@@ -1,7 +1,10 @@
-import * as logger            from '@nodeswork/logger';
-import { NAMSocketRpcClient } from '@nodeswork/nam/dist/client';
+import * as logger     from '@nodeswork/logger';
 
-import { Device }             from '../models';
+import { Device }      from '../models';
+import {
+  DeviceSocket,
+  deviceSocketManager,
+}                      from './device-socket-manager';
 
 const LOG = logger.getLogger();
 
@@ -11,23 +14,14 @@ export const deviceSocket = {
   onConnection,
 };
 
-export const deviceSocketMap: {
-  [name: string]: NAMSocketRpcClient;
-} = {};
-
-export interface DeviceSocket extends SocketIO.Socket {
-  device: Device;
-}
-
 function onConnection(socket: DeviceSocket) {
   LOG.info('New device connection', { deviceId: socket.device._id });
 
-  const client = new NAMSocketRpcClient(socket);
-  deviceSocketMap[socket.device._id.toString()] = client;
+  deviceSocketManager.register(socket);
 
   socket.on('disconnect', () => {
     LOG.info('Lost device connection', { deviceId: socket.device._id });
-    delete deviceSocketMap[socket.device._id.toString()];
+    deviceSocketManager.unregister(socket);
   });
 }
 

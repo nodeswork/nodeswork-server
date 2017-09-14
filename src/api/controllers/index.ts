@@ -1,11 +1,11 @@
-import * as Router    from 'koa-router';
+import * as Router             from 'koa-router';
 
-import * as logger    from '@nodeswork/logger';
+import * as logger             from '@nodeswork/logger';
 
-import { userRouter } from './user';
-import { config }     from '../../config';
+import { userRouter }          from './user';
+import { config }              from '../../config';
 
-import { deviceSocketMap } from '../sockets';
+import { deviceSocketManager } from '../sockets';
 
 const packageConfig = require('../../../package.json');
 
@@ -27,12 +27,9 @@ async function sstats(ctx: Router.IRouterContext) {
       version:     packageConfig.version,
     },
     devices: {
-      connected:   Object.keys(deviceSocketMap).length,
+      connected:   deviceSocketManager.size,
     },
   };
-  for (const deviceId of Object.keys(deviceSocketMap)) {
-    ctx.body.devices[deviceId] = await deviceSocketMap[deviceId].ps();
-  }
 }
 
 // -------------------------------------------------------------------------

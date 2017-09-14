@@ -29,4 +29,4 @@ export function setupSockets(srv: any) {
   return io;
 }
 
-export { deviceSocketMap } from './device';
+export * from './device-socket-manager';
