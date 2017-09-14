@@ -42,7 +42,7 @@ export class UserApplet extends sbase.mongoose.NModel {
   };
 
   public user:             mongoose.Schema.Types.ObjectId;
-  public applet:           mongoose.Schema.Types.ObjectId | object;
+  public applet:           mongoose.Schema.Types.ObjectId | models.Applet;
   public config:           UserAppletConfig;
   public enabled:          boolean;
 

@@ -80,8 +80,9 @@ describe 'endpoints - user user applets', ->
         .expect 200
       resp.body.should.have.properties {
         config:
-          appletConfig: applet.config._id
+          appletConfig: applet.config
           devices: []
+          upToDate: true
         user: loginUser._id
       }
       resp.body.applet.should.be.deepEqual _.omit(applet, '__v', 'tokens')
@@ -101,10 +102,11 @@ describe 'endpoints - user user applets', ->
         .expect 200
       resp.body.should.have.properties {
         config:
-          appletConfig: applet.config._id
+          appletConfig: applet.config
           devices: [
             device: device._id
           ]
+          upToDate: true
         user: loginUser._id
       }
       resp.body.applet.should.be.deepEqual _.omit(applet, '__v', 'tokens')

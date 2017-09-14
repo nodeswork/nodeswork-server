@@ -20,23 +20,40 @@ userAppletRouter
   .post(
     '/', sbase.koa.overrides('user._id->doc.user'),
     models.UserApplet.createMiddleware({
-      populate: {
-        path: 'applet',
-      },
+      populate: { path: 'applet' },
+      transform: transformUserApplet,
     }),
   )
 
   .get(
     '/', sbase.koa.overrides('user._id->query.user'),
     models.UserApplet.findMiddleware({
-      populate: {
-        path: 'applet',
-      },
+      populate: { path: 'applet' },
+      transform: transformUserApplet,
     }),
   )
 
   .get(
     `/:${USER_APPLET_ID_FIELD}`, sbase.koa.overrides('user._id->query.user'),
-    models.UserApplet.getMiddleware({ field: USER_APPLET_ID_FIELD }),
+    models.UserApplet.getMiddleware({
+      field: USER_APPLET_ID_FIELD,
+      populate: { path: 'applet' },
+      transform: transformUserApplet,
+    }),
   )
 ;
+
+async function transformUserApplet(
+  userApplet: models.UserApplet,
+): Promise<models.UserApplet> {
+  const result = userApplet.toJSON() as any;
+  const target = _.find(
+    (userApplet.applet as models.Applet).configHistories,
+    (v) => v._id.toString() === userApplet.config.appletConfig.toString(),
+  );
+  result.config.appletConfig = target;
+  result.config.upToDate = (
+    target._id.toString() === result.applet.config._id.toString()
+  );
+  return result;
+}

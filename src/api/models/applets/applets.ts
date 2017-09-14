@@ -45,6 +45,7 @@ export interface AppletWorkerConfig {
 }
 
 export interface AppletConfig {
+  _id:          mongoose.Schema.Types.ObjectId;
   na:           string;
   naVersion:    string;
   packageName:  string;
