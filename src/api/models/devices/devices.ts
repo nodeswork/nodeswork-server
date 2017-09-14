@@ -67,7 +67,7 @@ export class UserDevice extends Device {
     deviceIdentifier:  {
       type:            String,
       required:        true,
-      dataLevel:       DETAIL,
+      level:           DETAIL,
       api:             sbase.mongoose.READONLY,
     },
 
@@ -79,7 +79,7 @@ export class UserDevice extends Device {
     dev:               {
       type:            Boolean,
       default:         false,
-      dataLevel:       DETAIL,
+      level:           DETAIL,
       api:             sbase.mongoose.AUTOGEN,
     },
   };

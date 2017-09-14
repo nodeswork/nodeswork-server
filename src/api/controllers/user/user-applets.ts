@@ -19,12 +19,20 @@ userAppletRouter
 
   .post(
     '/', sbase.koa.overrides('user._id->doc.user'),
-    models.UserApplet.createMiddleware({}),
+    models.UserApplet.createMiddleware({
+      populate: {
+        path: 'applet',
+      },
+    }),
   )
 
   .get(
     '/', sbase.koa.overrides('user._id->query.user'),
-    models.UserApplet.findMiddleware({}),
+    models.UserApplet.findMiddleware({
+      populate: {
+        path: 'applet',
+      },
+    }),
   )
 
   .get(

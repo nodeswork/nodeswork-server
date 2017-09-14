@@ -19,12 +19,16 @@ appletRouter
 
   .post(
     '/', sbase.koa.overrides('user._id->doc.owner'),
-    models.Applet.createMiddleware({}),
+    models.Applet.createMiddleware({
+      level: models.Applet.DATA_LEVELS.TOKEN,
+    }),
   )
 
   .get(
     '/', sbase.koa.overrides('user._id->query.owner'),
-    models.Applet.findMiddleware({}),
+    models.Applet.findMiddleware({
+      level: models.Applet.DATA_LEVELS.TOKEN,
+    }),
   )
 
   .get(
@@ -39,7 +43,10 @@ appletRouter
       target:  'applet',
       noBody:  true,
     })),
-    models.Applet.updateMiddleware({ field: APPLET_ID_FIELD }),
+    models.Applet.updateMiddleware({
+      field: APPLET_ID_FIELD,
+      level: models.Applet.DATA_LEVELS.TOKEN,
+    }),
   )
 ;
 

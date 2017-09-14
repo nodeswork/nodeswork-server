@@ -6,12 +6,12 @@ import { generateToken } from '../../../utils/tokens';
 
 import compareVersion = require('compare-version');
 
-export const APPLET_DATA_LEVELS = {
+const APPLET_DATA_LEVELS = {
   DETAIL:  'DETAIL',
   TOKEN:   'TOKEN',
 };
 
-export const APPLET_PERMISSIONS = {
+const APPLET_PERMISSIONS = {
   PRIVATE:  'PRIVATE',
   PUBLIC:   'PUBLIC',
 };
@@ -84,6 +84,9 @@ const AppletConfig = new mongoose.Schema({
 
 export class Applet extends sbase.mongoose.NModel {
 
+  public static DATA_LEVELS = APPLET_DATA_LEVELS;
+  public static PERMISSIONS = APPLET_PERMISSIONS;
+
   public static $CONFIG: mongoose.SchemaOptions = {
     collection:        'applets',
     dataLevel:         {
@@ -128,26 +131,26 @@ export class Applet extends sbase.mongoose.NModel {
     description:      {
       type:           String,
       max:            [ 1400, 'description should be at most 1400 charactors' ],
-      dataLevel:      APPLET_DATA_LEVELS.DETAIL,
+      level:          APPLET_DATA_LEVELS.DETAIL,
     },
 
     tokens:           {
       type:           AppletTokens,
       default:        AppletTokens,
       api:            sbase.mongoose.AUTOGEN,
-      dataLevel:      APPLET_DATA_LEVELS.TOKEN,
+      level:          APPLET_DATA_LEVELS.TOKEN,
     },
 
     permission:       {
       type:           String,
       enum:           Object.keys(APPLET_PERMISSIONS),
       default:        APPLET_PERMISSIONS.PRIVATE,
-      dataLevel:      APPLET_DATA_LEVELS.DETAIL,
+      level:          APPLET_DATA_LEVELS.DETAIL,
     },
 
     configHistories:  {
       type:           [ AppletConfig ],
-      dataLevel:      APPLET_DATA_LEVELS.DETAIL,
+      level:          APPLET_DATA_LEVELS.DETAIL,
       validate:       [ validateConfig, 'config is required' ],
       api:            sbase.mongoose.AUTOGEN,
     },
