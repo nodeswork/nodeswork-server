@@ -41,6 +41,15 @@ userAppletRouter
       transform: transformUserApplet,
     }),
   )
+
+  .post(
+    `/:${USER_APPLET_ID_FIELD}`, sbase.koa.overrides('user._id->query.user'),
+    models.UserApplet.updateMiddleware({
+      field: USER_APPLET_ID_FIELD,
+      populate: { path: 'applet' },
+      transform: transformUserApplet,
+    }),
+  )
 ;
 
 async function transformUserApplet(
