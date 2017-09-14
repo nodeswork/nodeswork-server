@@ -1,7 +1,8 @@
-import * as mongoose     from 'mongoose';
-import * as sbase        from '@nodeswork/sbase';
+import * as mongoose           from 'mongoose';
+import * as sbase              from '@nodeswork/sbase';
 
-import { generateToken } from "../../../utils/tokens";
+import { generateToken }       from '../../../utils/tokens';
+import { deviceSocketManager } from '../../sockets';
 
 export const DETAIL = 'DETAIL';
 export const TOKEN  = 'TOKEN';
@@ -18,6 +19,10 @@ export class Device extends sbase.mongoose.NModel {
       levels:          [ DETAIL, TOKEN ],
       default:         DETAIL,
     },
+    toObject:          {
+      virtuals:        true,
+    },
+    id: false,
   };
 
   public static $SCHEMA: object = {
@@ -47,6 +52,10 @@ export class Device extends sbase.mongoose.NModel {
       required:        true,
     },
   };
+
+  get online(): boolean {
+    return deviceSocketManager.isDeviceOnline(this._id.toString());
+  }
 }
 
 export type UserDeviceTypeT = typeof UserDevice & sbase.mongoose.NModelType;

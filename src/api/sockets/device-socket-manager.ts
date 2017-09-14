@@ -25,6 +25,10 @@ export class DeviceSocketManager {
     }
     delete this.deviceSocketMap[idStr];
   }
+
+  public isDeviceOnline(deviceId: string): boolean {
+    return deviceId in this.deviceSocketMap;
+  }
 }
 
 export const deviceSocketManager = new DeviceSocketManager();

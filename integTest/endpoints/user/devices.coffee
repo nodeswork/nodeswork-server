@@ -100,6 +100,7 @@ describe 'endpoints - user devices', ->
         user:              loginUser._id.toString(),
         dev:               false,
         name:              'My Device',
+        online:            false,
       }
 
       resp.body.token.should.not.be.equal '1234'
@@ -131,3 +132,4 @@ describe 'endpoints - user devices', ->
 
       resp2.body._id.should.be.equal resp.body._id
       resp2.body.containerVersion.should.be.equal '1235'
+      resp2.body.online.should.be.false()
