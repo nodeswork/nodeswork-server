@@ -3,21 +3,42 @@ import * as sbase              from '@nodeswork/sbase';
 
 import { generateToken }       from '../../../utils/tokens';
 import { deviceSocketManager } from '../../sockets';
+import { Applet, AppletImage } from '../applets/applets';
 
-export const DETAIL = 'DETAIL';
-export const TOKEN  = 'TOKEN';
+export const DEVICE_DATA_LEVELS = {
+  DETAIL: 'DETAIL',
+  TOKEN:  'TOKEN',
+};
 
 export type DeviceTypeT = typeof Device & sbase.mongoose.NModelType;
 export interface DeviceType extends DeviceTypeT {}
 
+export class AppletStatus extends AppletImage {
+
+  public static $SCHEMA: object = {
+
+    port:         {
+      type:       Number,
+      required:   true,
+    },
+
+    status:       {
+      type:       String,
+      required:   true,
+    },
+  };
+}
+
 export class Device extends sbase.mongoose.NModel {
+
+  public DATA_LEVELS = DEVICE_DATA_LEVELS;
 
   public static $CONFIG: mongoose.SchemaOptions = {
     collection:        'devices',
     discriminatorKey:  'deviceType',
     dataLevel:         {
-      levels:          [ DETAIL, TOKEN ],
-      default:         DETAIL,
+      levels:          [ DEVICE_DATA_LEVELS.DETAIL, DEVICE_DATA_LEVELS.TOKEN ],
+      default:         DEVICE_DATA_LEVELS.DETAIL,
     },
     toObject:          {
       virtuals:        true,
@@ -34,22 +55,47 @@ export class Device extends sbase.mongoose.NModel {
       unique:          true,
       default:         generateToken,
       api:             sbase.mongoose.AUTOGEN,
+      level:           DEVICE_DATA_LEVELS.TOKEN,
     },
 
     os:                {
       type:            String,
       enum:            [ 'MacOS', 'Linux', 'Windows' ],
       required:        true,
+      level:           DEVICE_DATA_LEVELS.DETAIL,
     },
 
     osVersion:         {
       type:            String,
       required:        true,
+      level:           DEVICE_DATA_LEVELS.DETAIL,
     },
 
     containerVersion:  {
       type:            String,
       required:        true,
+      level:           DEVICE_DATA_LEVELS.DETAIL,
+    },
+
+    runningApplets:    {
+      type:            [ AppletStatus.$mongooseOptions().mongooseSchema ],
+      level:           DEVICE_DATA_LEVELS.DETAIL,
+      api:             sbase.mongoose.AUTOGEN,
+      default:         [],
+    },
+
+    installedApplets:  {
+      type:            [ Applet.$mongooseOptions().mongooseSchema ],
+      level:           DEVICE_DATA_LEVELS.DETAIL,
+      api:             sbase.mongoose.AUTOGEN,
+      default:         [],
+    },
+
+    scheduledApplets:  {
+      type:            [ Applet.$mongooseOptions().mongooseSchema ],
+      level:           DEVICE_DATA_LEVELS.DETAIL,
+      api:             sbase.mongoose.AUTOGEN,
+      default:         [],
     },
   };
 
@@ -76,7 +122,7 @@ export class UserDevice extends Device {
     deviceIdentifier:  {
       type:            String,
       required:        true,
-      level:           DETAIL,
+      level:           DEVICE_DATA_LEVELS.DETAIL,
       api:             sbase.mongoose.READONLY,
     },
 
@@ -88,7 +134,7 @@ export class UserDevice extends Device {
     dev:               {
       type:            Boolean,
       default:         false,
-      level:           DETAIL,
+      level:           DEVICE_DATA_LEVELS.DETAIL,
       api:             sbase.mongoose.AUTOGEN,
     },
   };

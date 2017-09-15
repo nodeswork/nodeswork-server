@@ -53,18 +53,50 @@ export interface AppletConfig {
   workers:      AppletWorkerConfig[];
 }
 
+export class AppletImage extends sbase.mongoose.Model {
+
+  public static $SCHEMA: object = {
+
+    naType:       {
+      type:       String,
+      enum:       ['npm'],
+      default:    'npm',
+      required:   true,
+    },
+
+    naVersion:    {
+      type:       String,
+      enum:       ['8.3.0'],
+      default:    '8.3.0',
+      required:   true,
+    },
+
+    packageName:  {
+      type:       String,
+      required:   true,
+    },
+
+    version:      {
+      type:       String,
+      required:   true,
+    },
+  };
+}
+
 export const AppletConfig = new mongoose.Schema({
 
   naType:       {
     type:       String,
     enum:       ['npm'],
     default:    'npm',
+    required:   true,
   },
 
   naVersion:    {
     type:       String,
     enum:       ['8.3.0'],
     default:    '8.3.0',
+    required:   true,
   },
 
   packageName:  {
