@@ -3,6 +3,7 @@ import * as Router             from 'koa-router';
 import * as logger             from '@nodeswork/logger';
 
 import { userRouter }          from './user';
+import { deviceRouter }        from './device';
 import { config }              from '../../config';
 
 import { deviceSocketManager } from '../sockets';
@@ -15,6 +16,7 @@ export const router = new Router()
   .use(handleApiRequest)
   .use(intializeOverrides)
   .use(userRouter.routes(), userRouter.allowedMethods())
+  .use(deviceRouter.routes(), deviceRouter.allowedMethods())
   .get('/sstats', sstats)
 ;
 

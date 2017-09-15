@@ -50,3 +50,13 @@ export const REQUIRE_LOGIN_ERROR = new UrlParameterError(
   'require login',
   { responseCode: 401 },
 );
+
+export const REQUIRE_DEVICE_TOKEN_ERROR = new UrlParameterError(
+  'require device token',
+  { responseCode: 401 },
+);
+
+export const INVALID_DEVICE_TOKEN_ERROR = new UrlParameterError(
+  'invalid device token',
+  { responseCode: 401 },
+);
