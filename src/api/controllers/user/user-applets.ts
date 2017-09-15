@@ -56,13 +56,12 @@ async function transformUserApplet(
   userApplet: models.UserApplet,
 ): Promise<models.UserApplet> {
   const result = userApplet.toJSON() as any;
-  const target = _.find(
-    (userApplet.applet as models.Applet).configHistories,
-    (v) => v._id.toString() === userApplet.config.appletConfig.toString(),
-  );
+  const target = await userApplet.populateAppletConfig();
   result.config.appletConfig = target;
   result.config.upToDate = (
     target._id.toString() === result.applet.config._id.toString()
   );
+  const stats = await userApplet.stats();
+  result.stats = stats;
   return result;
 }

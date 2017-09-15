@@ -1,8 +1,24 @@
-import { NAMSocketRpcClient } from '@nodeswork/nam/dist/client';
-import { Device }             from '../models';
+import { nam }                                        from '@nodeswork/nam/dist/def';
+import { NAMSocketRpcClient as O_NAMSocketRpcClient } from '@nodeswork/nam/dist/client';
+import { Device }                                     from '../models';
 
 export interface DeviceSocket extends SocketIO.Socket {
   device: Device;
+}
+
+export class NAMSocketRpcClient extends O_NAMSocketRpcClient {
+
+  private psResult: nam.AppletStatus[] = null;
+
+  public async ps(): Promise<nam.AppletStatus[]> {
+    const result = await super.ps();
+    this.psResult = result;
+    return result;
+  }
+
+  public psInCache(): nam.AppletStatus[] {
+    return this.psResult;
+  }
 }
 
 export class DeviceSocketManager {
@@ -28,6 +44,10 @@ export class DeviceSocketManager {
 
   public isDeviceOnline(deviceId: string): boolean {
     return deviceId in this.deviceSocketMap;
+  }
+
+  public getNAMSocketRpcClient(deviceId: string): NAMSocketRpcClient {
+    return this.deviceSocketMap[deviceId];
   }
 }
 

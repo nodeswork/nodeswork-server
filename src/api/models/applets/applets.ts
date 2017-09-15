@@ -24,7 +24,7 @@ export interface AppletTokens {
   prodToken:  string;
 }
 
-const AppletTokens = new mongoose.Schema({
+export const AppletTokens = new mongoose.Schema({
 
   devToken:             {
     type:            String,
@@ -53,7 +53,7 @@ export interface AppletConfig {
   workers:      AppletWorkerConfig[];
 }
 
-const AppletConfig = new mongoose.Schema({
+export const AppletConfig = new mongoose.Schema({
 
   na:           {
     type:       String,
