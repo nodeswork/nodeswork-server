@@ -46,7 +46,7 @@ export interface AppletWorkerConfig {
 
 export interface AppletConfig {
   _id:          mongoose.Schema.Types.ObjectId;
-  na:           string;
+  naType:       string;
   naVersion:    string;
   packageName:  string;
   version:      string;
@@ -55,7 +55,7 @@ export interface AppletConfig {
 
 export const AppletConfig = new mongoose.Schema({
 
-  na:           {
+  naType:       {
     type:       String,
     enum:       ['npm'],
     default:    'npm',

@@ -128,7 +128,7 @@ export class UserApplet extends sbase.mongoose.NModel {
     }
 
     const appletPs = _.find(ps, (p) => {
-      return (p.naType === config.na && p.naVersion === config.naVersion &&
+      return (p.naType === config.naType && p.naVersion === config.naVersion &&
         p.appletPackage === config.packageName && p.version === config.version);
     });
 

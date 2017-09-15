@@ -77,7 +77,7 @@ describe 'endpoints - user applets', ->
       resp.body.configHistories[0].should.have.properties {
         packageName: 'package name'
         version: 'version'
-        na: 'npm'
+        naType: 'npm'
         naVersion: '8.3.0'
         workers: []
       }
@@ -85,7 +85,7 @@ describe 'endpoints - user applets', ->
       resp.body.config.should.have.properties {
         packageName: 'package name'
         version: 'version'
-        na: 'npm'
+        naType: 'npm'
         naVersion: '8.3.0'
         workers: []
       }
@@ -128,14 +128,14 @@ describe 'endpoints - user applets', ->
       resp.body.configHistories[0].should.have.properties {
         packageName: 'package name'
         version: '0.0.1'
-        na: 'npm'
+        naType: 'npm'
         naVersion: '8.3.0'
         workers: []
       }
       resp.body.configHistories[1].should.have.properties {
         packageName: 'package name'
         version: '0.0.3'
-        na: 'npm'
+        naType: 'npm'
         naVersion: '8.3.0'
         workers: []
       }
@@ -143,7 +143,7 @@ describe 'endpoints - user applets', ->
       resp.body.config.should.have.properties {
         packageName: 'package name'
         version: '0.0.3'
-        na: 'npm'
+        naType: 'npm'
         naVersion: '8.3.0'
         workers: []
       }
