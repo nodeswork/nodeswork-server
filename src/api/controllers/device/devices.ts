@@ -3,7 +3,7 @@ import * as Router             from 'koa-router';
 
 import * as sbase              from '@nodeswork/sbase';
 
-import { DeviceSocketManager } from '../../sockets';
+import { deviceSocketManager } from '../../sockets';
 
 import {
   DeviceContext,
@@ -29,4 +29,5 @@ async function filterDeviceUpdates(ctx: DeviceContext, next: () => void) {
     ),
   );
   await next();
+  deviceSocketManager.updateDevice(ctx.device);
 }
