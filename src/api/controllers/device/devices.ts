@@ -1,7 +1,9 @@
-import * as _      from 'underscore';
-import * as Router from 'koa-router';
+import * as _                  from 'underscore';
+import * as Router             from 'koa-router';
 
-import * as sbase  from '@nodeswork/sbase';
+import * as sbase              from '@nodeswork/sbase';
+
+import { DeviceSocketManager } from '../../sockets';
 
 import {
   DeviceContext,
@@ -13,7 +15,8 @@ export const deviceRouter: Router = new Router({ prefix: '/devices' })
   .use(requireDevice)
   .use(sbase.koa.overrides('headers.device-token->query.token'))
   .post('/', filterDeviceUpdates, Device.updateMiddleware({
-    field: '*',
+    field:   '*',
+    target:  'device',
   }))
 ;
 

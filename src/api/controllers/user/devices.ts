@@ -13,7 +13,10 @@ export const deviceRouter = new Router({
 
   .post(
     '/',
-    updateExistingDevice(Device.updateMiddleware({ field: 'deviceId' })),
+    updateExistingDevice(Device.updateMiddleware({
+      field: 'deviceId',
+      level: Device.DATA_LEVELS.TOKEN,
+    })),
     sbase.koa.overrides('user._id->doc.user'),
     Device.createMiddleware({}),
   )

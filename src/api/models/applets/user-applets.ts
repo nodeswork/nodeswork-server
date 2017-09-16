@@ -121,24 +121,29 @@ export class UserApplet extends sbase.mongoose.NModel {
       return USER_APPLET_STATS_CONFIG_OUT_OF_DATE;
     }
 
-    const ps = rpcClient.psInCache();
+    const device = rpcClient.socket.device;
 
-    if (ps == null) {
-      return USER_APPLET_STATS_NO_STATS_UPDATES;
-    }
-
-    const appletPs = _.find(ps, (p) => {
+    const installedApplet = _.find(device.installedApplets, (p) => {
       return (p.naType === config.naType && p.naVersion === config.naVersion &&
-        p.appletPackage === config.packageName && p.version === config.version);
+        p.packageName === config.packageName && p.version === config.version);
     });
 
-    if (appletPs == null) {
+    if (installedApplet == null) {
+      return USER_APPLET_STATS_APPLET_NOT_INSTALLED;
+    }
+
+    const runningApplet = _.find(device.runningApplets, (p) => {
+      return (p.naType === config.naType && p.naVersion === config.naVersion &&
+        p.packageName === config.packageName && p.version === config.version);
+    });
+
+    if (runningApplet == null) {
       return USER_APPLET_STATS_APPLET_NOT_RUNNING;
     }
 
     return {
       online: true,
-      status: appletPs.status,
+      status: runningApplet.status,
     };
   }
 }
@@ -172,6 +177,11 @@ const USER_APPLET_STATS_DEVICE_IS_NOT_CONNECTED = {
 const USER_APPLET_STATS_NO_STATS_UPDATES = {
   online: false,
   reason: 'no stats update from device yet',
+};
+
+const USER_APPLET_STATS_APPLET_NOT_INSTALLED = {
+  online: false,
+  reason: 'applet is not installed on device',
 };
 
 const USER_APPLET_STATS_APPLET_NOT_RUNNING = {

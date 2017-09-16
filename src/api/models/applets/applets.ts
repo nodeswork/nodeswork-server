@@ -55,6 +55,11 @@ export interface AppletConfig {
 
 export class AppletImage extends sbase.mongoose.Model {
 
+  public naType:       string;
+  public naVersion:    string;
+  public packageName:  string;
+  public version:      string;
+
   public static $SCHEMA: object = {
 
     naType:       {

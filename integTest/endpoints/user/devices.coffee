@@ -133,3 +133,4 @@ describe 'endpoints - user devices', ->
       resp2.body._id.should.be.equal resp.body._id
       resp2.body.containerVersion.should.be.equal '1235'
       resp2.body.online.should.be.false()
+      resp2.body.token.should.be.ok()

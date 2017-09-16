@@ -15,6 +15,9 @@ export interface DeviceType extends DeviceTypeT {}
 
 export class AppletStatus extends AppletImage {
 
+  public port:    number;
+  public status:  string;
+
   public static $SCHEMA: object = {
 
     port:         {
@@ -31,7 +34,7 @@ export class AppletStatus extends AppletImage {
 
 export class Device extends sbase.mongoose.NModel {
 
-  public DATA_LEVELS = DEVICE_DATA_LEVELS;
+  public static DATA_LEVELS = DEVICE_DATA_LEVELS;
 
   public static $CONFIG: mongoose.SchemaOptions = {
     collection:        'devices',
@@ -45,6 +48,14 @@ export class Device extends sbase.mongoose.NModel {
     },
     id: false,
   };
+
+  public token:             string;
+  public os:                string;
+  public osVersion:         string;
+  public containerVersion:  string;
+  public runningApplets:    AppletStatus[];
+  public installedApplets:  AppletImage[];
+  public scheduledApplets:  AppletImage[];
 
   public static $SCHEMA: object = {
 

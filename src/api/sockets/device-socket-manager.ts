@@ -8,17 +8,8 @@ export interface DeviceSocket extends SocketIO.Socket {
 
 export class NAMSocketRpcClient extends O_NAMSocketRpcClient {
 
-  private psResult: nam.AppletStatus[] = null;
+  public socket: DeviceSocket;
 
-  public async ps(): Promise<nam.AppletStatus[]> {
-    const result = await super.ps();
-    this.psResult = result;
-    return result;
-  }
-
-  public psInCache(): nam.AppletStatus[] {
-    return this.psResult;
-  }
 }
 
 export class DeviceSocketManager {
@@ -48,6 +39,14 @@ export class DeviceSocketManager {
 
   public getNAMSocketRpcClient(deviceId: string): NAMSocketRpcClient {
     return this.deviceSocketMap[deviceId];
+  }
+
+  public updateDevice(device: Device) {
+    const idStr = device._id.toString();
+    const rpcClient = this.deviceSocketMap[idStr];
+    if (rpcClient != null) {
+      rpcClient.socket.device = device;
+    }
   }
 }
 
