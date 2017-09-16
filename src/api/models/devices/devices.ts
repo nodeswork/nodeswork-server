@@ -85,14 +85,14 @@ export class Device extends sbase.mongoose.NModel {
     },
 
     installedApplets:  {
-      type:            [ Applet.$mongooseOptions().mongooseSchema ],
+      type:            [ AppletImage.$mongooseOptions().mongooseSchema ],
       level:           DEVICE_DATA_LEVELS.DETAIL,
       api:             sbase.mongoose.AUTOGEN,
       default:         [],
     },
 
     scheduledApplets:  {
-      type:            [ Applet.$mongooseOptions().mongooseSchema ],
+      type:            [ AppletImage.$mongooseOptions().mongooseSchema ],
       level:           DEVICE_DATA_LEVELS.DETAIL,
       api:             sbase.mongoose.AUTOGEN,
       default:         [],
