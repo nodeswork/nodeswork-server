@@ -123,10 +123,15 @@ export class UserApplet extends sbase.mongoose.NModel {
 
     const device = rpcClient.socket.device;
 
+    console.log(JSON.stringify(device.installedApplets, null, 2));
+    console.log(JSON.stringify(config, null, 2));
+
     const installedApplet = _.find(device.installedApplets, (p) => {
       return (p.naType === config.naType && p.naVersion === config.naVersion &&
         p.packageName === config.packageName && p.version === config.version);
     });
+
+    console.log(installedApplet);
 
     if (installedApplet == null) {
       return USER_APPLET_STATS_APPLET_NOT_INSTALLED;
