@@ -11,12 +11,6 @@ COPY package-lock.json .
 
 RUN npm install
 
-RUN npm install --global bower
-
-RUN echo '{ "allow_root": true }' > /root/.bowerrc
-COPY bower.json .
-RUN bower install
-
 # Bundle app source
 COPY . .
 

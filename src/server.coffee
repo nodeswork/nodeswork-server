@@ -5,7 +5,6 @@ bodyParser            = require 'koa-bodyparser'
 convert               = require 'koa-convert'
 # csrf                  = require 'koa-csrf'
 cors                  = require 'koa2-cors'
-error                 = require 'koa-error'
 http                  = require 'http'
 mongoose              = require 'mongoose'
 mongooseStore         = require 'koa-session-mongoose'
@@ -72,10 +71,6 @@ do () ->
   }
 
   app
-    .use error {
-      engine: 'pug'
-      template: './dist/views/errors.pug'
-    }
     .use cors({
       origin: (ctx) -> config.app.CORS
       maxAge:      3600
