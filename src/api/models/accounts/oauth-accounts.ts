@@ -5,6 +5,9 @@ import * as sbase               from '@nodeswork/sbase';
 import { NodesworkError }       from '@nodeswork/utils';
 
 import { Account, AccountType } from './accounts';
+import { OAuth }                from '../../../utils/oauth';
+
+const CALLBACK_URL  = '/';
 
 export type OAuthAccountTypeT = typeof OAuthAccount & AccountType;
 export interface OAuthAccountType extends OAuthAccountTypeT {}
@@ -27,8 +30,9 @@ export interface OAuthConfig {
 export class OAuthAccount extends Account {
 
   @sbase.mongoose.Field({
-    type:  String,
-    enum:  ['twitter', 'customized'],
+    type:      String,
+    enum:      ['twitter', 'customized'],
+    required:  true,
   })
   public provider: string;
 
@@ -62,12 +66,31 @@ export class OAuthAccount extends Account {
   public accessTokenSecret: string;
 
   /**
+   * Return the oauth config based on provider.
+   */
+  public getOAuthConfig(): OAuthConfig {
+    return null;
+  }
+
+  private getOAuthClient(): OAuth {
+    const config = this.getOAuthConfig();
+    return new OAuth(
+      config.requestTokenUrl, config.accessTokenUrl, config.consumerKey,
+      config.consumerSecret, CALLBACK_URL,
+    );
+  }
+
+  /**
    * Step 1 of the verification process, triggered after account creation or
    * manually start the verify process.  The target is to gain oAuthToken and
    * redirect user's browser to 3rd-party website to gain the access token.
    */
   public async requestOAuthToken() {
-    // TODO
+    const oAuth             = this.getOAuthClient();
+    const oAuthTokenPair    = await oAuth.getOAuthRequestToken();
+    this.oAuthToken         = oAuthTokenPair.oAuthToken;
+    this.oAuthTokenSecret   = oAuthTokenPair.oAuthTokenSecret;
+    await this.save();
   }
 
   /**
@@ -75,6 +98,14 @@ export class OAuthAccount extends Account {
    * website with the verifier to gain the access token.
    */
   public async requestAccessToken(verifier: string) {
-    // TODO
+    const oAuth             = this.getOAuthClient();
+    const accessTokenPair   = await oAuth.getOAuthAccessToken({
+      oAuthToken:        this.oAuthToken,
+      oAuthTokenSecret:  this.oAuthTokenSecret,
+    }, verifier);
+    this.accessToken        = accessTokenPair.accessToken;
+    this.accessTokenSecret  = accessTokenPair.accessTokenSecret;
+    this.verified           = true;
+    await this.save();
   }
 }
