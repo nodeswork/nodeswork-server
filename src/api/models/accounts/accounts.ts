@@ -6,6 +6,7 @@ import { NodesworkError } from '@nodeswork/utils';
 
 const DATA_LEVELS = {
   DETAIL:      'DETAIL',
+  TOKEN:       'TOKEN',
   CREDENTIAL:  'CREDENTIAL',
 };
 
@@ -16,7 +17,7 @@ export interface AccountType extends AccountTypeT {}
   collection:        'accounts',
   discriminatorKey:  'accountType',
   dataLevel:         {
-    levels:          [ DATA_LEVELS.DETAIL, DATA_LEVELS.CREDENTIAL ],
+    levels:          [ DATA_LEVELS.DETAIL, DATA_LEVELS.TOKEN, DATA_LEVELS.CREDENTIAL ],
     default:         DATA_LEVELS.DETAIL,
   },
 })
