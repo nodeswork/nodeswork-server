@@ -44,24 +44,28 @@ export class OAuthAccount extends Account {
   @sbase.mongoose.Field({
     type:      String,
     level:     Account.DATA_LEVELS.CREDENTIAL,
+    api:       sbase.mongoose.AUTOGEN,
   })
   public oAuthToken: string;
 
   @sbase.mongoose.Field({
     type:      String,
     level:     Account.DATA_LEVELS.CREDENTIAL,
+    api:       sbase.mongoose.AUTOGEN,
   })
   public oAuthTokenSecret: string;
 
   @sbase.mongoose.Field({
     type:      String,
     level:     Account.DATA_LEVELS.TOKEN,
+    api:       sbase.mongoose.AUTOGEN,
   })
   public accessToken: string;
 
   @sbase.mongoose.Field({
     type:      String,
     level:     Account.DATA_LEVELS.CREDENTIAL,
+    api:       sbase.mongoose.AUTOGEN,
   })
   public accessTokenSecret: string;
 
