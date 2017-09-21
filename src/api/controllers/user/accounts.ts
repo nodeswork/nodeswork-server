@@ -11,6 +11,10 @@ export const accountRouter = new Router({
 
 const ACCOUNT_ID_FIELD = 'accountId';
 
+interface AccountContext extends Router.IRouterContext {
+  account: models.Account;
+}
+
 accountRouter
 
   .use(requireUserLogin)
@@ -34,4 +38,20 @@ accountRouter
     `/:${ACCOUNT_ID_FIELD}`, sbase.koa.overrides('user._id->query.user'),
     models.Account.updateMiddleware({ field: ACCOUNT_ID_FIELD }),
   )
+
+  .post(
+    `/:${ACCOUNT_ID_FIELD}/verify`,
+    sbase.koa.overrides('user._id->query.user'),
+    models.Account.getMiddleware({
+      field:        ACCOUNT_ID_FIELD,
+      target:       'account',
+      noBody:       true,
+      triggerNext:  true,
+    }),
+    verifyAccount,
+  )
 ;
+
+async function verifyAccount(ctx: AccountContext) {
+  ctx.body = await ctx.account.verify();
+}

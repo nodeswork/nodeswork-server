@@ -47,4 +47,8 @@ export class Account extends sbase.mongoose.NModel {
     api:       sbase.mongoose.AUTOGEN,
   })
   public verified: boolean;
+
+  public verify(): any {
+    // Abstract method
+  }
 }

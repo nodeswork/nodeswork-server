@@ -85,6 +85,16 @@ export class OAuthAccount extends Account {
   }
 
   /**
+   * Override verify method.
+   */
+  public async verify(): Promise<object> {
+    await this.requestOAuthToken();
+    return {
+      redirectTo: this.getOAuthConfig().accessTokenUrl,
+    };
+  }
+
+  /**
    * Step 1 of the verification process, triggered after account creation or
    * manually start the verify process.  The target is to gain oAuthToken and
    * redirect user's browser to 3rd-party website to gain the access token.
