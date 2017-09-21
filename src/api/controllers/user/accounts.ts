@@ -4,6 +4,8 @@ import * as sbase           from '@nodeswork/sbase';
 
 import { requireUserLogin } from './auth';
 import * as models          from '../../models';
+import * as errors          from '../../errors';
+import { config }           from '../../../config';
 
 export const accountRouter = new Router({
   prefix: '/accounts',
@@ -27,6 +29,11 @@ accountRouter
   .get(
     '/', sbase.koa.overrides('user._id->query.user'),
     models.Account.findMiddleware({}),
+  )
+
+  .get(
+    '/oauth-callback', sbase.koa.overrides('user._id->query.user'),
+    oAuthCallback,
   )
 
   .get(
@@ -54,4 +61,22 @@ accountRouter
 
 async function verifyAccount(ctx: AccountContext) {
   ctx.body = await ctx.account.verify();
+}
+
+async function oAuthCallback(ctx: Router.IRouterContext) {
+  const oAuthToken: string      = ctx.request.query.oauth_token;
+  const oAuthVerifier: string   = ctx.request.query.oauth_verifier;
+
+  const account: models.OAuthAccount = await models.OAuthAccount.findOne({
+    user: ctx.user._id,
+    oAuthToken,
+  }, undefined, { level: models.OAuthAccount.DATA_LEVELS.CREDENTIAL });
+
+  if (account == null) {
+    throw errors.UNRECOGNIZED_TOKEN_ERROR;
+  }
+
+  await account.requestAccessToken(oAuthVerifier);
+
+  ctx.redirect(config.app.publicHost);
 }

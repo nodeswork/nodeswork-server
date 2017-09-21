@@ -1,3 +1,4 @@
+import { URL }                  from 'url';
 import * as mongoose            from 'mongoose';
 import * as _                   from 'underscore';
 
@@ -6,8 +7,9 @@ import { NodesworkError }       from '@nodeswork/utils';
 
 import { Account, AccountType } from './accounts';
 import { OAuth }                from '../../../utils/oauth';
+import { config }               from '../../../config';
 
-const CALLBACK_URL  = '/';
+const CALLBACK_URL  = config.app.oAuthCallbackUrl;
 
 export type OAuthAccountTypeT = typeof OAuthAccount & AccountType;
 export interface OAuthAccountType extends OAuthAccountTypeT {}
@@ -15,6 +17,7 @@ export interface OAuthAccountType extends OAuthAccountTypeT {}
 const OAuthConfig = new mongoose.Schema({
   requestTokenUrl:  String,
   accessTokenUrl:   String,
+  authorizeUrl:     String,
   consumerKey:      String,
   consumerSecret:   String,
 }, { _id: false, id: false });
@@ -22,19 +25,13 @@ const OAuthConfig = new mongoose.Schema({
 export interface OAuthConfig {
   requestTokenUrl:  string;
   accessTokenUrl:   string;
+  authorizeUrl:     string;
   consumerKey:      string;
   consumerSecret:   string;
 }
 
 @sbase.mongoose.Config({})
 export class OAuthAccount extends Account {
-
-  @sbase.mongoose.Field({
-    type:      String,
-    enum:      ['twitter', 'customized'],
-    required:  true,
-  })
-  public provider: string;
 
   @sbase.mongoose.Field({
     type: OAuthConfig,
@@ -69,18 +66,31 @@ export class OAuthAccount extends Account {
   })
   public accessTokenSecret: string;
 
+  public reset() {
+    this.oAuthToken         = null;
+    this.oAuthTokenSecret   = null;
+    this.accessToken        = null;
+    this.accessTokenSecret  = null;
+  }
+
   /**
    * Return the oauth config based on provider.
    */
   public getOAuthConfig(): OAuthConfig {
-    return null;
+    const oAuthTokenUrls = config.app.oAuthTokenUrls[this.provider];
+    if (oAuthTokenUrls !== null) {
+      const oAuthSecrets = config.secrets.oAuthSecrets[this.provider];
+      return _.extend({}, oAuthTokenUrls, oAuthSecrets);
+    }
+
+    return this.oAuthConfig;
   }
 
   private getOAuthClient(): OAuth {
-    const config = this.getOAuthConfig();
+    const oAuthConfig = this.getOAuthConfig();
     return new OAuth(
-      config.requestTokenUrl, config.accessTokenUrl, config.consumerKey,
-      config.consumerSecret, CALLBACK_URL,
+      oAuthConfig.requestTokenUrl, oAuthConfig.accessTokenUrl,
+      oAuthConfig.consumerKey, oAuthConfig.consumerSecret, CALLBACK_URL,
     );
   }
 
@@ -88,9 +98,13 @@ export class OAuthAccount extends Account {
    * Override verify method.
    */
   public async verify(): Promise<object> {
-    await this.requestOAuthToken();
+    this.reset();
+    const oAuth         = this.getOAuthConfig();
+    const authorizeUrl  = new URL(oAuth.authorizeUrl);
+    await this.requestOAuthToken(oAuth);
+    authorizeUrl.searchParams.append('oauth_token', this.oAuthToken);
     return {
-      redirectTo: this.getOAuthConfig().accessTokenUrl,
+      redirectTo: authorizeUrl.toString(),
     };
   }
 
@@ -99,7 +113,7 @@ export class OAuthAccount extends Account {
    * manually start the verify process.  The target is to gain oAuthToken and
    * redirect user's browser to 3rd-party website to gain the access token.
    */
-  public async requestOAuthToken() {
+  public async requestOAuthToken(oAuthConfig: OAuthConfig) {
     const oAuth             = this.getOAuthClient();
     const oAuthTokenPair    = await oAuth.getOAuthRequestToken();
     this.oAuthToken         = oAuthTokenPair.oAuthToken;

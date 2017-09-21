@@ -1,4 +1,9 @@
-env:         base
-port:        3000
-db:          mongodb://localhost:27017/nodeswork-dev
-publicHost:  http://localhost:3000
+env:             base
+port:            3000
+db:              mongodb://localhost:27017/nodeswork-dev
+publicHost:      http://localhost:3000
+oAuthTokenUrls:
+  twitter:
+    requestTokenUrl:  https://api.twitter.com/oauth/request_token
+    accessTokenUrl:   https://api.twitter.com/oauth/access_token
+    authorizeUrl:     https://api.twitter.com/oauth/authorize

@@ -30,10 +30,12 @@ export class OAuth {
   public async getOAuthAccessToken(
     oAuthTokenPair: OAuthTokenPair, verifier: string,
   ): Promise<AccessTokenPair> {
+    console.log('requesting', oAuthTokenPair, verifier);
     return await new Promise<AccessTokenPair>((resolve, reject) => {
       this.oAuthClient.getOAuthAccessToken(
         oAuthTokenPair.oAuthToken, oAuthTokenPair.oAuthTokenSecret, verifier,
         (err: any, accessToken: string, accessTokenSecret: string) => {
+          console.log('error from oAuthClient', err, accessToken, accessTokenSecret);
           if (err != null) {
             reject(err);
           } else {

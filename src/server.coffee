@@ -17,6 +17,8 @@ nwLogger              = require '@nodeswork/logger'
 
 { config }            = require './config'
 
+console.log config
+
 # mongoose.set 'debug', true
 
 if config.app.env == 'test'
