@@ -57,6 +57,11 @@ export class Account extends sbase.mongoose.NModel {
   public name: string;
 
   @sbase.mongoose.Field({
+    type:      String,
+  })
+  public imageUrl: string;
+
+  @sbase.mongoose.Field({
     type:      Boolean,
     default:   false,
     api:       sbase.mongoose.AUTOGEN,

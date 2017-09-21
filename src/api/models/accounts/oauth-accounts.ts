@@ -134,6 +134,20 @@ export class OAuthAccount extends Account {
     this.accessToken        = accessTokenPair.accessToken;
     this.accessTokenSecret  = accessTokenPair.accessTokenSecret;
     this.verified           = true;
+    await this.updateAccountInfoFromRemote();
     await this.save();
+  }
+
+  public async updateAccountInfoFromRemote() {
+    const oAuth             = this.getOAuthClient();
+    if (this.provider === 'twitter') {
+      const data = await oAuth.get(
+        'https://api.twitter.com/1.1/account/verify_credentials.json',
+        this.accessToken, this.accessTokenSecret,
+      );
+      this.name = data.name;
+      this.imageUrl = data.profile_image_url;
+      await this.save();
+    }
   }
 }

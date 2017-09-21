@@ -57,6 +57,19 @@ accountRouter
     }),
     verifyAccount,
   )
+
+  .post(
+    `/:${ACCOUNT_ID_FIELD}/update-account-info`,
+    sbase.koa.overrides('user._id->query.user'),
+    models.Account.getMiddleware({
+      field:        ACCOUNT_ID_FIELD,
+      target:       'account',
+      noBody:       true,
+      triggerNext:  true,
+      level:        models.Account.DATA_LEVELS.CREDENTIAL,
+    }),
+    updateAccountInfoFromRemote,
+  )
 ;
 
 async function verifyAccount(ctx: AccountContext) {
@@ -79,4 +92,10 @@ async function oAuthCallback(ctx: Router.IRouterContext) {
   await account.requestAccessToken(oAuthVerifier);
 
   ctx.redirect(config.app.publicHost);
+}
+
+async function updateAccountInfoFromRemote(ctx: AccountContext) {
+  await (ctx.account as models.OAuthAccount).updateAccountInfoFromRemote();
+  // TODO: Allow toJSON accepts virtual field.
+  ctx.body = await models.Account.findById(ctx.account._id);
 }
