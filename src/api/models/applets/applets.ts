@@ -44,6 +44,13 @@ export interface AppletWorkerConfig {
   schedule:  string;
 }
 
+export interface AppletAccountConfig {
+  accountType: string;
+  provider:    string;
+  optional:    boolean;
+  multiple:    boolean;
+}
+
 export interface AppletConfig {
   _id:          mongoose.Schema.Types.ObjectId;
   naType:       string;
@@ -51,6 +58,7 @@ export interface AppletConfig {
   packageName:  string;
   version:      string;
   workers:      AppletWorkerConfig[];
+  accounts:     AppletAccountConfig[];
 }
 
 export class AppletImage extends sbase.mongoose.Model {
@@ -117,6 +125,13 @@ export const AppletConfig = new mongoose.Schema({
   workers:      [{
     name:       String,
     schedule:   String,
+  }],
+
+  accounts:     [{
+    accountType: String,
+    provider:    String,
+    optional:    Boolean,
+    multiple:    Boolean,
   }],
 });
 
