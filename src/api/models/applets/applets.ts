@@ -220,6 +220,7 @@ export class Applet extends sbase.mongoose.NModel {
         (c) => compareVersion(c.version, value.version) === 0,
       );
       if (index === -1) {
+        delete value._id;
         this.configHistories.push(value);
         this.configHistories.sort(
           (a, b) => compareVersion(a.version, b.version),
