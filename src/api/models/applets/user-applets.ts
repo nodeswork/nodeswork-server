@@ -22,12 +22,22 @@ const UserAppletDeviceConfig = new mongoose.Schema({
   },
 }, { _id: false });
 
+const UserAppletAccountConfig = new mongoose.Schema({
+  // TODO: Verify account ownership before saving.
+  account:      {
+    type:      mongoose.Schema.Types.ObjectId,
+    ref:       'Account',
+    required:  true,
+  },
+}, { _id: false });
+
 const UserAppletConfig = new mongoose.Schema({
   appletConfig:  {
     type:        mongoose.Schema.Types.ObjectId,
     required:    true,
   },
   devices:       [ UserAppletDeviceConfig ],
+  accounts:      [ UserAppletAccountConfig ],
 }, { _id: false });
 
 export class UserApplet extends sbase.mongoose.NModel {
@@ -192,8 +202,13 @@ const USER_APPLET_STATS_APPLET_NOT_RUNNING = {
 export interface UserAppletConfig {
   appletConfig:  mongoose.Schema.Types.ObjectId | AppletConfig;
   devices:       UserAppletDeviceConfig[];
+  accounts:      UserAppletAccountConfig[];
 }
 
 export interface UserAppletDeviceConfig {
   device: models.Device;
+}
+
+export interface UserAppletAccountConfig {
+  account: models.Device;
 }
