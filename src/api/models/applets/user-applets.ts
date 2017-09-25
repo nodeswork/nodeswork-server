@@ -62,7 +62,7 @@ export class UserApplet extends sbase.mongoose.NModel {
     index:          true,
     api:            sbase.mongoose.READONLY,
   })
-  public user:             mongoose.Schema.Types.ObjectId;
+  public user:      mongoose.Schema.Types.ObjectId;
 
   @sbase.mongoose.Field({
     type:           mongoose.Schema.Types.ObjectId,
@@ -70,22 +70,22 @@ export class UserApplet extends sbase.mongoose.NModel {
     required:       true,
     api:            sbase.mongoose.READONLY,
   })
-  public applet:           mongoose.Schema.Types.ObjectId | models.Applet;
+  public applet:    mongoose.Schema.Types.ObjectId | models.Applet;
 
   @sbase.mongoose.Field({
     type:           UserAppletConfig,
     required:       true,
   })
-  public config:           UserAppletConfig;
+  public config:    UserAppletConfig;
 
   @sbase.mongoose.Field({
     type:           Boolean,
     default:        false,
   })
-  public enabled:          boolean;
+  public enabled:   boolean;
 
   @sbase.mongoose.Field({
-    type:           String,
+    type: String,
   })
   public disableReason:    string;
 
@@ -182,13 +182,19 @@ export class UserApplet extends sbase.mongoose.NModel {
     }
 
     if (this.enabled) {
+      const currentAccounts = _.filter(accounts, (account) => {
+        return _.find(
+          this.config.accounts,
+          (a) => a.account.toString() === account._id.toString(),
+        ) != null;
+      });
       const appletConfig = await this.populateAppletConfig();
       for (const appletAccount of appletConfig.accounts) {
         if (appletAccount.optional) {
           continue;
         }
 
-        const filteredAccounts = _.filter(accounts, (a) => {
+        const filteredAccounts = _.filter(currentAccounts, (a) => {
           return a.accountType === appletAccount.accountType &&
             a.provider === appletAccount.provider;
         });
@@ -206,6 +212,10 @@ export class UserApplet extends sbase.mongoose.NModel {
           break;
         }
       }
+    }
+
+    if (this.enabled) {
+      this.disableReason = null;
     }
 
     if (changed || this.isModified()) {

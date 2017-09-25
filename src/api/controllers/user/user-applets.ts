@@ -44,13 +44,31 @@ userAppletRouter
 
   .post(
     `/:${USER_APPLET_ID_FIELD}`, sbase.koa.overrides('user._id->query.user'),
+    checkUserAppletsAndDevices(
+      models.UserApplet.getMiddleware({
+        field: USER_APPLET_ID_FIELD,
+        populate: { path: 'applet' },
+        transform: transformUserApplet,
+      }),
+    ),
     models.UserApplet.updateMiddleware({
       field: USER_APPLET_ID_FIELD,
       populate: { path: 'applet' },
       transform: transformUserApplet,
+      noBody: true,
     }),
   )
 ;
+
+function checkUserAppletsAndDevices(
+  middleware: Router.IMiddleware,
+): Router.IMiddleware {
+  return async (ctx: Router.IRouterContext, next: () => void) => {
+    await next();
+    await ctx.user.checkAppletsAndDevices();
+    await middleware(ctx, null);
+  };
+}
 
 async function transformUserApplet(
   userApplet: models.UserApplet,
