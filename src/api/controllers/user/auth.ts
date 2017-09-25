@@ -1,10 +1,9 @@
-import * as _                  from 'underscore';
-import * as Router             from 'koa-router';
+import * as _      from 'underscore';
+import * as Router from 'koa-router';
 
-import * as errors             from '../../errors';
-import { NRouter }             from '../router';
-import { User }                from '../../models';
-import { DETAIL, USER_STATUS } from '../../models/users/users';
+import * as errors from '../../errors';
+import { NRouter } from '../router';
+import * as models from '../../models';
 
 export const userAuthRouter = new NRouter({
   prefix: '/user',
@@ -12,13 +11,13 @@ export const userAuthRouter = new NRouter({
 
 userAuthRouter
 
-  .post('/register', sendVerifyEmail, User.createMiddleware({
+  .post('/register', sendVerifyEmail, models.User.createMiddleware({
     target:                      'user',
     allowCreateFromParentModel:  true,
     noBody:                      true,
   }))
 
-  .post('/verifyUserEmail', User.verifyUserEmail as any)
+  .post('/verifyUserEmail', models.User.verifyUserEmail as any)
 
   .post('/login', login)
 
@@ -35,7 +34,7 @@ export async function requireUserLogin(
   ctx: Router.IRouterContext, next: () => void,
 ) {
   if (ctx.session.userId) {
-    ctx.user = await User.findById(ctx.session.userId);
+    ctx.user = await models.User.findById(ctx.session.userId);
   }
 
   if (ctx.user == null) {
@@ -49,7 +48,7 @@ async function requireUnActiveUserLogin(
   ctx: Router.IRouterContext, next: () => void,
 ) {
   if (ctx.session.userId) {
-    ctx.user = await User.findById(ctx.session.userId, null, {
+    ctx.user = await models.User.findById(ctx.session.userId, null, {
       withUnActive: true,
     });
   }
@@ -74,16 +73,16 @@ async function sendVerifyEmail(ctx: any, next: () => void) {
 }
 
 async function login(ctx: Router.IRouterContext) {
-  const user = await User.verifyEmailPassword(
+  const user = await models.User.verifyEmailPassword(
     ctx.request.body.email, ctx.request.body.password,
   );
   ctx.session.userId  = user._id;
 
-  if (user.status === USER_STATUS.UNVERIFIED) {
+  if (user.status === models.User.USER_STATUS.UNVERIFIED) {
     throw errors.USER_NOT_ACTIVE_ERROR;
   }
 
-  ctx.body            = user.toJSON({ level: DETAIL });
+  ctx.body            = user.toJSON({ level: models.User.DATA_LEVELS.DETAIL });
 }
 
 async function logout(ctx: Router.IRouterContext) {

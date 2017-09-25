@@ -12,14 +12,6 @@ import { Token } from '../';
 
 import 'mongoose-type-email';
 
-export const DETAIL      = 'DETAIL';
-export const CREDENTIAL  = 'CREDENTIAL';
-export const USER_STATUS = {
-  ACTIVE:      'ACTIVE',
-  INACTIVE:    'INACTIVE',
-  UNVERIFIED:  'UNVERIFIED',
-};
-
 const VERIFY_EMAIL_TOKEN_PURPOSE = 'verifyEmail';
 const VERIFY_EMAIL_TEMPLATE = 'email-verification';
 const EMAIL_EXPIRATION_TIME_IN_MS = 10 * 60 * 1000;
@@ -27,46 +19,55 @@ const EMAIL_EXPIRATION_TIME_IN_MS = 10 * 60 * 1000;
 export type UserTypeT = typeof User & sbase.mongoose.NModelType;
 export interface UserType extends UserTypeT {}
 
+const DATA_LEVELS = {
+  DETAIL:      'DETAIL',
+  CREDENTIAL:  'CREDENTIAL',
+};
+
+const USER_STATUS = {
+  ACTIVE:      'ACTIVE',
+  INACTIVE:    'INACTIVE',
+  UNVERIFIED:  'UNVERIFIED',
+};
+
+@sbase.mongoose.Config({
+  collection:        'users',
+  discriminatorKey:  'userType',
+  dataLevel:         {
+    levels:          [ DATA_LEVELS.DETAIL, DATA_LEVELS.CREDENTIAL ],
+    default:         DATA_LEVELS.DETAIL,
+  },
+})
 export class User extends sbase.mongoose.NModel {
 
-  public static $CONFIG: mongoose.SchemaOptions = {
-    collection:        'users',
-    discriminatorKey:  'userType',
-    dataLevel:         {
-      levels:          [ DETAIL, CREDENTIAL ],
-      default:         DETAIL,
-    },
-  };
+  public static DATA_LEVELS = DATA_LEVELS;
+  public static USER_STATUS = USER_STATUS;
 
-  public static $SCHEMA = {
-
-    email:       {
-      type:      (mongoose.SchemaTypes as any).Email,
-      required:  true,
-      unique:    true,
-      trim:      true,
-      api:       sbase.mongoose.READONLY,
-      level:     DETAIL,
-    },
-
-    password:    {
-      type:      String,
-      required:  true,
-      min:       [6,  'Password should be at least 6 charactors.'],
-      max:       [80, 'Password should be at most 80 charactors.'],
-      level:     CREDENTIAL,
-    },
-
-    status:      {
-      type:      String,
-      enum:      _.values(USER_STATUS),
-      default:   USER_STATUS.UNVERIFIED,
-      api:       sbase.mongoose.AUTOGEN,
-    },
-  };
-
+  @sbase.mongoose.Field({
+    type:      (mongoose.SchemaTypes as any).Email,
+    required:  true,
+    unique:    true,
+    trim:      true,
+    api:       sbase.mongoose.READONLY,
+    level:     DATA_LEVELS.DETAIL,
+  })
   public email:     string;
+
+  @sbase.mongoose.Field({
+    type:      String,
+    required:  true,
+    min:       [6,  'Password should be at least 6 charactors.'],
+    max:       [80, 'Password should be at most 80 charactors.'],
+    level:     DATA_LEVELS.CREDENTIAL,
+  })
   public password:  string;
+
+  @sbase.mongoose.Field({
+    type:      String,
+    enum:      _.values(USER_STATUS),
+    default:   USER_STATUS.UNVERIFIED,
+    api:       sbase.mongoose.AUTOGEN,
+  })
   public status:    string;
 
   @sbase.koa.bind('POST')
@@ -119,7 +120,7 @@ export class User extends sbase.mongoose.NModel {
       const self = this.cast<User>();
       const user = await self.findOne({ email }, null, {
         withUnActive:  true,
-        level:         CREDENTIAL,
+        level:         DATA_LEVELS.CREDENTIAL,
       });
       if (user == null) {
         throw errors.USER_NOT_EXISTS_ERROR;
