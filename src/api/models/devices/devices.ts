@@ -1,9 +1,11 @@
+import * as _                  from 'underscore';
 import * as mongoose           from 'mongoose';
 import * as sbase              from '@nodeswork/sbase';
 
 import { generateToken }       from '../../../utils/tokens';
 import { deviceSocketManager } from '../../sockets';
 import { Applet, AppletImage } from '../applets/applets';
+import * as models             from '../../models';
 
 export const DEVICE_DATA_LEVELS = {
   DETAIL: 'DETAIL',
@@ -32,83 +34,86 @@ export class AppletStatus extends AppletImage {
   };
 }
 
+@sbase.mongoose.Config({
+  collection:        'devices',
+  discriminatorKey:  'deviceType',
+  dataLevel:         {
+    levels:          [ DEVICE_DATA_LEVELS.DETAIL, DEVICE_DATA_LEVELS.TOKEN ],
+    default:         DEVICE_DATA_LEVELS.DETAIL,
+  },
+  toObject:          {
+    virtuals:        true,
+  },
+  id: false,
+})
 export class Device extends sbase.mongoose.NModel {
 
   public static DATA_LEVELS = DEVICE_DATA_LEVELS;
 
-  public static $CONFIG: mongoose.SchemaOptions = {
-    collection:        'devices',
-    discriminatorKey:  'deviceType',
-    dataLevel:         {
-      levels:          [ DEVICE_DATA_LEVELS.DETAIL, DEVICE_DATA_LEVELS.TOKEN ],
-      default:         DEVICE_DATA_LEVELS.DETAIL,
-    },
-    toObject:          {
-      virtuals:        true,
-    },
-    id: false,
-  };
-
+  @sbase.mongoose.Field({
+    type:            String,
+    required:        true,
+    index:           true,
+    unique:          true,
+    default:         generateToken,
+    api:             sbase.mongoose.AUTOGEN,
+    level:           DEVICE_DATA_LEVELS.TOKEN,
+  })
   public token:             string;
+
+  @sbase.mongoose.Field({
+    type:            String,
+    enum:            [ 'MacOS', 'Linux', 'Windows' ],
+    required:        true,
+    level:           DEVICE_DATA_LEVELS.DETAIL,
+  })
   public os:                string;
+
+  @sbase.mongoose.Field({
+    type:            String,
+    required:        true,
+    level:           DEVICE_DATA_LEVELS.DETAIL,
+  })
   public osVersion:         string;
+
+  @sbase.mongoose.Field({
+    type:            String,
+    required:        true,
+    level:           DEVICE_DATA_LEVELS.DETAIL,
+  })
   public containerVersion:  string;
+
+  @sbase.mongoose.Field({
+    type:            [ AppletStatus.$mongooseOptions().mongooseSchema ],
+    level:           DEVICE_DATA_LEVELS.DETAIL,
+    api:             sbase.mongoose.AUTOGEN,
+    default:         [],
+  })
   public runningApplets:    AppletStatus[];
+
+  @sbase.mongoose.Field({
+    type:            [ AppletImage.$mongooseOptions().mongooseSchema ],
+    level:           DEVICE_DATA_LEVELS.DETAIL,
+    api:             sbase.mongoose.AUTOGEN,
+    default:         [],
+  })
   public installedApplets:  AppletImage[];
+
+  @sbase.mongoose.Field({
+    type:            [ AppletImage.$mongooseOptions().mongooseSchema ],
+    level:           DEVICE_DATA_LEVELS.DETAIL,
+    api:             sbase.mongoose.AUTOGEN,
+    default:         [],
+  })
   public scheduledApplets:  AppletImage[];
 
-  public static $SCHEMA: object = {
+  public async updateScheduledApplets(userApplets: models.UserApplet[]) {
+    const scheduledApplets: AppletImage[] = [];
 
-    token:             {
-      type:            String,
-      required:        true,
-      index:           true,
-      unique:          true,
-      default:         generateToken,
-      api:             sbase.mongoose.AUTOGEN,
-      level:           DEVICE_DATA_LEVELS.TOKEN,
-    },
-
-    os:                {
-      type:            String,
-      enum:            [ 'MacOS', 'Linux', 'Windows' ],
-      required:        true,
-      level:           DEVICE_DATA_LEVELS.DETAIL,
-    },
-
-    osVersion:         {
-      type:            String,
-      required:        true,
-      level:           DEVICE_DATA_LEVELS.DETAIL,
-    },
-
-    containerVersion:  {
-      type:            String,
-      required:        true,
-      level:           DEVICE_DATA_LEVELS.DETAIL,
-    },
-
-    runningApplets:    {
-      type:            [ AppletStatus.$mongooseOptions().mongooseSchema ],
-      level:           DEVICE_DATA_LEVELS.DETAIL,
-      api:             sbase.mongoose.AUTOGEN,
-      default:         [],
-    },
-
-    installedApplets:  {
-      type:            [ AppletImage.$mongooseOptions().mongooseSchema ],
-      level:           DEVICE_DATA_LEVELS.DETAIL,
-      api:             sbase.mongoose.AUTOGEN,
-      default:         [],
-    },
-
-    scheduledApplets:  {
-      type:            [ AppletImage.$mongooseOptions().mongooseSchema ],
-      level:           DEVICE_DATA_LEVELS.DETAIL,
-      api:             sbase.mongoose.AUTOGEN,
-      default:         [],
-    },
-  };
+    for (const ua of userApplets) {
+      const appletConfig = await ua.populateAppletConfig();
+    }
+  }
 
   get online(): boolean {
     return deviceSocketManager.isDeviceOnline(this._id.toString());
