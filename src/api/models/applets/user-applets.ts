@@ -13,6 +13,8 @@ export const USER_APPLET_DATA_LEVELS = {
 export type UserAppletTypeT = typeof UserApplet & sbase.mongoose.NModelType;
 export interface UserAppletType extends UserAppletTypeT {}
 
+export type ObjectId = mongoose.Types.ObjectId;
+
 const UserAppletDeviceConfig = new mongoose.Schema({
   // TODO: Verify device ownership before saving.
   device:      {
@@ -40,52 +42,52 @@ const UserAppletConfig = new mongoose.Schema({
   accounts:      [ UserAppletAccountConfig ],
 }, { _id: false });
 
+@sbase.mongoose.Config({
+  collection:        'users.applets',
+  dataLevel:         {
+    levels:          [ USER_APPLET_DATA_LEVELS.DETAIL ],
+    default:         USER_APPLET_DATA_LEVELS.DETAIL,
+  },
+  toObject:          {
+    virtuals:        true,
+  },
+  id: false,
+})
 export class UserApplet extends sbase.mongoose.NModel {
 
-  public static $CONFIG: mongoose.SchemaOptions = {
-    collection:        'users.applets',
-    dataLevel:         {
-      levels:          [ USER_APPLET_DATA_LEVELS.DETAIL ],
-      default:         USER_APPLET_DATA_LEVELS.DETAIL,
-    },
-    toObject:          {
-      virtuals:        true,
-    },
-    id: false,
-  };
-
+  @sbase.mongoose.Field({
+    type:           mongoose.Schema.Types.ObjectId,
+    ref:            'User',
+    required:       true,
+    index:          true,
+    api:            sbase.mongoose.READONLY,
+  })
   public user:             mongoose.Schema.Types.ObjectId;
+
+  @sbase.mongoose.Field({
+    type:           mongoose.Schema.Types.ObjectId,
+    ref:            'Applet',
+    required:       true,
+    api:            sbase.mongoose.READONLY,
+  })
   public applet:           mongoose.Schema.Types.ObjectId | models.Applet;
+
+  @sbase.mongoose.Field({
+    type:           UserAppletConfig,
+    required:       true,
+  })
   public config:           UserAppletConfig;
+
+  @sbase.mongoose.Field({
+    type:           Boolean,
+    default:        false,
+  })
   public enabled:          boolean;
 
-  public static $SCHEMA: object = {
-
-    user:             {
-      type:           mongoose.Schema.Types.ObjectId,
-      ref:            'User',
-      required:       true,
-      index:          true,
-      api:            sbase.mongoose.READONLY,
-    },
-
-    applet:           {
-      type:           mongoose.Schema.Types.ObjectId,
-      ref:            'Applet',
-      required:       true,
-      api:            sbase.mongoose.READONLY,
-    },
-
-    config:           {
-      type:           UserAppletConfig,
-      required:       true,
-    },
-
-    enabled:          {
-      type:           Boolean,
-      default:        false,
-    },
-  };
+  @sbase.mongoose.Field({
+    type:           String,
+  })
+  public disableReason:    string;
 
   public async populateAppletConfig(): Promise<AppletConfig> {
     let applet: models.Applet;
@@ -156,6 +158,116 @@ export class UserApplet extends sbase.mongoose.NModel {
       status: runningApplet.status,
     };
   }
+
+  /**
+   * Validate current configuration in case of
+   *
+   *   1. not reach the applet requirements.
+   *   2. account is unavailable.
+   */
+  public async validateConfiguration(
+    accounts: models.Account[], devices: models.Device[],
+  ): Promise<UserApplet> {
+    let changed = false;
+
+    // Step 1, filter deleted accounts.
+    if (this.filterDeletedAccounts(accounts)) { changed = true; }
+
+    // Step 2, filter unanbled devices.
+    if (this.filterUnenabledDevices(devices)) { changed = true; }
+
+    if (this.config.devices.length === 0) {
+      this.enabled        = false;
+      this.disableReason  = 'Device is not specified';
+    }
+
+    if (this.enabled) {
+      const appletConfig = await this.populateAppletConfig();
+      for (const appletAccount of appletConfig.accounts) {
+        if (appletAccount.optional) {
+          continue;
+        }
+
+        const filteredAccounts = _.filter(accounts, (a) => {
+          return a.accountType === appletAccount.accountType &&
+            a.provider === appletAccount.provider;
+        });
+        if (filteredAccounts.length === 0) {
+          this.enabled = false;
+          this.disableReason = `Required ${appletAccount.accountType} ` +
+            `provided by ${appletAccount.provider} is missing`;
+          break;
+        }
+        if (filteredAccounts.length > 1 && !appletAccount.multiple) {
+          this.enabled = false;
+          this.disableReason = `Applet only accepts one ` +
+            `${appletAccount.accountType} provided ` +
+            `by ${appletAccount.provider}`;
+          break;
+        }
+      }
+    }
+
+    if (changed || this.isModified()) {
+      await this.save();
+    }
+
+    return this;
+  }
+
+  private filterUnenabledDevices(devices: models.Device[]): boolean {
+    const enabledDevices = _.filter(
+      this.config.devices, (device) => {
+        const target = _.find(
+          devices,
+          (d) => d._id.toString() === device.device.toString(),
+        );
+        return target != null;
+      },
+    );
+    if (enabledDevices.length !== this.config.devices.length) {
+      this.config.devices = enabledDevices;
+      return true;
+    }
+    return false;
+  }
+
+  private filterDeletedAccounts(accounts: models.Account[]): boolean {
+    const enabledAccounts = _.filter(
+      this.config.accounts, (account) => {
+        const target = _.find(
+          accounts,
+          (d) => d._id.toString() === account.account.toString(),
+        );
+        return target != null;
+      },
+    );
+    if (enabledAccounts.length !== this.config.accounts.length) {
+      this.config.accounts = enabledAccounts;
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Validate all user's enabled applets.
+   *
+   * @param user    specifies the owner of enabled applets.
+   * @param devices in most use cases, user's devices should be already
+   *                retrieved.
+   * @return user's enabled applets.
+   */
+  public static async validateUserApplets(
+    user: mongoose.Types.ObjectId,
+    accounts: models.Account[],
+    devices: models.Device[],
+  ): Promise<UserApplet[]> {
+    const userApplets = await models.UserApplet.find({ user, enabled: true });
+    for (const userApplet of userApplets) {
+      await userApplet.validateConfiguration(accounts, devices);
+    }
+    return _.filter(userApplets, (x) => x.enabled);
+  }
 }
 
 export interface UserAppletStats {
@@ -206,9 +318,9 @@ export interface UserAppletConfig {
 }
 
 export interface UserAppletDeviceConfig {
-  device: models.Device;
+  device: mongoose.Types.ObjectId;
 }
 
 export interface UserAppletAccountConfig {
-  account: models.Device;
+  account: mongoose.Types.ObjectId;
 }

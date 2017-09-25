@@ -1,14 +1,15 @@
-import * as bcrypt from 'bcrypt';
-import * as mongoose from 'mongoose';
-import * as _ from 'underscore';
+import * as bcrypt        from 'bcrypt';
+import * as mongoose      from 'mongoose';
+import * as _             from 'underscore';
 
-import * as sbase from '@nodeswork/sbase';
+import * as sbase         from '@nodeswork/sbase';
 import { NodesworkError } from '@nodeswork/utils';
 
-import { config } from '../../../config';
-import { sendMail } from '../../../mail/mailer';
-import * as errors from '../../errors';
-import { Token } from '../';
+import { config }         from '../../../config';
+import { sendMail }       from '../../../mail/mailer';
+import * as errors        from '../../errors';
+import { Token }          from '../';
+import * as models        from '..';
 
 import 'mongoose-type-email';
 
@@ -69,6 +70,22 @@ export class User extends sbase.mongoose.NModel {
     api:       sbase.mongoose.AUTOGEN,
   })
   public status:    string;
+
+  /**
+   * Check if user's applets and devices are up-to-date.
+   *
+   *   1. For user installed applets, validate current configuration and
+   *      fail reasons.
+   *   2. For user's devices, calculate scheduledApplets. Install and run user's
+   *      applets if necessary.
+   */
+  public async checkAppletsAndDevices() {
+    const accounts = await models.Account.find({ user: this._id });
+    const devices = await models.UserDevice.find({ user: this._id });
+    const enabledUserApplets = await models.UserApplet.validateUserApplets(
+      this._id, accounts, devices,
+    );
+  }
 
   @sbase.koa.bind('POST')
   public static async forgotPassword(
