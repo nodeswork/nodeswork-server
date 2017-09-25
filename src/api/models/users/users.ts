@@ -85,6 +85,16 @@ export class User extends sbase.mongoose.NModel {
     const enabledUserApplets = await models.UserApplet.validateUserApplets(
       this._id, accounts, devices,
     );
+
+    const grouped = _.groupBy(enabledUserApplets, (ua) => {
+      return ua.config.devices[0].device.toString();
+    });
+
+    for (const deviceId of Object.keys(grouped)) {
+      const userApplets = grouped[deviceId];
+      const device = _.find(devices, (d) => d._id.toString() === deviceId);
+      await device.updateScheduledApplets(userApplets);
+    }
   }
 
   @sbase.koa.bind('POST')

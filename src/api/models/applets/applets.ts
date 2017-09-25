@@ -51,89 +51,57 @@ export interface AppletAccountConfig {
   multiple:    boolean;
 }
 
-export interface AppletConfig {
-  _id:          mongoose.Schema.Types.ObjectId;
-  naType:       string;
-  naVersion:    string;
-  packageName:  string;
-  version:      string;
-  workers:      AppletWorkerConfig[];
-  accounts:     AppletAccountConfig[];
-}
-
 export class AppletImage extends sbase.mongoose.Model {
 
-  public naType:       string;
-  public naVersion:    string;
-  public packageName:  string;
-  public version:      string;
-
-  public static $SCHEMA: object = {
-
-    naType:       {
-      type:       String,
-      enum:       ['npm'],
-      default:    'npm',
-      required:   true,
-    },
-
-    naVersion:    {
-      type:       String,
-      enum:       ['8.3.0'],
-      default:    '8.3.0',
-      required:   true,
-    },
-
-    packageName:  {
-      type:       String,
-      required:   true,
-    },
-
-    version:      {
-      type:       String,
-      required:   true,
-    },
-  };
-}
-
-export const AppletConfig = new mongoose.Schema({
-
-  naType:       {
+  @sbase.mongoose.Field({
     type:       String,
     enum:       ['npm'],
     default:    'npm',
     required:   true,
-  },
+  })
+  public naType:       string;
 
-  naVersion:    {
+  @sbase.mongoose.Field({
     type:       String,
     enum:       ['8.3.0'],
     default:    '8.3.0',
     required:   true,
-  },
+  })
+  public naVersion:    string;
 
-  packageName:  {
+  @sbase.mongoose.Field({
     type:       String,
     required:   true,
-  },
+  })
+  public packageName:  string;
 
-  version:      {
+  @sbase.mongoose.Field({
     type:       String,
     required:   true,
-  },
+  })
+  public version:      string;
+}
 
-  workers:      [{
-    name:       String,
-    schedule:   String,
-  }],
+export class AppletConfig extends AppletImage {
 
-  accounts:     [{
-    accountType: String,
-    provider:    String,
-    optional:    Boolean,
-    multiple:    Boolean,
-  }],
-});
+  @sbase.mongoose.Field({
+    type:       [{
+      name:     String,
+      schedule: String,
+    }],
+  })
+  public workers:      AppletWorkerConfig[];
+
+  @sbase.mongoose.Field({
+    type: [{
+      accountType: String,
+      provider:    String,
+      optional:    Boolean,
+      multiple:    Boolean,
+    }],
+  })
+  public accounts:     AppletAccountConfig[];
+}
 
 export class Applet extends sbase.mongoose.NModel {
 
@@ -202,7 +170,7 @@ export class Applet extends sbase.mongoose.NModel {
     },
 
     configHistories:  {
-      type:           [ AppletConfig ],
+      type:           [ AppletConfig.$mongooseOptions().mongooseSchema ],
       level:          APPLET_DATA_LEVELS.DETAIL,
       validate:       [ validateConfig, 'config is required' ],
       api:            sbase.mongoose.AUTOGEN,

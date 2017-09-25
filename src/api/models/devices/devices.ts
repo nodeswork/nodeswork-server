@@ -17,21 +17,17 @@ export interface DeviceType extends DeviceTypeT {}
 
 export class AppletStatus extends AppletImage {
 
+  @sbase.mongoose.Field({
+    type:       Number,
+    required:   true,
+  })
   public port:    number;
+
+  @sbase.mongoose.Field({
+    type:       String,
+    required:   true,
+  })
   public status:  string;
-
-  public static $SCHEMA: object = {
-
-    port:         {
-      type:       Number,
-      required:   true,
-    },
-
-    status:       {
-      type:       String,
-      required:   true,
-    },
-  };
 }
 
 @sbase.mongoose.Config({
@@ -112,7 +108,11 @@ export class Device extends sbase.mongoose.NModel {
 
     for (const ua of userApplets) {
       const appletConfig = await ua.populateAppletConfig();
+      scheduledApplets.push(appletConfig);
     }
+
+    this.scheduledApplets = scheduledApplets;
+    await this.save();
   }
 
   get online(): boolean {
