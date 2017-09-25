@@ -83,6 +83,7 @@ describe 'endpoints - user user applets', ->
           appletConfig: applet.config
           devices: []
           upToDate: true
+          accounts: []
         user: loginUser._id
       }
       resp.body.applet.should.be.deepEqual _.omit(applet, '__v', 'tokens')
@@ -106,6 +107,7 @@ describe 'endpoints - user user applets', ->
           devices: [
             device: device._id
           ]
+          accounts: []
           upToDate: true
         user: loginUser._id
       }

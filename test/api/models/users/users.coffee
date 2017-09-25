@@ -1,4 +1,4 @@
-{ User, Token } = require '../../../../dist/api/models/models'
+{ User, Token } = require '../../../../dist/api/models'
 
 describe 'UserModel', ->
 

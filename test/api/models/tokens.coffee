@@ -1,6 +1,6 @@
 should        = require 'should'
 
-models        = require '../../../dist/api/models/models'
+models        = require '../../../dist/api/models'
 { MAX_DATE }  = require '../../../dist/utils/time'
 
 describe 'TokenModel', ->
