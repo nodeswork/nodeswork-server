@@ -22,7 +22,7 @@
   "dependencies": {
     "@nodeswork/logger": "^0.1.0",
     "@nodeswork/mongoose": "0.0.2",
-    "@nodeswork/nam": "0.0.4",
+    "@nodeswork/nam": "0.0.11",
     "@nodeswork/sbase": "^0.1.20",
     "@nodeswork/utils": "0.0.6",
     "@types/compare-version": "^0.1.31",

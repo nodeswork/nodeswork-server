@@ -2,10 +2,14 @@ import * as _                  from 'underscore';
 import * as mongoose           from 'mongoose';
 import * as sbase              from '@nodeswork/sbase';
 
+import * as logger             from '@nodeswork/logger';
+
 import { generateToken }       from '../../../utils/tokens';
 import { deviceSocketManager } from '../../sockets';
 import { Applet, AppletImage } from '../applets/applets';
 import * as models             from '../../models';
+
+const LOG = logger.getLogger();
 
 export const DEVICE_DATA_LEVELS = {
   DETAIL: 'DETAIL',
@@ -113,6 +117,77 @@ export class Device extends sbase.mongoose.NModel {
 
     this.scheduledApplets = scheduledApplets;
     await this.save();
+    await this.checkAppletRunningStatus();
+  }
+
+  public async checkAppletRunningStatus(): Promise<void> {
+    const deviceSocketRpc = deviceSocketManager.getNAMSocketRpcClient(
+      this._id.toString(),
+    );
+    if (deviceSocketRpc == null) {
+      return;
+    }
+
+    LOG.info('Check online device environment', {
+      device: JSON.parse(JSON.stringify(this.toObject())),
+    });
+
+    for (const runningApplet of this.runningApplets) {
+      const scheduledApplet = _.find(this.scheduledApplets, (sa) => {
+        return sa.packageName === runningApplet.packageName &&
+          sa.version === runningApplet.version;
+      });
+
+      if (scheduledApplet == null) {
+        try {
+          await deviceSocketRpc.kill(runningApplet);
+          LOG.info('Stop running applet successfully', {
+            device: this._id.toString(),
+            applet: JSON.parse(JSON.stringify(runningApplet.toJSON())),
+          });
+        } catch (e) {
+          LOG.error('Stop running applet failed', {
+            device: this._id.toString(),
+            applet: JSON.parse(JSON.stringify(runningApplet.toJSON())),
+            error: e,
+          });
+          throw e;
+        }
+      }
+    }
+
+    for (const scheduledApplet of this.scheduledApplets) {
+      const runningApplet = _.find(this.runningApplets, (ra) => {
+        return ra.packageName === scheduledApplet.packageName &&
+          ra.version === scheduledApplet.version;
+      });
+
+      if (runningApplet != null) {
+        continue;
+      }
+
+      if (runningApplet == null) {
+        try {
+          await deviceSocketRpc.install(scheduledApplet);
+          LOG.info('Install applet successfully', {
+            device: this._id.toString(),
+            applet: JSON.parse(JSON.stringify(scheduledApplet.toJSON())),
+          });
+          await deviceSocketRpc.run(scheduledApplet);
+          LOG.info('Run applet successfully', {
+            device: this._id.toString(),
+            applet: JSON.parse(JSON.stringify(scheduledApplet.toJSON())),
+          });
+        } catch (e) {
+          LOG.error('Run applet failed', {
+            device: this._id.toString(),
+            applet: JSON.parse(JSON.stringify(scheduledApplet.toJSON())),
+            error: e,
+          });
+          throw e;
+        }
+      }
+    }
   }
 
   get online(): boolean {

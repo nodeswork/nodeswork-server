@@ -17,12 +17,14 @@ export class DeviceSocketManager {
   private deviceSocketMap: { [name: string]: NAMSocketRpcClient; } = {};
   public size = 0;
 
-  public register(socket: DeviceSocket) {
+  public register(socket: DeviceSocket): NAMSocketRpcClient {
     const idStr = socket.device._id.toString();
     if (this.deviceSocketMap[idStr] == null) {
       this.size++;
     }
-    this.deviceSocketMap[idStr] = new NAMSocketRpcClient(socket);
+    const result = new NAMSocketRpcClient(socket);
+    this.deviceSocketMap[idStr] = result;
+    return result;
   }
 
   public unregister(socket: DeviceSocket) {

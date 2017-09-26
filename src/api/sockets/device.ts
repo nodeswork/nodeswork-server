@@ -19,6 +19,11 @@ function onConnection(socket: DeviceSocket) {
 
   deviceSocketManager.register(socket);
 
+  // Asynchronously check device applets running status.
+  socket.device.checkAppletRunningStatus().catch((err) => {
+    LOG.error('Checking device running status failed', err);
+  });
+
   socket.on('disconnect', () => {
     LOG.info('Lost device connection', { deviceId: socket.device._id });
     deviceSocketManager.unregister(socket);
