@@ -5,6 +5,7 @@ import * as sbase              from '@nodeswork/sbase';
 import * as models             from '../../models';
 import { deviceSocketManager } from '../../sockets';
 import { AppletConfig }        from './applets';
+import * as errors             from '../../errors';
 
 export const USER_APPLET_DATA_LEVELS = {
   DETAIL:  'DETAIL',
@@ -157,6 +158,31 @@ export class UserApplet extends sbase.mongoose.NModel {
       online: true,
       status: runningApplet.status,
     };
+  }
+
+  public async work(worker: { name: string; action: string; }) {
+    const appletConfig = await this.populateAppletConfig();
+    const workerConfig = _.find(appletConfig.workers, (wc) => {
+      return wc.name === `${worker.name}.${worker.action}`;
+    });
+
+    if (workerConfig == null) {
+      throw errors.INVALID_WORKER;
+    }
+
+    const rpcClient = deviceSocketManager.getNAMSocketRpcClient(
+      this.config.devices[0].device.toString(),
+    );
+
+    if (rpcClient == null) {
+      throw errors.DEVICE_OFFLINE;
+    }
+
+    const appletImage = _.pick(
+      appletConfig, 'packageName', 'version', 'naType', 'naVersion',
+    );
+
+    return await rpcClient.work(appletImage, worker);
   }
 
   /**

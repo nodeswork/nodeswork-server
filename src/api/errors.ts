@@ -60,3 +60,11 @@ export const INVALID_DEVICE_TOKEN_ERROR = new UrlParameterError(
   'invalid device token',
   { responseCode: 401 },
 );
+
+export const INVALID_WORKER = new UrlParameterError(
+  'invalid worker',
+);
+
+export const DEVICE_OFFLINE = new UrlParameterError(
+  'device is offline',
+);

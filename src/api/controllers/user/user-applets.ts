@@ -13,6 +13,10 @@ export const userAppletRouter = new Router({
 
 const USER_APPLET_ID_FIELD = 'userAppletId';
 
+interface UserAppletContext extends Router.IRouterContext {
+  userApplet: models.UserApplet;
+}
+
 userAppletRouter
 
   .use(requireUserLogin)
@@ -58,7 +62,28 @@ userAppletRouter
       noBody: true,
     }),
   )
+
+  .post(
+    `/:${USER_APPLET_ID_FIELD}/work/:workerName/:workerAction`,
+    sbase.koa.overrides('user._id->query.user'),
+    models.UserApplet.getMiddleware({
+      field:       USER_APPLET_ID_FIELD,
+      populate:    { path: 'applet' },
+      transform:   transformUserApplet,
+      target:      'userApplet',
+      noBody:      true,
+      triggerNext: true,
+    }),
+    work,
+  )
 ;
+
+async function work(ctx: UserAppletContext) {
+  ctx.body = await ctx.userApplet.work({
+    name: ctx.params.workerName,
+    action: ctx.params.workerAction,
+  });
+}
 
 function checkUserAppletsAndDevices(
   middleware: Router.IMiddleware,
