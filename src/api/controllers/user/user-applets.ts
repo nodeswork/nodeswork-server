@@ -68,7 +68,10 @@ userAppletRouter
     sbase.koa.overrides('user._id->query.user'),
     models.UserApplet.getMiddleware({
       field:       USER_APPLET_ID_FIELD,
-      populate:    { path: 'applet' },
+      populate:    [
+        { path: 'applet' },
+        { path: 'config.accounts.account' },
+      ],
       transform:   transformUserApplet,
       target:      'userApplet',
       noBody:      true,
@@ -80,8 +83,8 @@ userAppletRouter
 
 async function work(ctx: UserAppletContext) {
   ctx.body = await ctx.userApplet.work({
-    name: ctx.params.workerName,
-    action: ctx.params.workerAction,
+    name:    ctx.params.workerName,
+    action:  ctx.params.workerAction,
   });
 }
 

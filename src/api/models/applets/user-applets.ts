@@ -170,6 +170,14 @@ export class UserApplet extends sbase.mongoose.NModel {
       throw errors.INVALID_WORKER;
     }
 
+    const accounts = _.map(this.config.accounts, (account) => {
+      return account.account;
+    });
+
+    const payload = {
+      accounts,
+    };
+
     const rpcClient = deviceSocketManager.getNAMSocketRpcClient(
       this.config.devices[0].device.toString(),
     );
@@ -182,7 +190,7 @@ export class UserApplet extends sbase.mongoose.NModel {
       appletConfig, 'packageName', 'version', 'naType', 'naVersion',
     );
 
-    return await rpcClient.work(appletImage, worker);
+    return await rpcClient.work(appletImage, worker, payload);
   }
 
   /**
