@@ -6,16 +6,16 @@ import * as sbase           from '@nodeswork/sbase';
 import * as errors          from '../../errors';
 import * as models          from '../../models';
 import { requireUserLogin } from './auth';
+import {
+  UserAppletContext,
+  UserContext,
+}                           from '../def';
 
 export const userAppletRouter = new Router({
   prefix: '/my-applets',
 });
 
 const USER_APPLET_ID_FIELD = 'userAppletId';
-
-interface UserAppletContext extends Router.IRouterContext {
-  userApplet: models.UserApplet;
-}
 
 userAppletRouter
 
@@ -91,7 +91,7 @@ async function work(ctx: UserAppletContext) {
 function checkUserAppletsAndDevices(
   middleware: Router.IMiddleware,
 ): Router.IMiddleware {
-  return async (ctx: Router.IRouterContext, next: () => void) => {
+  return async (ctx: UserContext, next: () => void) => {
     await next();
     await ctx.user.checkAppletsAndDevices();
     await middleware(ctx, null);

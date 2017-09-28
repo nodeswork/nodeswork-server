@@ -4,6 +4,7 @@ import * as sbase           from '@nodeswork/sbase';
 
 import { requireUserLogin } from './auth';
 import { Device }           from '../../models';
+import { UserContext }      from '../def';
 
 export const deviceRouter = new Router({
   prefix: '/devices',
@@ -32,7 +33,7 @@ export const deviceRouter = new Router({
 function updateExistingDevice(
   updateMiddleware: Router.IMiddleware,
 ): Router.IMiddleware {
-  return async (ctx: Router.IRouterContext, next: () => void) => {
+  return async (ctx: UserContext, next: () => void) => {
     const query  = {
       user:             ctx.user._id,
       deviceIdentifier: ctx.request.body.deviceIdentifier,

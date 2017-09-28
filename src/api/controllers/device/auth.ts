@@ -1,13 +1,10 @@
-import * as Router from 'koa-router';
+import * as Router       from 'koa-router';
 
-import * as errors from '../../errors';
-import { Device }  from '../../models';
+import * as errors       from '../../errors';
+import { Device }        from '../../models';
+import { DeviceContext } from '../def';
 
 export const DEVICE_HEADER_TOKEN_KEY = 'device-token';
-
-export interface DeviceContext extends Router.IRouterContext {
-  device: Device;
-}
 
 export async function requireDevice(ctx: DeviceContext, next: () => void) {
   const token = ctx.request.headers[DEVICE_HEADER_TOKEN_KEY];

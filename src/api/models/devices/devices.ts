@@ -117,10 +117,13 @@ export class Device extends sbase.mongoose.NModel {
 
     this.scheduledApplets = scheduledApplets;
     await this.save();
-    await this.checkAppletRunningStatus();
+    await this.checkAppletRunningStatus(userApplets);
   }
 
-  public async checkAppletRunningStatus(): Promise<void> {
+  public async checkAppletRunningStatus(
+    userApplets: models.UserApplet[],
+  ): Promise<void> {
+
     const deviceSocketRpc = deviceSocketManager.getNAMSocketRpcClient(
       this._id.toString(),
     );
@@ -156,6 +159,16 @@ export class Device extends sbase.mongoose.NModel {
       }
     }
 
+    const appletsInfo = [];
+
+    for (const userApplet of userApplets) {
+      const appletConfig = await userApplet.populateAppletConfig();
+      appletsInfo.push({
+        userApplet,
+        appletConfig,
+      });
+    }
+
     for (const scheduledApplet of this.scheduledApplets) {
       const runningApplet = _.find(this.runningApplets, (ra) => {
         return ra.packageName === scheduledApplet.packageName &&
@@ -166,6 +179,15 @@ export class Device extends sbase.mongoose.NModel {
         continue;
       }
 
+      const appletInfo = _.find(appletsInfo, (info) => {
+        return info.appletConfig.packageName === scheduledApplet.packageName &&
+          info.appletConfig.version === scheduledApplet.version;
+      });
+
+      if (appletInfo == null) {
+        continue;
+      }
+
       if (runningApplet == null) {
         try {
           await deviceSocketRpc.install(scheduledApplet);
@@ -173,7 +195,16 @@ export class Device extends sbase.mongoose.NModel {
             device: this._id.toString(),
             applet: JSON.parse(JSON.stringify(scheduledApplet.toJSON())),
           });
-          await deviceSocketRpc.run(scheduledApplet);
+          const applet = appletInfo.userApplet.applet as models.Applet;
+          const runOptions = {
+            packageName:  scheduledApplet.packageName,
+            version:      scheduledApplet.version,
+            naType:       scheduledApplet.naType,
+            naVersion:    scheduledApplet.naVersion,
+            appletId:     applet._id.toString(),
+            appletToken:  applet.tokens.prodToken,
+          };
+          await deviceSocketRpc.run(runOptions);
           LOG.info('Run applet successfully', {
             device: this._id.toString(),
             applet: JSON.parse(JSON.stringify(scheduledApplet.toJSON())),
@@ -200,33 +231,34 @@ export interface UserDeviceType extends UserDeviceTypeT {}
 
 export class UserDevice extends Device {
 
-  public static $SCHEMA: object = {
+  @sbase.mongoose.Field({
+    type:            mongoose.Schema.Types.ObjectId,
+    ref:             'User',
+    required:        true,
+    index:           true,
+    api:             sbase.mongoose.READONLY,
+  })
+  public user: models.User;
 
-    user:              {
-      type:            mongoose.Schema.Types.ObjectId,
-      ref:             'User',
-      required:        true,
-      index:           true,
-      api:             sbase.mongoose.READONLY,
-    },
+  @sbase.mongoose.Field({
+    type:            String,
+    required:        true,
+    level:           DEVICE_DATA_LEVELS.DETAIL,
+    api:             sbase.mongoose.READONLY,
+  })
+  public deviceIdentifier: string;
 
-    deviceIdentifier:  {
-      type:            String,
-      required:        true,
-      level:           DEVICE_DATA_LEVELS.DETAIL,
-      api:             sbase.mongoose.READONLY,
-    },
+  @sbase.mongoose.Field({
+    type:            String,
+    default:         'My Device',
+  })
+  public name: string;
 
-    name:              {
-      type:            String,
-      default:         'My Device',
-    },
-
-    dev:               {
-      type:            Boolean,
-      default:         false,
-      level:           DEVICE_DATA_LEVELS.DETAIL,
-      api:             sbase.mongoose.AUTOGEN,
-    },
-  };
+  @sbase.mongoose.Field({
+    type:            Boolean,
+    default:         false,
+    level:           DEVICE_DATA_LEVELS.DETAIL,
+    api:             sbase.mongoose.AUTOGEN,
+  })
+  public dev: boolean;
 }

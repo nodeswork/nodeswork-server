@@ -5,6 +5,8 @@ import * as sbase                              from '@nodeswork/sbase';
 import { NodesworkError }                      from '@nodeswork/utils';
 
 import { AccountCategory, ACCOUNT_CATEGORIES } from './account-categories';
+import * as errors                             from '../../errors';
+import * as models                             from '../../models';
 
 const DATA_LEVELS = {
   DETAIL:      'DETAIL',
@@ -78,4 +80,21 @@ export class Account extends sbase.mongoose.NModel {
         this.provider === accountCategory.provider;
     });
   }
+
+  public operate(
+    options: AccountOperateOptions,
+    userApplet: models.UserApplet,
+  ): AccountOperateResult {
+    throw errors.NOT_IMPLEMENTED_ERROR;
+  }
+}
+
+export interface AccountOperateOptions {
+  ref:     string;
+  method:  string;
+  body?:   any;
+}
+
+export interface AccountOperateResult {
+  status: string;
 }

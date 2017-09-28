@@ -5,11 +5,9 @@ import * as sbase              from '@nodeswork/sbase';
 
 import { deviceSocketManager } from '../../sockets';
 
-import {
-  DeviceContext,
-  requireDevice,
-}                  from './auth';
-import { Device }  from '../../models';
+import { requireDevice }       from './auth';
+import { Device }              from '../../models';
+import { DeviceContext }       from '../def';
 
 export const deviceRouter: Router = new Router({ prefix: '/devices' })
   .use(requireDevice)

@@ -306,7 +306,20 @@ export class UserApplet extends sbase.mongoose.NModel {
     accounts: models.Account[],
     devices: models.Device[],
   ): Promise<UserApplet[]> {
-    const userApplets = await models.UserApplet.find({ user, enabled: true });
+    const userApplets = await models.UserApplet.find(
+      { user, enabled: true },
+      undefined,
+      {
+        populate: [
+          {
+            path: 'applet',
+            options: {
+              level: models.Applet.DATA_LEVELS.TOKEN,
+            },
+          },
+        ],
+      },
+    );
     for (const userApplet of userApplets) {
       await userApplet.validateConfiguration(accounts, devices);
     }

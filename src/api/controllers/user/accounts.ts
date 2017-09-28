@@ -6,16 +6,16 @@ import { requireUserLogin } from './auth';
 import * as models          from '../../models';
 import * as errors          from '../../errors';
 import { config }           from '../../../config';
+import {
+  AccountContext,
+  UserContext,
+}                           from '../def';
 
 export const accountRouter = new Router({
   prefix: '/accounts',
 });
 
 const ACCOUNT_ID_FIELD = 'accountId';
-
-interface AccountContext extends Router.IRouterContext {
-  account: models.Account;
-}
 
 accountRouter
 
@@ -76,7 +76,7 @@ async function verifyAccount(ctx: AccountContext) {
   ctx.body = await ctx.account.verify();
 }
 
-async function oAuthCallback(ctx: Router.IRouterContext) {
+async function oAuthCallback(ctx: UserContext) {
   const oAuthToken: string      = ctx.request.query.oauth_token;
   const oAuthVerifier: string   = ctx.request.query.oauth_verifier;
 

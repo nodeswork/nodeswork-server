@@ -68,3 +68,9 @@ export const INVALID_WORKER = new UrlParameterError(
 export const DEVICE_OFFLINE = new UrlParameterError(
   'device is offline',
 );
+
+export const NO_ACCOUNT_OPERATE_PERMISSION_ERROR = new UrlParameterError(
+  'no account operate permission',
+);
+
+export const NOT_IMPLEMENTED_ERROR = NodesworkError.notImplemented();

@@ -1,9 +1,10 @@
-import * as _      from 'underscore';
-import * as Router from 'koa-router';
+import * as _          from 'underscore';
+import * as Router     from 'koa-router';
 
-import * as errors from '../../errors';
-import { NRouter } from '../router';
-import * as models from '../../models';
+import * as errors     from '../../errors';
+import { NRouter }     from '../router';
+import * as models     from '../../models';
+import { UserContext } from '../def';
 
 export const userAuthRouter = new NRouter({
   prefix: '/user',
@@ -23,16 +24,14 @@ userAuthRouter
 
   .get('/logout', logout)
 
-  .get('/', requireUserLogin, (ctx) => {
+  .get('/', requireUserLogin, (ctx: UserContext) => {
     ctx.body = ctx.user;
   })
 
   .post('/sendVerifyEmail', sendVerifyEmail, requireUnActiveUserLogin, _.noop)
 ;
 
-export async function requireUserLogin(
-  ctx: Router.IRouterContext, next: () => void,
-) {
+export async function requireUserLogin(ctx: UserContext, next: () => void) {
   if (ctx.session.userId) {
     ctx.user = await models.User.findById(ctx.session.userId);
   }
@@ -44,9 +43,7 @@ export async function requireUserLogin(
   await next();
 }
 
-async function requireUnActiveUserLogin(
-  ctx: Router.IRouterContext, next: () => void,
-) {
+async function requireUnActiveUserLogin(ctx: UserContext, next: () => void) {
   if (ctx.session.userId) {
     ctx.user = await models.User.findById(ctx.session.userId, null, {
       withUnActive: true,

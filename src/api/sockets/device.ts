@@ -1,6 +1,6 @@
 import * as logger     from '@nodeswork/logger';
 
-import { Device }      from '../models';
+import * as models     from '../models';
 import {
   DeviceSocket,
   deviceSocketManager,
@@ -14,13 +14,27 @@ export const deviceSocket = {
   onConnection,
 };
 
-function onConnection(socket: DeviceSocket) {
+async function onConnection(socket: DeviceSocket) {
   LOG.info('New device connection', { deviceId: socket.device._id });
 
   deviceSocketManager.register(socket);
 
+  // TODO: Hack all devices as user device.
+  const userApplets = await models.UserApplet.find({
+    user: (socket.device as models.UserDevice).user,
+  }, undefined, {
+    populate: [
+      {
+        path: 'applet',
+        options: {
+          level: models.Applet.DATA_LEVELS.TOKEN,
+        },
+      },
+    ],
+  });
+
   // Asynchronously check device applets running status.
-  socket.device.checkAppletRunningStatus().catch((err) => {
+  socket.device.checkAppletRunningStatus(userApplets).catch((err) => {
     LOG.error('Checking device running status failed', err);
   });
 
@@ -40,7 +54,7 @@ async function authorize(
     return next(new Error('token is missing'));
   }
 
-  const device = await Device.findOne({ token });
+  const device = await models.Device.findOne({ token });
 
   if (device == null) {
     next(new Error('token is invalid'));
