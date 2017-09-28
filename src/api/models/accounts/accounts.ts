@@ -84,7 +84,7 @@ export class Account extends sbase.mongoose.NModel {
   public operate(
     options: AccountOperateOptions,
     userApplet: models.UserApplet,
-  ): AccountOperateResult {
+  ): Promise<AccountOperateResult> {
     throw errors.NOT_IMPLEMENTED_ERROR;
   }
 }

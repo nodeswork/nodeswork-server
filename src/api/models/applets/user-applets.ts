@@ -1,11 +1,15 @@
 import * as _                  from 'underscore';
 import * as mongoose           from 'mongoose';
+
 import * as sbase              from '@nodeswork/sbase';
+import * as logger             from '@nodeswork/logger';
 
 import * as models             from '../../models';
 import { deviceSocketManager } from '../../sockets';
 import { AppletConfig }        from './applets';
 import * as errors             from '../../errors';
+
+const LOG = logger.getLogger();
 
 export const USER_APPLET_DATA_LEVELS = {
   DETAIL:  'DETAIL',
@@ -189,6 +193,12 @@ export class UserApplet extends sbase.mongoose.NModel {
     const appletImage = _.pick(
       appletConfig, 'packageName', 'version', 'naType', 'naVersion',
     );
+
+    LOG.debug('Call rptClient to work', JSON.parse(JSON.stringify({
+      appletImage,
+      worker,
+      payload,
+    })));
 
     return await rpcClient.work(appletImage, worker, payload);
   }

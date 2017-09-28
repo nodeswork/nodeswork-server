@@ -48,6 +48,11 @@ import {
 // TODO: Find a better place for these helper functions.
 async function handleApiRequest(ctx: any, next: () => void) {
   try {
+    LOG.info('Receive request', {
+      url: ctx.request.url,
+      method: ctx.request.method,
+      headers: ctx.request.headers,
+    });
     await next();
   } catch (e) {
     e = NodesworkError.cast(e);

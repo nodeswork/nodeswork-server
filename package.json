@@ -21,9 +21,9 @@
     "node": ">= 7.0"
   },
   "dependencies": {
-    "@nodeswork/logger": "^0.1.0",
-    "@nodeswork/nam": "0.0.15",
-    "@nodeswork/sbase": "^0.1.27",
+    "@nodeswork/logger": "^0.1.2",
+    "@nodeswork/nam": "0.0.16",
+    "@nodeswork/sbase": "^0.1.30",
     "@nodeswork/utils": "0.0.8",
     "@types/compare-version": "^0.1.31",
     "@types/socket.io": "^1.4.30",

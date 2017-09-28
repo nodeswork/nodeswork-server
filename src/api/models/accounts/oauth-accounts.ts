@@ -1,13 +1,20 @@
-import { URL }                  from 'url';
-import * as mongoose            from 'mongoose';
-import * as _                   from 'underscore';
+import { URL }            from 'url';
+import * as mongoose      from 'mongoose';
+import * as _             from 'underscore';
 
-import * as sbase               from '@nodeswork/sbase';
-import { NodesworkError }       from '@nodeswork/utils';
+import * as sbase         from '@nodeswork/sbase';
+import { NodesworkError } from '@nodeswork/utils';
 
-import { Account, AccountType } from './accounts';
-import { OAuth }                from '../../../utils/oauth';
-import { config }               from '../../../config';
+import {
+  Account,
+  AccountType,
+  AccountOperateOptions,
+  AccountOperateResult,
+}                         from './accounts';
+import { OAuth }          from '../../../utils/oauth';
+import { config }         from '../../../config';
+import * as errors        from '../../errors';
+import * as models        from '../../models';
 
 const CALLBACK_URL  = config.app.oAuthCallbackUrl;
 
@@ -149,5 +156,14 @@ export class OAuthAccount extends Account {
       this.imageUrl = data.profile_image_url;
       await this.save();
     }
+  }
+
+  public async operate(
+    options: AccountOperateOptions,
+    userApplet: models.UserApplet,
+  ): Promise<AccountOperateResult> {
+    return {
+      status: 'operated by oauth account',
+    };
   }
 }
