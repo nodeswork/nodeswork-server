@@ -30,6 +30,7 @@ export interface OAuthTokenUrls {
   requestTokenUrl:  string;
   accessTokenUrl:   string;
   authorizeUrl:     string;
+  apiBaseUrl:       string;
 }
 
 export interface OAuthSecrets {

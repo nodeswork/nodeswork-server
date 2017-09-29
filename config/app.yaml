@@ -7,3 +7,4 @@ oAuthTokenUrls:
     requestTokenUrl:  https://api.twitter.com/oauth/request_token
     accessTokenUrl:   https://api.twitter.com/oauth/access_token
     authorizeUrl:     https://api.twitter.com/oauth/authorize
+    apiBaseUrl:       https://api.twitter.com/1.1/

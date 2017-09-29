@@ -43,6 +43,7 @@ export const appletsRouter: Router = new Router({ prefix: '/applets' })
       target:      'account',
       noBody:      true,
       triggerNext: true,
+      level:       models.Account.DATA_LEVELS.CREDENTIAL,
     }),
     operate,
   )

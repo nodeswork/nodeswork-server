@@ -27,6 +27,7 @@ const OAuthConfig = new mongoose.Schema({
   authorizeUrl:     String,
   consumerKey:      String,
   consumerSecret:   String,
+  apiBaseUrl:       String,
 }, { _id: false, id: false });
 
 export interface OAuthConfig {
@@ -35,6 +36,7 @@ export interface OAuthConfig {
   authorizeUrl:     string;
   consumerKey:      string;
   consumerSecret:   string;
+  apiBaseUrl:       string;
 }
 
 @sbase.mongoose.Config({})
@@ -162,8 +164,38 @@ export class OAuthAccount extends Account {
     options: AccountOperateOptions,
     userApplet: models.UserApplet,
   ): Promise<AccountOperateResult> {
-    return {
-      status: 'operated by oauth account',
+    const oAuthConfig = this.getOAuthConfig();
+    const oAuthClient = this.getOAuthClient();
+
+    const url = new URL(options.ref, oAuthConfig.apiBaseUrl);
+
+    const result: AccountOperateResult = {
+      status: 'ok',
+      data:   null,
     };
+
+    switch (options.method) {
+      case 'GET':
+        result.data = await oAuthClient.get(
+          url.toString(),
+          this.accessToken,
+          this.accessTokenSecret,
+        );
+        break;
+
+      case 'POST':
+        result.data = await oAuthClient.post(
+          url.toString(),
+          this.accessToken,
+          this.accessTokenSecret,
+          options.body,
+        );
+        break;
+
+      default:
+
+    }
+
+    return result;
   }
 }

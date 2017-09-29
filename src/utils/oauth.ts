@@ -60,6 +60,40 @@ export class OAuth {
       );
     });
   }
+
+  public async post(
+    url: string, accessToken: string, accessTokenSecret: string, body: any,
+  ): Promise<any> {
+    return await new Promise((resolve, reject) => {
+      this.oAuthClient.post(
+        url, accessToken, accessTokenSecret, body,
+        (err: any, data: any) => {
+          if (err != null) {
+            reject(err);
+          } else {
+            resolve(JSON.parse(data));
+          }
+        },
+      );
+    });
+  }
+
+  public async put(
+    url: string, accessToken: string, accessTokenSecret: string, body: any,
+  ): Promise<any> {
+    return await new Promise((resolve, reject) => {
+      this.oAuthClient.put(
+        url, accessToken, accessTokenSecret, body,
+        (err: any, data: any) => {
+          if (err != null) {
+            reject(err);
+          } else {
+            resolve(JSON.parse(data));
+          }
+        },
+      );
+    });
+  }
 }
 
 export interface OAuthTokenPair {

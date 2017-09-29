@@ -97,4 +97,5 @@ export interface AccountOperateOptions {
 
 export interface AccountOperateResult {
   status: string;
+  data:   any;
 }
