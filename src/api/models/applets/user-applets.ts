@@ -164,10 +164,11 @@ export class UserApplet extends sbase.mongoose.NModel {
     };
   }
 
-  public async work(worker: { name: string; action: string; }) {
+  public async work(worker: { handler: string; name: string; }) {
     const appletConfig = await this.populateAppletConfig();
     const workerConfig = _.find(appletConfig.workers, (wc) => {
-      return wc.name === `${worker.name}.${worker.action}`;
+      return wc.name === worker.name &&
+        wc.handler === worker.handler;
     });
 
     if (workerConfig == null) {

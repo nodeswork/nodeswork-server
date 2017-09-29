@@ -39,9 +39,40 @@ export const AppletTokens = new mongoose.Schema({
   },
 }, { _id: false });
 
-export interface AppletWorkerConfig {
-  name:      string;
-  schedule:  string;
+@sbase.mongoose.Config({
+  _id: false,
+})
+export class AppletWorkerConfig extends sbase.mongoose.Model {
+
+  @sbase.mongoose.Field({
+    type: String,
+  })
+  public name:         string;
+
+  @sbase.mongoose.Field({
+    type: String,
+  })
+  public schedule:     string;
+
+  @sbase.mongoose.Field({
+    type: String,
+  })
+  public handler:      string;
+
+  @sbase.mongoose.Field({
+    type: String,
+  })
+  public displayName:  string;
+
+  @sbase.mongoose.Field({
+    type: Boolean,
+  })
+  public default:      boolean;
+
+  @sbase.mongoose.Field({
+    type: Boolean,
+  })
+  public hide:         boolean;
 }
 
 export interface AppletAccountConfig {
@@ -85,10 +116,9 @@ export class AppletImage extends sbase.mongoose.Model {
 export class AppletConfig extends AppletImage {
 
   @sbase.mongoose.Field({
-    type:       [{
-      name:     String,
-      schedule: String,
-    }],
+    type:           [
+      AppletWorkerConfig.$mongooseOptions().mongooseSchema,
+    ],
   })
   public workers:      AppletWorkerConfig[];
 

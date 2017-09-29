@@ -64,7 +64,7 @@ userAppletRouter
   )
 
   .post(
-    `/:${USER_APPLET_ID_FIELD}/work/:workerName/:workerAction`,
+    `/:${USER_APPLET_ID_FIELD}/work/:handler/:name`,
     sbase.koa.overrides('user._id->query.user'),
     models.UserApplet.getMiddleware({
       field:       USER_APPLET_ID_FIELD,
@@ -83,8 +83,8 @@ userAppletRouter
 
 async function work(ctx: UserAppletContext) {
   ctx.body = await ctx.userApplet.work({
-    name:    ctx.params.workerName,
-    action:  ctx.params.workerAction,
+    handler:  ctx.params.handler,
+    name:     ctx.params.name,
   });
 }
 
