@@ -185,7 +185,7 @@ export class OAuthAccount extends Account {
         );
 
       default:
-
+        throw NodesworkError.notImplemented();
     }
   }
 }
