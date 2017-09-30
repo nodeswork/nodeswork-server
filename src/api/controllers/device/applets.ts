@@ -3,15 +3,16 @@ import * as Router             from 'koa-router';
 
 import * as sbase              from '@nodeswork/sbase';
 
+import * as models             from '../../models';
+import * as errors             from '../../errors';
 import { deviceSocketManager } from '../../sockets';
 import { requireDevice }       from './auth';
-import * as models             from '../../models';
 import {
   AccountContext,
   DeviceContext,
   UserAppletContext,
 }                              from '../def';
-import * as errors             from '../../errors';
+import { transformUserApplet } from '../common';
 
 const APPLET_ID_FIELD       = 'appletId';
 const ACCOUNT_ID_FIELD      = 'accountId';

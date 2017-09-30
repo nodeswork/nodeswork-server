@@ -84,7 +84,7 @@ export class Account extends sbase.mongoose.NModel {
   public operate(
     options: AccountOperateOptions,
     userApplet: models.UserApplet,
-  ): Promise<AccountOperateResult> {
+  ): Promise<any> {
     throw errors.NOT_IMPLEMENTED_ERROR;
   }
 }
@@ -93,9 +93,4 @@ export interface AccountOperateOptions {
   ref:     string;
   method:  string;
   body?:   any;
-}
-
-export interface AccountOperateResult {
-  status: string;
-  data:   any;
 }

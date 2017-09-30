@@ -9,7 +9,6 @@ import {
   Account,
   AccountType,
   AccountOperateOptions,
-  AccountOperateResult,
 }                         from './accounts';
 import { OAuth }          from '../../../utils/oauth';
 import { config }         from '../../../config';
@@ -163,39 +162,30 @@ export class OAuthAccount extends Account {
   public async operate(
     options: AccountOperateOptions,
     userApplet: models.UserApplet,
-  ): Promise<AccountOperateResult> {
+  ): Promise<any> {
     const oAuthConfig = this.getOAuthConfig();
     const oAuthClient = this.getOAuthClient();
 
     const url = new URL(options.ref, oAuthConfig.apiBaseUrl);
 
-    const result: AccountOperateResult = {
-      status: 'ok',
-      data:   null,
-    };
-
     switch (options.method) {
       case 'GET':
-        result.data = await oAuthClient.get(
+        return await oAuthClient.get(
           url.toString(),
           this.accessToken,
           this.accessTokenSecret,
         );
-        break;
 
       case 'POST':
-        result.data = await oAuthClient.post(
+        return await oAuthClient.post(
           url.toString(),
           this.accessToken,
           this.accessTokenSecret,
           options.body,
         );
-        break;
 
       default:
 
     }
-
-    return result;
   }
 }

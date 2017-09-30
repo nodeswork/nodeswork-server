@@ -1,15 +1,16 @@
-import * as _               from 'underscore';
-import * as Router          from 'koa-router';
+import * as _                  from 'underscore';
+import * as Router             from 'koa-router';
 
-import * as sbase           from '@nodeswork/sbase';
+import * as sbase              from '@nodeswork/sbase';
 
-import * as errors          from '../../errors';
-import * as models          from '../../models';
-import { requireUserLogin } from './auth';
+import * as errors             from '../../errors';
+import * as models             from '../../models';
+import { requireUserLogin }    from './auth';
 import {
   UserAppletContext,
   UserContext,
-}                           from '../def';
+}                              from '../def';
+import { transformUserApplet } from '../common';
 
 export const userAppletRouter = new Router({
   prefix: '/my-applets',
@@ -96,18 +97,4 @@ function checkUserAppletsAndDevices(
     await ctx.user.checkAppletsAndDevices();
     await middleware(ctx, null);
   };
-}
-
-async function transformUserApplet(
-  userApplet: models.UserApplet,
-): Promise<models.UserApplet> {
-  const result = userApplet.toJSON() as any;
-  const target = await userApplet.populateAppletConfig();
-  result.config.appletConfig = target;
-  result.config.upToDate = (
-    target._id.toString() === result.applet.config._id.toString()
-  );
-  const stats = await userApplet.stats();
-  result.stats = stats;
-  return result;
 }

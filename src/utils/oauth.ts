@@ -1,3 +1,9 @@
+import * as _     from 'underscore';
+import {
+  ErrorOptions,
+  NodesworkError,
+}                 from '@nodeswork/utils';
+
 const OOAuth = require('oauth').OAuth;
 
 export class OAuth {
@@ -105,3 +111,20 @@ export interface AccessTokenPair {
   accessToken:        string;
   accessTokenSecret:  string;
 }
+
+const OAuthErrorCaster = {
+
+  filter: (error: any, options: ErrorOptions): boolean => {
+    return error.statusCode != null && error.data != null;
+  },
+
+  cast: (error: any, options: ErrorOptions): NodesworkError => {
+    const data = _.isString(error.data) ? JSON.parse(error.data) : error.data;
+    return new NodesworkError('OAuth Client Error', {
+      responseCode: error.statusCode,
+      data,
+    });
+  },
+};
+
+NodesworkError.addErrorCaster(OAuthErrorCaster);
