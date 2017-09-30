@@ -3,6 +3,7 @@ import * as mongoose           from 'mongoose';
 
 import * as sbase              from '@nodeswork/sbase';
 import * as logger             from '@nodeswork/logger';
+import { nam }                 from '@nodeswork/nam/dist/def';
 
 import * as models             from '../../models';
 import { deviceSocketManager } from '../../sockets';
@@ -165,6 +166,7 @@ export class UserApplet extends sbase.mongoose.NModel {
   }
 
   public async work(worker: { handler: string; name: string; }) {
+    const applet       =  this.applet as models.Applet;
     const appletConfig = await this.populateAppletConfig();
     const workerConfig = _.find(appletConfig.workers, (wc) => {
       return wc.name === worker.name &&
@@ -191,17 +193,27 @@ export class UserApplet extends sbase.mongoose.NModel {
       throw errors.DEVICE_OFFLINE;
     }
 
-    const appletImage = _.pick(
+    const appletImage: nam.AppletImage = _.pick(
       appletConfig, 'packageName', 'version', 'naType', 'naVersion',
     );
 
-    LOG.debug('Call rptClient to work', JSON.parse(JSON.stringify({
-      appletImage,
+    const workOptions: nam.WorkOptions = {
+      route: {
+        appletId: applet._id.toString(),
+        naType: appletImage.naType,
+        naVersion: appletImage.naVersion,
+        packageName: appletImage.packageName,
+        version: appletImage.version,
+      },
       worker,
       payload,
-    })));
+    };
 
-    return await rpcClient.work(appletImage, worker, payload);
+    LOG.debug(
+      'Call rptClient to work', JSON.parse(JSON.stringify(workOptions)),
+    );
+
+    return await rpcClient.work(workOptions);
   }
 
   /**
