@@ -22,16 +22,28 @@ export interface DeviceType extends DeviceTypeT {}
 export class AppletStatus extends AppletImage {
 
   @sbase.mongoose.Field({
-    type:       Number,
-    required:   true,
+    type:  mongoose.Schema.Types.ObjectId,
+    ref:   'Applet',
   })
-  public port:    number;
+  public appletId: string;
 
   @sbase.mongoose.Field({
     type:       String,
     required:   true,
   })
-  public status:  string;
+  public ip:    string;
+
+  @sbase.mongoose.Field({
+    type:       Number,
+    required:   true,
+  })
+  public port:  number;
+
+  @sbase.mongoose.Field({
+    type:       String,
+    required:   true,
+  })
+  public status: string;
 }
 
 @sbase.mongoose.Config({
