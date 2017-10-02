@@ -14,8 +14,7 @@ const DATA_LEVELS = {
   CREDENTIAL:  'CREDENTIAL',
 };
 
-export type AccountTypeT = typeof Account & sbase.mongoose.NModelType;
-export interface AccountType extends AccountTypeT {}
+export type AccountType = typeof Account & sbase.mongoose.NModelType;
 
 @sbase.mongoose.Config({
   collection:        'accounts',

@@ -16,8 +16,7 @@ const APPLET_PERMISSIONS = {
   PUBLIC:   'PUBLIC',
 };
 
-export type AppletTypeT = typeof Applet & sbase.mongoose.NModelType;
-export interface AppletType extends AppletTypeT {}
+export type AppletType = typeof Applet & sbase.mongoose.NModelType;
 
 export interface AppletTokens {
   devToken:   string;

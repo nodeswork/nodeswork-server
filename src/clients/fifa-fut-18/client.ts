@@ -76,21 +76,11 @@ export class FifaFut18Client {
   }
 
   public async ensureLogin() {
-    console.log(this.options.jar);
-
     let resp = await this.defaultRequest.get({
       uri:                      urls.HOME,
       json:                     true,
       resolveWithFullResponse:  true,
     });
-
-    // console.log('step 1');
-    // console.log('home headers', resp.headers);
-    // saveToFile('1.home.html', resp.body);
-    // console.log('request headers', resp.request.headers);
-    // console.log('location', resp.request.href);
-    // console.log('jar', this.options.jar);
-    // console.log('--------------------------------------------------------');
 
     resp = await this.defaultRequest.get({
       uri:                      urls.accounts.AUTH,
@@ -102,14 +92,6 @@ export class FifaFut18Client {
         Origin:                 'https://www.easports.com',
       },
     });
-
-    // console.log('step 2');
-    // console.log('auth headers', resp.headers);
-    // console.log('auth data', resp.body);
-    // console.log('request headers', resp.request.headers);
-    // console.log('location', resp.request.href);
-    // console.log('jar', this.options.jar);
-    // console.log('--------------------------------------------------------');
 
     if (resp.body.error === 'login_required') {
       LOG.debug('Auth check: account is not login');
@@ -153,38 +135,6 @@ export class FifaFut18Client {
         throw errors.UNKNOWN_AUTH_PROMPT_RESPONSE_ERROR;
     }
 
-    // console.log('auth prompt headers', resp.headers);
-    // saveToFile('2.1.1.auth prompt-data.html', resp.body);
-    // console.log('request headers', resp.request.headers);
-    // console.log('location', resp.request.href);
-    // console.log('jar', this.options.jar);
-    // console.log('title', parseTitle(resp.body));
-    // console.log('--------------------------------------------------------');
-
-    // const loginFormUrl = resp.request.href;
-
-    // console.log('loginFormUrl', loginFormUrl);
-
-    // resp = await this.defaultRequest.get({
-      // uri:                            loginFormUrl,
-      // json:                           true,
-      // headers:                        {
-        // 'Host':                       'signin.ea.com',
-        // 'Origin':                     'https://signin.ea.com',
-        // 'Referer':                    loginFormUrl,
-        // 'Upgrade-Insecure-Requests':  '1',
-      // },
-      // resolveWithFullResponse:        true,
-    // });
-
-    // console.log('step 2.1.x');
-    // console.log('headers', resp.headers);
-    // saveToFile('2.2.x login.html', resp.body);
-    // console.log('login data', resp.statusCode);
-    // console.log('request headers', resp.request.headers);
-    // console.log('location', resp.request.href);
-    // console.log('jar', this.options.jar);
-    // console.log('--------------------------------------------------------');
   }
 
   private async loginWithCredentials(formUrl: string) {

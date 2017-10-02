@@ -16,8 +16,7 @@ export const USER_APPLET_DATA_LEVELS = {
   DETAIL:  'DETAIL',
 };
 
-export type UserAppletTypeT = typeof UserApplet & sbase.mongoose.NModelType;
-export interface UserAppletType extends UserAppletTypeT {}
+export type UserAppletType = typeof UserApplet & sbase.mongoose.NModelType;
 
 export type ObjectId = mongoose.Types.ObjectId;
 

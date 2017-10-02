@@ -17,8 +17,7 @@ import * as models        from '../../models';
 
 const CALLBACK_URL  = config.app.oAuthCallbackUrl;
 
-export type OAuthAccountTypeT = typeof OAuthAccount & AccountType;
-export interface OAuthAccountType extends OAuthAccountTypeT {}
+export type OAuthAccountType = typeof OAuthAccount & AccountType;
 
 const OAuthConfig = new mongoose.Schema({
   requestTokenUrl:  String,

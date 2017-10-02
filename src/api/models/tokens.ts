@@ -6,8 +6,7 @@ import * as sbase from "@nodeswork/sbase";
 import { MAX_DATE } from "../../utils/time";
 import { generateToken } from "../../utils/tokens";
 
-export interface TokenType extends TokenTypeT {}
-export type TokenTypeT = typeof Token & sbase.mongoose.NModelType;
+export type TokenType = typeof Token & sbase.mongoose.NModelType;
 
 export class Token extends sbase.mongoose.NModel {
 

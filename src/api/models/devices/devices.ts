@@ -16,8 +16,7 @@ export const DEVICE_DATA_LEVELS = {
   TOKEN:  'TOKEN',
 };
 
-export type DeviceTypeT = typeof Device & sbase.mongoose.NModelType;
-export interface DeviceType extends DeviceTypeT {}
+export type DeviceType = typeof Device & sbase.mongoose.NModelType;
 
 export class AppletStatus extends AppletImage {
 
@@ -238,8 +237,7 @@ export class Device extends sbase.mongoose.NModel {
   }
 }
 
-export type UserDeviceTypeT = typeof UserDevice & sbase.mongoose.NModelType;
-export interface UserDeviceType extends UserDeviceTypeT {}
+export type UserDeviceType = typeof UserDevice & DeviceType;
 
 export class UserDevice extends Device {
 

@@ -17,8 +17,7 @@ const VERIFY_EMAIL_TOKEN_PURPOSE = 'verifyEmail';
 const VERIFY_EMAIL_TEMPLATE = 'email-verification';
 const EMAIL_EXPIRATION_TIME_IN_MS = 10 * 60 * 1000;
 
-export type UserTypeT = typeof User & sbase.mongoose.NModelType;
-export interface UserType extends UserTypeT {}
+export type UserType = typeof User & sbase.mongoose.NModelType;
 
 const DATA_LEVELS = {
   DETAIL:      'DETAIL',
