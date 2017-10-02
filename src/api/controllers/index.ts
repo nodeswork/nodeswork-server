@@ -4,6 +4,7 @@ import * as logger             from '@nodeswork/logger';
 
 import { userRouter }          from './user';
 import { deviceRouter }        from './device';
+import { resourcesRouter }     from './resources';
 import { config }              from '../../config';
 
 import { deviceSocketManager } from '../sockets';
@@ -17,6 +18,7 @@ export const router = new Router()
   .use(intializeOverrides)
   .use(userRouter.routes(), userRouter.allowedMethods())
   .use(deviceRouter.routes(), deviceRouter.allowedMethods())
+  .use(resourcesRouter.routes(), resourcesRouter.allowedMethods())
   .get('/sstats', sstats)
 ;
 
@@ -61,7 +63,6 @@ async function handleApiRequest(ctx: any, next: () => void) {
       message: e.message,
     }, e.meta);
     if (ctx.status === 500) {
-      console.error(e.cause);
       LOG.error('internal service error', e.cause);
     }
   }
