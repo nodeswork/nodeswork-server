@@ -16,6 +16,7 @@ export class FifaFut18Account extends CookieAccount {
 
   @sbase.mongoose.Field({
     type:      String,
+    required:  true,
     api:       sbase.mongoose.READONLY,
   })
   public email: string;

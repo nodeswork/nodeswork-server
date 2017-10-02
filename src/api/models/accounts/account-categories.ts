@@ -12,4 +12,10 @@ export const ACCOUNT_CATEGORIES: AccountCategory[] = [
     name:        'Twitter',
     imageUrl:    'https://www.seeklogo.net/wp-content/uploads/2016/11/twitter-icon-circle-blue-logo-preview.png',
   },
+  {
+    accountType: 'FifaFut18Account',
+    provider:    'Fifa18 Fut',
+    name:        'Fifa18 Fut',
+    imageUrl:    'https://orig00.deviantart.net/6d00/f/2011/231/1/0/ea_games_logo_icon_by_mahesh69a-d473fzx.png',
+  },
 ];
