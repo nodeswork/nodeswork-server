@@ -76,6 +76,7 @@ export class FifaFut18Client {
   }
 
   public async ensureLogin() {
+    console.log(this.options.jar);
 
     let resp = await this.defaultRequest.get({
       uri:                      urls.HOME,

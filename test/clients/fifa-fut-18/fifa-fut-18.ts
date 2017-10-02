@@ -10,14 +10,13 @@ describe('client > fifa-fut-18', () => {
 
   describe('#login', () => {
 
-    const jar     = request.jar();
-    it('wrong password', async () => {
+    it('failed when crendential is wrong', async () => {
       const client  = new fifaFut18.FifaFut18Client({
-        email: 'wrong@gmail.com',
-        password: 'wrong pass',
-        secret: '???',
-        platform: 'xone',
-        jar,
+        email:     'wrong@gmail.com',
+        password:  'wrong pass',
+        secret:    '???',
+        platform:  'xone',
+        jar:       request.jar(),
       });
 
       try {
@@ -28,7 +27,17 @@ describe('client > fifa-fut-18', () => {
       }
     });
 
-    // it('should work', async () => {
+    const jar     = request.jar();
+
+    // it('pauses at login verification phrase', async () => {
+      // const client  = new fifaFut18.FifaFut18Client({
+        // email: 'zyz.4.zyz@gmail.com',
+        // password: '',
+        // secret: '???',
+        // platform: 'xone',
+        // jar,
+      // });
+
       // try {
         // await client.ensureLogin();
         // false.should.be.ok();
