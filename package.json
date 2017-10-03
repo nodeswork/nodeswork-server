@@ -24,7 +24,7 @@
   "dependencies": {
     "@nodeswork/logger": "^0.1.2",
     "@nodeswork/nam": "0.0.20",
-    "@nodeswork/sbase": "^0.1.31",
+    "@nodeswork/sbase": "^0.1.32",
     "@nodeswork/utils": "0.0.8",
     "@types/compare-version": "^0.1.31",
     "@types/socket.io": "^1.4.30",

@@ -1,15 +1,18 @@
-import * as Router          from 'koa-router';
+import * as Router      from 'koa-router';
 
-import * as sbase           from '@nodeswork/sbase';
+import * as sbase       from '@nodeswork/sbase';
 
-import { requireUserLogin } from './auth';
-import * as models          from '../../models';
-import * as errors          from '../../errors';
-import { config }           from '../../../config';
+import {
+  requireUserLogin,
+  updateUserProperties,
+}                       from './auth';
+import * as models      from '../../models';
+import * as errors      from '../../errors';
+import { config }       from '../../../config';
 import {
   AccountContext,
   UserContext,
-}                           from '../def';
+}                       from '../def';
 
 export const accountRouter = new Router({
   prefix: '/accounts',
@@ -70,6 +73,16 @@ accountRouter
       level:        models.Account.DATA_LEVELS.CREDENTIAL,
     }),
     updateAccountInfoFromRemote,
+  )
+
+  .delete(
+    `/:${ACCOUNT_ID_FIELD}`,
+    sbase.koa.overrides('user._id->query.user'),
+    models.Account.deleteMiddleware({
+      field:        ACCOUNT_ID_FIELD,
+      triggerNext:  true,
+    }),
+    updateUserProperties,
   )
 ;
 

@@ -31,6 +31,10 @@ userAuthRouter
   .post('/sendVerifyEmail', sendVerifyEmail, requireUnActiveUserLogin, _.noop)
 ;
 
+export async function updateUserProperties(ctx: UserContext) {
+  await ctx.user.checkAppletsAndDevices();
+}
+
 export async function requireUserLogin(ctx: UserContext, next: () => void) {
   if (ctx.session.userId) {
     ctx.user = await models.User.findById(ctx.session.userId);

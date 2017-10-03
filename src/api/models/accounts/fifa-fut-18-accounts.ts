@@ -37,27 +37,6 @@ export class FifaFut18Account extends CookieAccount {
   })
   public clientMetadata: Fifa18ClientMetadata;
 
-  // @sbase.mongoose.Field({
-    // type:      String,
-    // level:     Account.DATA_LEVELS.CREDENTIAL,
-    // api:       sbase.mongoose.AUTOGEN,
-  // })
-  // public tokenUrl: string;
-
-  // @sbase.mongoose.Field({
-    // type:      String,
-    // level:     Account.DATA_LEVELS.CREDENTIAL,
-    // api:       sbase.mongoose.AUTOGEN,
-  // })
-  // public accessToken: string;
-
-  // @sbase.mongoose.Field({
-    // type:      String,
-    // level:     Account.DATA_LEVELS.CREDENTIAL,
-    // api:       sbase.mongoose.AUTOGEN,
-  // })
-  // public tokenType: string;
-
   public reset() {
     this.cookieString   = '';
     this.clientMetadata = {};

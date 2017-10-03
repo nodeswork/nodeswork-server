@@ -5,7 +5,10 @@ import * as sbase              from '@nodeswork/sbase';
 
 import * as errors             from '../../errors';
 import * as models             from '../../models';
-import { requireUserLogin }    from './auth';
+import {
+  requireUserLogin,
+  updateUserProperties,
+}                              from './auth';
 import {
   UserAppletContext,
   UserContext,
@@ -49,7 +52,7 @@ userAppletRouter
 
   .post(
     `/:${USER_APPLET_ID_FIELD}`, sbase.koa.overrides('user._id->query.user'),
-    checkUserAppletsAndDevices(
+    updateAndCheckUserAppletsAndDevices(
       models.UserApplet.getMiddleware({
         field: USER_APPLET_ID_FIELD,
         populate: { path: 'applet' },
@@ -62,6 +65,15 @@ userAppletRouter
       transform: transformUserApplet,
       noBody: true,
     }),
+  )
+
+  .delete(
+    `/:${USER_APPLET_ID_FIELD}`, sbase.koa.overrides('user._id->query.user'),
+    models.UserApplet.deleteMiddleware({
+      field:        USER_APPLET_ID_FIELD,
+      triggerNext:  true,
+    }),
+    updateUserProperties,
   )
 
   .post(
@@ -89,7 +101,7 @@ async function work(ctx: UserAppletContext) {
   });
 }
 
-function checkUserAppletsAndDevices(
+function updateAndCheckUserAppletsAndDevices(
   middleware: Router.IMiddleware,
 ): Router.IMiddleware {
   return async (ctx: UserContext, next: () => void) => {
