@@ -1,5 +1,3 @@
-/* tslint:disable:no-console */
-
 import * as _           from 'underscore';
 import {
   RequestAPI,
@@ -20,8 +18,6 @@ import {
   STATES,
   STATE_INDEX,
 }                       from './defs';
-
-import * as fs          from 'fs-extra';
 
 const hasher                             = require('./hasher');
 
@@ -77,18 +73,36 @@ export class FifaFut18Client {
    * Login with credentials.
    */
   public async login(password: string) {
+    this.setState(STATES.REQUIRE_LOGIN);
+    const formUrl          = await this.getLoginFormUrl();
+    const verificationUrl  = await this.loginWithCredential(formUrl, password);
+    const securityCodeVerificationUrl = await this.sendVerificationCode(
+      verificationUrl,
+    );
+    this.metadata.securityCodeVerificationUrl = securityCodeVerificationUrl;
+    this.setState(STATES.REQUIRE_SECURITY_CODE);
   }
 
   /**
    * Verify account with security code.
    */
   public async verifySecurityCode(code: string) {
+    await this.sendSecurityCode(code);
+    if (this.metadata.stateIndex > STATE_INDEX.REQUIRE_SECURITY_CODE) {
+      await this.initializeWithGameSku();
+    }
+    if (this.metadata.stateIndex > STATE_INDEX.REQUIRE_GAME_SKU) {
+      await this.initializeWithPhishing();
+    }
   }
 
   /**
    * Choose platform for the account.
    */
-  public async choosePlatform(platform: string) {
+  public async chooseGameSku(gameSku: string) {
+    this.metadata.gameSku = gameSku;
+    this.setState(STATES.REQUIRE_PHISHING_QUESTIONS);
+    await this.initializeWithPhishing();
   }
 
   /**
@@ -261,9 +275,6 @@ export class FifaFut18Client {
     });
     title = parseTitle(resp2.body);
 
-    console.log(resp2.body);
-    console.log(resp2.request.href);
-
     if (title !== 'Login Verification') {
       throw errors.UNKNOWN_LOGIN_FORM_VERIFY_RESPONSE_ERROR;
     }
@@ -295,28 +306,10 @@ export class FifaFut18Client {
     return securityCodeVerificationUrl;
   }
 
-  public async loginO(password: string): Promise<Fifa18ClientMetadata> {
-    LOG.debug('Login Fifa FUT 18 account');
-
-    // const metadata         = await this.initializeWithAuth();
-    // if (metadata != null) {
-      // return metadata;
-    // }
-
-    const formUrl          = await this.getLoginFormUrl();
-    const verificationUrl  = await this.loginWithCredential(formUrl, password);
-    const securityCodeVerificationUrl = await this.sendVerificationCode(
-      verificationUrl,
-    );
-    return { securityCodeVerificationUrl };
-  }
-
-  private async sendSecurityCode(code: string): Promise<Fifa18ClientMetadata> {
+  private async sendSecurityCode(code: string) {
     const resp = await this.defaultRequest.post({
       uri:                            this.options.metadata.securityCodeVerificationUrl,
-      json:                           true,
       headers:                        {
-        'Host':                       'signin.ea.com',
         'Origin':                     'https://signin.ea.com',
         'Referer':                    this.options.metadata.securityCodeVerificationUrl,
         'Upgrade-Insecure-Requests':  '1',
@@ -331,13 +324,9 @@ export class FifaFut18Client {
     });
 
     const u = new URL((resp.request.href as string).replace('#', '?'));
-    const metadata = {
-      tokenType:   u.searchParams.get('token_type'),
-      accessToken: u.searchParams.get('access_token'),
-    };
-
-    LOG.debug('Send security code result', { url: u.toString(), metadata });
-    return metadata;
+    this.metadata.tokenType = u.searchParams.get('token_type');
+    this.metadata.accessToken = u.searchParams.get('access_token');
+    this.setState(STATES.REQUIRE_GAME_SKU);
   }
 
   private async getPid() {
@@ -410,9 +399,6 @@ export class FifaFut18Client {
     }
   }
 
-  /**
-   * require gameSku.
-   */
   private async getAuth(force: boolean = false) {
     if (this.metadata.auth != null && !force) {
       return;
@@ -444,20 +430,6 @@ export class FifaFut18Client {
 
     this.metadata.auth = resp;
   }
-
-  public async verifySecurityCodeO(code: string): Promise<Fifa18ClientMetadata> {
-    LOG.debug('Verify Fifa FUT 18 account Security Code');
-
-    let metadata  = this.options.metadata;
-    metadata      = await this.sendSecurityCode(code);
-
-    // metadata      = await this.getPid(metadata);
-    // metadata      = await this.getShardInfo(metadata);
-    // metadata      = await this.getAuthCode(metadata);
-    // metadata      = await this.getAuth(metadata);
-
-    return metadata;
-  }
 }
 
 const PARSE_TITLE_REGEX = /<title>(.*)<\/title>/;
@@ -480,12 +452,6 @@ function parseRedirectUrl(content: string): string {
     throw errors.UNKNOWN_LOGIN_FORM_RESPONSE_ERROR;
   }
   return result;
-}
-
-async function saveToFile(step: string, context: string) {
-  const filename = `/tmp/${step}`;
-  console.log('saved to', filename);
-  fs.writeFileSync(filename, context);
 }
 
 export interface FifaFut18ClientOptions {
