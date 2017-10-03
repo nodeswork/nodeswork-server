@@ -20,7 +20,7 @@ gulp.task("less", function() {
 });
 
 gulp.task("resources", function() {
-  gulp.src(['src/**/*.json', 'src/**/*.pug', 'src/**/*.less', ])
+  gulp.src(['src/**/*.json', 'src/**/*.pug', 'src/**/*.js', ])
     .pipe(gulp.dest('dist'));
 });
 

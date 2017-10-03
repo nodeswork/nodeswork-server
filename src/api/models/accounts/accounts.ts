@@ -44,7 +44,7 @@ export class Account extends sbase.mongoose.NModel {
 
   @sbase.mongoose.Field({
     type:      String,
-    enum:      ['twitter', 'customized'],
+    enum:      ['twitter', 'fifa-fut-18', 'customized'],
     required:  true,
   })
   public provider: string;
@@ -69,7 +69,7 @@ export class Account extends sbase.mongoose.NModel {
   })
   public verified: boolean;
 
-  public verify(): any {
+  public verify(data: any): any {
     // Abstract method
   }
 

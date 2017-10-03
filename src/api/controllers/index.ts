@@ -63,7 +63,8 @@ async function handleApiRequest(ctx: any, next: () => void) {
       message: e.message,
     }, e.meta);
     if (ctx.status === 500) {
-      LOG.error('internal service error', e.cause);
+      console.log(e);
+      LOG.error('internal service error', e);
     }
   }
 }

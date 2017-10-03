@@ -54,6 +54,7 @@ accountRouter
       target:       'account',
       noBody:       true,
       triggerNext:  true,
+      level:        models.Account.DATA_LEVELS.CREDENTIAL,
     }),
     verifyAccount,
   )
@@ -73,7 +74,7 @@ accountRouter
 ;
 
 async function verifyAccount(ctx: AccountContext) {
-  ctx.body = await ctx.account.verify();
+  ctx.body = await ctx.account.verify(ctx.request.body);
 }
 
 async function oAuthCallback(ctx: UserContext) {

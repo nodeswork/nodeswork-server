@@ -14,7 +14,7 @@ export const ACCOUNT_CATEGORIES: AccountCategory[] = [
   },
   {
     accountType: 'FifaFut18Account',
-    provider:    'Fifa18 Fut',
+    provider:    'fifa-fut-18',
     name:        'Fifa18 Fut',
     imageUrl:    'https://orig00.deviantart.net/6d00/f/2011/231/1/0/ea_games_logo_icon_by_mahesh69a-d473fzx.png',
   },
