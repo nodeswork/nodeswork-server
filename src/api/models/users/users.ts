@@ -89,9 +89,8 @@ export class User extends sbase.mongoose.NModel {
       return ua.config.devices[0].device.toString();
     });
 
-    for (const deviceId of Object.keys(grouped)) {
-      const userApplets = grouped[deviceId];
-      const device = _.find(devices, (d) => d._id.toString() === deviceId);
+    for (const device of devices) {
+      const userApplets = grouped[device._id.toString()] || [];
       await device.updateScheduledApplets(userApplets);
     }
   }
