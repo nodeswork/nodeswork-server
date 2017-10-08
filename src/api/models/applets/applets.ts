@@ -132,79 +132,74 @@ export class AppletConfig extends AppletImage {
   public accounts:     AppletAccountConfig[];
 }
 
+@sbase.mongoose.Config({
+  collection:        'applets',
+  dataLevel:         {
+    levels:          [ APPLET_DATA_LEVELS.DETAIL, APPLET_DATA_LEVELS.TOKEN ],
+    default:         APPLET_DATA_LEVELS.DETAIL,
+  },
+  toObject:          {
+    virtuals:        true,
+  },
+  id: false,
+})
 export class Applet extends sbase.mongoose.NModel {
 
   public static DATA_LEVELS = APPLET_DATA_LEVELS;
   public static PERMISSIONS = APPLET_PERMISSIONS;
 
-  public static $CONFIG: mongoose.SchemaOptions = {
-    collection:        'applets',
-    dataLevel:         {
-      levels:          [ APPLET_DATA_LEVELS.DETAIL, APPLET_DATA_LEVELS.TOKEN ],
-      default:         APPLET_DATA_LEVELS.DETAIL,
-    },
-    toObject:          {
-      virtuals:        true,
-    },
-    id: false,
-  };
+  @sbase.mongoose.Field({
+    type:           mongoose.Schema.Types.ObjectId,
+    ref:            'User',
+    required:       true,
+    index:          true,
+    api:            sbase.mongoose.READONLY,
+  })
+  public owner:     mongoose.Schema.Types.ObjectId;
 
-  public owner:            mongoose.Schema.Types.ObjectId;
-  public name:             string;
-  public imageUrl:         string;
-  public description:      string;
-  public tokens:           AppletTokens;
-  public permission:       string;
+  @sbase.mongoose.Field({
+    type:           String,
+    required:       true,
+    unique:         true,
+  })
+  public name:      string;
+
+  @sbase.mongoose.Field({
+    type:           String,
+    default:        'http://www.nodeswork.com/favicon.ico',
+  })
+  public imageUrl:  string;
+
+  @sbase.mongoose.Field({
+    type:           String,
+    max:            [ 1400, 'description should be at most 1400 charactors' ],
+    level:          APPLET_DATA_LEVELS.DETAIL,
+  })
+  public description: string;
+
+  @sbase.mongoose.Field({
+    type:           AppletTokens,
+    default:        AppletTokens,
+    api:            sbase.mongoose.AUTOGEN,
+    level:          APPLET_DATA_LEVELS.TOKEN,
+  })
+  public tokens:    AppletTokens;
+
+  @sbase.mongoose.Field({
+    type:           String,
+    enum:           Object.keys(APPLET_PERMISSIONS),
+    default:        APPLET_PERMISSIONS.PRIVATE,
+    level:          APPLET_DATA_LEVELS.DETAIL,
+  })
+  public permission: string;
+
+  @sbase.mongoose.Field({
+    type:           [ AppletConfig.$mongooseOptions().mongooseSchema ],
+    level:          APPLET_DATA_LEVELS.DETAIL,
+    validate:       [ validateConfig, 'config is required' ],
+    api:            sbase.mongoose.AUTOGEN,
+  })
   public configHistories:  AppletConfig[];
-
-  public static $SCHEMA: object = {
-
-    owner:            {
-      type:           mongoose.Schema.Types.ObjectId,
-      ref:            'User',
-      required:       true,
-      index:          true,
-      api:            sbase.mongoose.READONLY,
-    },
-
-    name:             {
-      type:           String,
-      required:       true,
-      unique:         true,
-    },
-
-    imageUrl:         {
-      type:           String,
-      default:        'http://www.nodeswork.com/favicon.ico',
-    },
-
-    description:      {
-      type:           String,
-      max:            [ 1400, 'description should be at most 1400 charactors' ],
-      level:          APPLET_DATA_LEVELS.DETAIL,
-    },
-
-    tokens:           {
-      type:           AppletTokens,
-      default:        AppletTokens,
-      api:            sbase.mongoose.AUTOGEN,
-      level:          APPLET_DATA_LEVELS.TOKEN,
-    },
-
-    permission:       {
-      type:           String,
-      enum:           Object.keys(APPLET_PERMISSIONS),
-      default:        APPLET_PERMISSIONS.PRIVATE,
-      level:          APPLET_DATA_LEVELS.DETAIL,
-    },
-
-    configHistories:  {
-      type:           [ AppletConfig.$mongooseOptions().mongooseSchema ],
-      level:          APPLET_DATA_LEVELS.DETAIL,
-      validate:       [ validateConfig, 'config is required' ],
-      api:            sbase.mongoose.AUTOGEN,
-    },
-  };
 
   get config(): AppletConfig {
     return this.configHistories[this.configHistories.length - 1];
