@@ -48,6 +48,7 @@ export const userAppletsRouter: Router = new Router({ prefix: '/user-applets' })
 
 async function overrideDeviceQuery(ctx: DeviceContext, next: () => void) {
   ctx.overrides.query['config.devices.device'] = ctx.device._id;
+  ctx.overrides.query.enabled = true;
   await next();
 }
 

@@ -27,6 +27,10 @@ export const appletsRouter: Router = new Router({ prefix: '/applets' })
       'device.user->query.user',
       `params.${APPLET_ID_FIELD}->query.applet`,
     ),
+    async (ctx: DeviceContext, next: () => void) => {
+      ctx.overrides.query.enabled = true;
+      await next();
+    },
     models.UserApplet.getMiddleware({
       field:       '*',
       populate:    [
