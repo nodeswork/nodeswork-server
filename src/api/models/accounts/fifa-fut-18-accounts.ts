@@ -114,25 +114,17 @@ export class FifaFut18Account extends CookieAccount {
       body:    options.body,
     };
     try {
-      return await fifaClient.request(clientRequestOptions);
+      const res = await fifaClient.request(clientRequestOptions);
+      this.dumpFifa18Client(fifaClient);
+      await this.save();
+      return res;
     } catch (e) {
-      if (e.statusCode === 401 && e.error && e.error.reason === 'expired session') {
-        LOG.info('Session expired, refreshing');
-        await fifaClient.refresh();
-        LOG.info('Session expired, refreshed');
-
-        if (fifaClient.metadata.state !== STATES.READY) {
-          // this.verified = false;
-          // await this.save();
-          throw errors.SESSION_REFRESH_FAILED;
-        }
-
-        const res = await fifaClient.request(clientRequestOptions);
-        this.dumpFifa18Client(fifaClient);
-        await this.save();
-        return res;
-      } else {
-        throw e;
+      if (e.statusCode != null) {
+        throw new NodesworkError(e.message, {
+          responseCode:  e.statusCode,
+          message:       e.message,
+          error:         e.error,
+        });
       }
     }
   }

@@ -57,19 +57,42 @@ export class FifaFut18Client {
   }
 
   public async request(options: RequestOptions): Promise<any> {
+    LOG.debug('Fifa FUT 18 Request', options);
     const uri = new URL(options.url, this.metadata.sharedHost);
     _.each(options.query, (val, key) => {
       uri.searchParams.append(key, val);
     });
-    return await this.defaultRequest({
-      uri:                      uri.toString(),
-      method:                   options.method || 'GET',
-      headers:                  {
-        'X-UT-PHISHING-TOKEN':  this.metadata.phishingToken,
-        'X-UT-SID':             this.metadata.auth.sid,
-      },
-      body:                     options.body,
-    });
+    try {
+      const requestOptions = {
+        uri:                      uri.toString(),
+        method:                   options.method || 'GET',
+        headers:                  {
+          'X-UT-PHISHING-TOKEN':  this.metadata.phishingToken,
+          'X-UT-SID':             this.metadata.auth.sid,
+        },
+        body:                     options.body,
+      };
+      return await this.defaultRequest(requestOptions);
+    } catch (e) {
+      if (e.statusCode === 401 && e.error &&
+        e.error.reason === 'expired session') {
+        LOG.info('Session expired, refreshing');
+        await this.refresh();
+        LOG.info('Session expired, refreshed');
+        const requestOptions = {
+          uri:                      uri.toString(),
+          method:                   options.method || 'GET',
+          headers:                  {
+            'X-UT-PHISHING-TOKEN':  this.metadata.phishingToken,
+            'X-UT-SID':             this.metadata.auth.sid,
+          },
+          body:                     options.body,
+        };
+        return await this.defaultRequest(requestOptions);
+      } else {
+        throw e;
+      }
+    }
   }
 
   /**
