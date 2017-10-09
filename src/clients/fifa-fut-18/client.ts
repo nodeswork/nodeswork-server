@@ -466,8 +466,11 @@ export class FifaFut18Client {
     };
 
     const resp = await this.defaultRequest.post({
-      uri:   this.metadata.sharedHost + urls.fut18.GET_SID_PATH + '?' + Date.now(),
-      body:  payload,
+      uri:                      this.metadata.sharedHost + urls.fut18.GET_SID_PATH + '?' + Date.now(),
+      body:                     payload,
+      headers:                  {
+        'X-UT-PHISHING-TOKEN':  this.metadata.phishingToken || '',
+      },
     });
 
     this.metadata.auth = resp;

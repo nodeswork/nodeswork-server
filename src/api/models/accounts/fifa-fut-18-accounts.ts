@@ -119,6 +119,7 @@ export class FifaFut18Account extends CookieAccount {
       if (e.statusCode === 401 && e.error && e.error.reason === 'expired session') {
         LOG.info('Session expired, refreshing');
         await fifaClient.refresh();
+        LOG.info('Session expired, refreshed');
 
         if (fifaClient.metadata.state !== STATES.READY) {
           // this.verified = false;
