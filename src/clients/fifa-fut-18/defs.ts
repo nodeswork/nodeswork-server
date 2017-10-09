@@ -5,6 +5,7 @@ export interface Fifa18ClientMetadata {
   errors?:                       object;
   gameSku?:                      string;
   gameSkuChoices?:               string[];
+  secret?:                       string;
 
   securityCodeVerificationUrl?:  string;
 

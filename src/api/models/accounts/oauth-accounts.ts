@@ -159,9 +159,13 @@ export class OAuthAccount extends Account {
   }
 
   public async operate(
-    options: AccountOperateOptions,
-    userApplet: models.UserApplet,
+    options:     AccountOperateOptions,
+    userApplet:  models.UserApplet,
   ): Promise<any> {
+    if (!this.verified) {
+      throw errors.ACCOUNT_IS_NOT_VERIFIED;
+    }
+
     const oAuthConfig = this.getOAuthConfig();
     const oAuthClient = this.getOAuthClient();
 

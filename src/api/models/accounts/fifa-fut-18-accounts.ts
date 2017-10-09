@@ -4,18 +4,26 @@ import * as tough         from 'tough-cookie';
 import * as request       from 'request-promise';
 
 import * as sbase         from '@nodeswork/sbase';
+import * as logger        from '@nodeswork/logger';
 import { NodesworkError } from '@nodeswork/utils';
 
 import {
   CookieAccount,
   CookieAccountType,
 }                         from './cookie-accounts';
-import { Account }        from './accounts';
+import {
+  Account,
+  AccountOperateOptions,
+}                         from './accounts';
 import {
   FifaFut18Client,
   Fifa18ClientMetadata,
   STATES,
 }                         from '../../../clients/fifa-fut-18';
+import * as errors        from '../../errors';
+import * as models        from '../../models';
+
+const LOG = logger.getLogger();
 
 export type FifaFut18AccountType = typeof FifaFut18Account & CookieAccountType;
 
@@ -87,6 +95,45 @@ export class FifaFut18Account extends CookieAccount {
       status:    'ok',
       metadata:  fifaClient.metadata,
     };
+  }
+
+  public async operate(
+    options:     AccountOperateOptions,
+    userApplet:  models.UserApplet,
+  ): Promise<any> {
+    if (!this.verified) {
+      throw errors.ACCOUNT_IS_NOT_VERIFIED;
+    }
+
+    const fifaClient = this.getFifa18Client();
+
+    const clientRequestOptions = {
+      url:     options.ref,
+      method:  options.method,
+      query:   options.query,
+      body:    options.body,
+    };
+    try {
+      return await fifaClient.request(clientRequestOptions);
+    } catch (e) {
+      if (e.statusCode === 401 && e.error && e.error.reason === 'expired session') {
+        LOG.info('Session expired, refreshing');
+        await fifaClient.refresh();
+
+        if (fifaClient.metadata.state !== STATES.READY) {
+          // this.verified = false;
+          // await this.save();
+          throw errors.SESSION_REFRESH_FAILED;
+        }
+
+        const res = await fifaClient.request(clientRequestOptions);
+        this.dumpFifa18Client(fifaClient);
+        await this.save();
+        return res;
+      } else {
+        throw e;
+      }
+    }
   }
 }
 

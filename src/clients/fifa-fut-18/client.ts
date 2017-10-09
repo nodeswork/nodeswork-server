@@ -56,17 +56,34 @@ export class FifaFut18Client {
     this.metadata = _.extend({}, DEFAULT_METADATA, options.metadata);
   }
 
+  public async request(options: RequestOptions): Promise<any> {
+    const uri = new URL(options.url, this.metadata.sharedHost);
+    _.each(options.query, (val, key) => {
+      uri.searchParams.append(key, val);
+    });
+    return await this.defaultRequest({
+      uri:                      uri.toString(),
+      method:                   options.method || 'GET',
+      headers:                  {
+        'X-UT-PHISHING-TOKEN':  this.metadata.phishingToken,
+        'X-UT-SID':             this.metadata.auth.sid,
+      },
+      body:                     options.body,
+    });
+  }
+
   /**
    * Refresh metadata.
    */
   public async refresh() {
-    await this.initializeWithAuth();
-    if (this.metadata.stateIndex > STATE_INDEX.REQUIRE_LOGIN) {
-      await this.initializeWithGameSku();
-    }
-    if (this.metadata.stateIndex > STATE_INDEX.REQUIRE_GAME_SKU) {
-      await this.initializeWithPhishing();
-    }
+    await this.initializeWithAuth2();
+    // await this.initializeWithAuth();
+    // if (this.metadata.stateIndex > STATE_INDEX.REQUIRE_LOGIN) {
+      // await this.initializeWithGameSku();
+    // }
+    // if (this.metadata.stateIndex > STATE_INDEX.REQUIRE_GAME_SKU) {
+      // await this.initializeWithPhishing();
+    // }
   }
 
   /**
@@ -112,23 +129,8 @@ export class FifaFut18Client {
     const hash: string = hasher(secret);
     await this.getUserAccountInfo();
     await this.getAuth(true);
-
-    const resp = await this.defaultRequest.post({
-      uri:                               this.metadata.sharedHost + urls.fut18.PHISHING_VALIDATE_PATH + hash,
-      headers:                           {
-        'Easw-Session-Data-Nucleus-Id':  this.metadata.pid.pidId,
-        'X-UT-SID':                      this.metadata.auth.sid,
-      },
-      body:                              hash,
-    });
-
-    if (resp.code === "200") {
-      this.metadata.phishingToken = resp.token;
-      this.setState(STATES.READY);
-    } else {
-      this.setState(STATES.REQUIRE_PHISHING_QUESTIONS);
-      this.metadata.errors = resp;
-    }
+    this.metadata.secret = hash;
+    await this.initializeWithSecret();
   }
 
   private setState(state: string) {
@@ -137,6 +139,7 @@ export class FifaFut18Client {
   }
 
   private async initializeWithAuth() {
+    LOG.debug('initializeWithAuth');
     const resp = await this.defaultRequest.get({
       uri: urls.accounts.AUTH,
     });
@@ -144,15 +147,26 @@ export class FifaFut18Client {
     if (resp.error === 'login_required') {
       this.setState(STATES.REQUIRE_LOGIN);
     } else if (resp.access_token) {
-      this.metadata.accessToken = resp.access_token;
-      this.metadata.tokenType   = resp.token_type;
+      this.metadata.accessToken    = resp.access_token;
+      this.metadata.tokenType      = resp.token_type;
+      this.metadata.auth           = null;
+      this.metadata.phishingToken  = null;
       this.setState(STATES.REQUIRE_GAME_SKU);
     } else {
       throw errors.UNKNOWN_AUTH_RESPONSE_ERROR;
     }
   }
 
+  /**
+   * Smaller scope than Auth1.  Auth1 needs to check the secret again.
+   */
+  private async initializeWithAuth2() {
+    LOG.debug('initializeWithAuth2');
+    await this.getAuth(true);
+  }
+
   private async initializeWithGameSku() {
+    LOG.debug('initializeWithGameSku');
     if (this.metadata.gameSku != null) {
       this.setState(STATES.REQUIRE_PHISHING_QUESTIONS);
       return;
@@ -168,6 +182,7 @@ export class FifaFut18Client {
   }
 
   private async initializeWithPhishing() {
+    LOG.debug('initializeWithPhishing');
     await this.getUserAccountInfo();
     await this.getAuth();
 
@@ -182,8 +197,35 @@ export class FifaFut18Client {
     if (resp.question != null) {
       this.metadata.phishingQuestionId = resp.question;
       this.setState(STATES.REQUIRE_PHISHING_QUESTIONS);
+      await this.initializeWithSecret();
     } else {
       this.setState(STATES.READY);
+    }
+  }
+
+  private async initializeWithSecret() {
+    if (this.metadata.secret == null) {
+      this.setState(STATES.REQUIRE_PHISHING_QUESTIONS);
+      return;
+    }
+
+    const uri = this.metadata.sharedHost + urls.fut18.PHISHING_VALIDATE_PATH +
+      this.metadata.secret;
+    const resp = await this.defaultRequest.post({
+      uri,
+      headers:                           {
+        'Easw-Session-Data-Nucleus-Id':  this.metadata.pid.pidId,
+        'X-UT-SID':                      this.metadata.auth.sid,
+      },
+      body:                              this.metadata.secret,
+    });
+
+    if (resp.code === "200") {
+      this.metadata.phishingToken  = resp.token;
+      this.setState(STATES.READY);
+    } else {
+      this.setState(STATES.REQUIRE_PHISHING_QUESTIONS);
+      this.metadata.errors = resp;
     }
   }
 
@@ -430,6 +472,13 @@ export class FifaFut18Client {
 
     this.metadata.auth = resp;
   }
+}
+
+export interface RequestOptions {
+  url:      string;
+  method?:  string;
+  query?:   { [name: string]: string; };
+  body?:    object;
 }
 
 const PARSE_TITLE_REGEX = /<title>(.*)<\/title>/;

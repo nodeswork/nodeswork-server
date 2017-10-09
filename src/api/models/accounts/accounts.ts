@@ -91,5 +91,6 @@ export class Account extends sbase.mongoose.NModel {
 export interface AccountOperateOptions {
   ref:     string;
   method:  string;
+  query?:  { [name: string]: string; };
   body?:   any;
 }

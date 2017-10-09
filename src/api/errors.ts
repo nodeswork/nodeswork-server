@@ -73,4 +73,12 @@ export const NO_ACCOUNT_OPERATE_PERMISSION_ERROR = new UrlParameterError(
   'no account operate permission',
 );
 
+export const ACCOUNT_IS_NOT_VERIFIED = NodesworkError.internalServerError(
+  'account is not verified',
+);
+
+export const SESSION_REFRESH_FAILED = NodesworkError.internalServerError(
+  'session refresh failed',
+);
+
 export const NOT_IMPLEMENTED_ERROR = NodesworkError.notImplemented();
