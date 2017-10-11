@@ -115,17 +115,23 @@ export class FifaFut18Account extends CookieAccount {
     };
     try {
       const res = await fifaClient.request(clientRequestOptions);
-      this.dumpFifa18Client(fifaClient);
-      await this.save();
       return res;
     } catch (e) {
       if (e.statusCode != null) {
-        throw new NodesworkError(e.message, {
-          responseCode:  e.statusCode,
-          message:       e.message,
-          error:         e.error,
-        });
+        throw NodesworkError.failedDependency(
+          undefined,
+          {
+            remoteError:   {
+              statusCode:  e.statusCode,
+              message:     e.message,
+              error:       e.error,
+            },
+          },
+        );
       }
+    } finally {
+      this.dumpFifa18Client(fifaClient);
+      await this.save();
     }
   }
 }

@@ -35,6 +35,7 @@ if config.app.env == 'test'
 { registerModels }    = require './api/models'
 
 statuses['470'] = 'Permission Denied'
+statuses['521'] = 'Undefined'
 
 app = new Koa
 

@@ -58,14 +58,16 @@ async function handleApiRequest(ctx: any, next: () => void) {
     await next();
   } catch (e) {
     e = NodesworkError.cast(e);
-    ctx.status = e.meta.responseCode || 500;
-    ctx.body = _.extend({
-      message: e.message,
-    }, e.meta);
-    if (ctx.status === 500) {
+    const statusCode = e.meta.responseCode || 500;
+    if (statusCode >= 500) {
       console.log(e);
       LOG.error('internal service error', e);
     }
+
+    ctx.status = statusCode;
+    ctx.body = _.extend({
+      message: e.message,
+    }, e.meta);
   }
 }
 
