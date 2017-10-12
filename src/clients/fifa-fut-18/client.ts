@@ -59,32 +59,35 @@ export class FifaFut18Client {
   public async request(options: RequestOptions): Promise<any> {
     LOG.debug('Fifa FUT 18 Request', options);
     try {
-      return await this.requestInternal(options);
-    } catch (e) {
-      if (e.statusCode === 401 && e.error &&
-        e.error.reason === 'expired session') {
-        LOG.info('Session expired, refreshing');
-        try {
-          await this.refresh2();
-        } catch (e) {
-          if (e.statusCode === 400 && e.error &&
-            e.error.error_description === 'access_token is invalid') {
-            LOG.info('Access token is invalid, refreshing');
-            await this.refresh();
-            LOG.info('Access token is invalid, refreshed');
-          } else {
-            throw e;
-          }
-        }
-        LOG.info('Session expired, refreshed');
+      try {
         return await this.requestInternal(options);
-      } else  {
+      } catch (e) {
+        if (e.statusCode === 401 && e.error &&
+          e.error.reason === 'expired session') {
+          LOG.info('Session expired, refreshing');
+          await this.refresh2();
+          LOG.info('Session expired, refreshed');
+          return await this.requestInternal(options);
+        } else  {
+          throw e;
+        }
+      }
+    } catch (e) {
+      if (e.statusCode === 400 && e.error &&
+        e.error.error_description === 'access_token is invalid') {
+        LOG.info('Access token is invalid, refreshing');
+        await this.refresh();
+        LOG.info('Access token is invalid, refreshed');
+        return await this.requestInternal(options);
+      } else {
         throw e;
       }
     }
   }
 
   private async requestInternal(options: RequestOptions) {
+    await this.getAuth();
+
     const uri = new URL(options.url, this.metadata.sharedHost);
     _.each(options.query, (val, key) => {
       uri.searchParams.append(key, val);

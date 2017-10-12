@@ -104,7 +104,6 @@ export class FifaFut18Account extends CookieAccount {
     if (!this.verified) {
       throw errors.ACCOUNT_IS_NOT_VERIFIED;
     }
-
     const fifaClient = this.getFifa18Client();
 
     const clientRequestOptions = {
@@ -128,6 +127,8 @@ export class FifaFut18Account extends CookieAccount {
             },
           },
         );
+      } else {
+        throw e;
       }
     } finally {
       this.dumpFifa18Client(fifaClient);
