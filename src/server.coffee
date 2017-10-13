@@ -13,8 +13,6 @@ staticCache           = require 'koa-static-cache'
 { MongoDB }           = require 'winston-mongodb'
 winston               = require 'winston'
 
-statuses              = require 'statuses'
-
 nwLogger              = require '@nodeswork/logger'
 
 { config }            = require './config'
@@ -33,9 +31,6 @@ if config.app.env == 'test'
   ]
 
 { registerModels }    = require './api/models'
-
-statuses['470'] = 'Permission Denied'
-statuses['521'] = 'Undefined'
 
 app = new Koa
 
