@@ -41,5 +41,6 @@ function updateMetrics(field: string) {
       value:       ctx.request.body.value,
     });
     await target.save();
+    ctx.body = target;
   };
 }
