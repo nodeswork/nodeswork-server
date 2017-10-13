@@ -44,6 +44,28 @@ export const userAppletsRouter: Router = new Router({ prefix: '/user-applets' })
     }),
     fetchAccounts,
   )
+
+  .post(`/:${USER_APPLET_ID_FIELD}/execute`,
+    sbase.koa.overrides('device.user->query.user'),
+    overrideDeviceQuery,
+    models.UserApplet.getMiddleware({
+      field: USER_APPLET_ID_FIELD,
+      populate:    [
+        { path: 'applet' },
+        { path: 'config.accounts.account' },
+      ],
+      target:      'userApplet',
+      triggerNext: true,
+      noBody:      true,
+    }),
+    sbase.koa.overrides(
+      'device.user->doc.user',
+      `params.${USER_APPLET_ID_FIELD}->doc.userApplet`,
+      'userApplet.applet._id->doc.applet',
+      'device._id->doc.device',
+    ),
+    models.AppletExecution.createMiddleware({}),
+  )
 ;
 
 async function overrideDeviceQuery(ctx: DeviceContext, next: () => void) {

@@ -16,3 +16,7 @@ export interface UserContext extends Router.IRouterContext {
 export interface DeviceContext extends Router.IRouterContext {
   device: models.Device;
 }
+
+export interface ExecutionContext extends Router.IRouterContext {
+  execution: models.AppletExecution;
+}

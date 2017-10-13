@@ -4,10 +4,14 @@ import * as mongoose          from 'mongoose';
 import {
   DataLevelModel,
   KoaMiddlewares,
+  Model,
   NModel,
   SoftDeleteModel,
   TimestampModel,
 }                             from '@nodeswork/sbase/dist/mongoose';
+import {
+  MetricsModel,
+}                             from '@nodeswork/sbase/dist/metrics';
 
 import * as accounts          from './accounts/accounts';
 import * as cookieAccounts    from './accounts/cookie-accounts';
@@ -18,6 +22,8 @@ import * as tokens            from './tokens';
 import * as devices           from './devices/devices';
 import * as applets           from './applets/applets';
 import * as userApplets       from './applets/user-applets';
+import * as accountOperations from './executions/account-operations';
+import * as appletExecutions  from './executions/applet-executions';
 
 export type Account            = accounts.Account;
 export const Account           = accounts.Account.$register<accounts.Account, accounts.AccountType>();
@@ -48,3 +54,9 @@ export const Applet            = applets.Applet.$register<applets.Applet, applet
 
 export type UserApplet         = userApplets.UserApplet;
 export const UserApplet        = userApplets.UserApplet.$register<userApplets.UserApplet, userApplets.UserAppletType>();
+
+export type AccountOperation   = accountOperations.AccountOperation;
+export const AccountOperation  = accountOperations.AccountOperation.$register<accountOperations.AccountOperation, accountOperations.AccountOperationType>();
+
+export type AppletExecution    = appletExecutions.AppletExecution;
+export const AppletExecution   = appletExecutions.AppletExecution.$register<appletExecutions.AppletExecution, appletExecutions.AppletExecutionType>();
