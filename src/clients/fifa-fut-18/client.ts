@@ -523,12 +523,16 @@ export class FifaFut18Client {
       sku:               'FUT18WEB',
     };
 
+    const headers: any = {};
+
+    if (this.metadata.phishingToken) {
+      headers['X-UT-PHISHING-TOKEN'] = this.metadata.phishingToken;
+    }
+
     const resp = await this.defaultRequest.post({
-      uri:                      this.metadata.sharedHost + urls.fut18.GET_SID_PATH + '?' + Date.now(),
-      body:                     payload,
-      headers:                  {
-        'X-UT-PHISHING-TOKEN':  this.metadata.phishingToken || '',
-      },
+      uri:      this.metadata.sharedHost + urls.fut18.GET_SID_PATH + '?' + Date.now(),
+      body:     payload,
+      headers,
     });
 
     this.metadata.auth = resp;
