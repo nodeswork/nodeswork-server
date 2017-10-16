@@ -16,21 +16,29 @@ export interface AccountOperation extends sbase.metrics.MetricsModel {}
   collection:        'executions.accounts',
 })
 @sbase.mongoose.Mixin(sbase.metrics.MetricsModel)
+@sbase.mongoose.Index({ fields: { 'user': 1, 'account': 1, 'timerange.start': -1 } })
+@sbase.mongoose.Index({ fields: { 'applet': 1, 'timerange.start': -1 } })
 export class AccountOperation extends sbase.mongoose.NModel {
 
   @sbase.mongoose.Field({
     type:      mongoose.Schema.Types.ObjectId,
     ref:       'User',
     required:  true,
-    index:     true,
     api:       sbase.mongoose.READONLY,
   })
   public user: mongoose.Types.ObjectId | models.User;
 
   @sbase.mongoose.Field({
     type:      mongoose.Schema.Types.ObjectId,
+    ref:       'Account',
+    required:  true,
+    api:       sbase.mongoose.READONLY,
+  })
+  public account: mongoose.Types.ObjectId | models.Account;
+
+  @sbase.mongoose.Field({
+    type:      mongoose.Schema.Types.ObjectId,
     ref:       'Applet',
-    index:     true,
     required:  true,
     api:       sbase.mongoose.READONLY,
   })

@@ -5,6 +5,7 @@ import { deviceRouter }     from './devices';
 import { appletRouter }     from './applets';
 import { userAppletRouter } from './user-applets';
 import { accountRouter }    from './accounts';
+import { metricsRouter }    from './metrics';
 
 export const userRouter = new Router({ prefix: '/v1/u' })
   .use(userAuthRouter.routes(), userAuthRouter.allowedMethods())
@@ -12,4 +13,5 @@ export const userRouter = new Router({ prefix: '/v1/u' })
   .use(appletRouter.routes(), appletRouter.allowedMethods())
   .use(userAppletRouter.routes(), userAppletRouter.allowedMethods())
   .use(accountRouter.routes(), accountRouter.allowedMethods())
+  .use(metricsRouter.routes(), metricsRouter.allowedMethods())
 ;
