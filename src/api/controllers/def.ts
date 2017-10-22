@@ -5,6 +5,10 @@ export interface UserAppletContext extends Router.IRouterContext {
   userApplet: models.UserApplet;
 }
 
+export interface UserAppletsContext extends Router.IRouterContext {
+  userApplets: models.UserApplet[];
+}
+
 export interface AccountContext extends Router.IRouterContext {
   account: models.Account;
 }
