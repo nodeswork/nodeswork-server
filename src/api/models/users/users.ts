@@ -11,7 +11,7 @@ import * as errors        from '../../errors';
 import { Token }          from '../';
 import * as models        from '..';
 
-import 'mongoose-type-email';
+import '../../../utils/email';
 
 const VERIFY_EMAIL_TOKEN_PURPOSE = 'verifyEmail';
 const VERIFY_EMAIL_TEMPLATE = 'email-verification';
