@@ -92,6 +92,22 @@ userAppletRouter
     }),
     work,
   )
+
+  .get(
+    `/:${USER_APPLET_ID_FIELD}/route/:path*`,
+    sbase.koa.overrides('user._id->query.user'),
+    models.UserApplet.getMiddleware({
+      field:       USER_APPLET_ID_FIELD,
+      populate:    [
+        { path: 'applet' },
+      ],
+      transform:   transformUserApplet,
+      target:      'userApplet',
+      noBody:      true,
+      triggerNext: true,
+    }),
+    route,
+  )
 ;
 
 async function work(ctx: UserAppletContext) {
@@ -99,6 +115,10 @@ async function work(ctx: UserAppletContext) {
     handler:  ctx.params.handler,
     name:     ctx.params.name,
   });
+}
+
+async function route(ctx: UserAppletContext) {
+  ctx.body = await ctx.userApplet.routeGet(ctx.params.path);
 }
 
 function updateAndCheckUserAppletsAndDevices(

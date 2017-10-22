@@ -1,14 +1,15 @@
-import * as _                  from 'underscore';
-import * as mongoose           from 'mongoose';
+import * as _                          from 'underscore';
+import * as mongoose                   from 'mongoose';
 
-import * as sbase              from '@nodeswork/sbase';
-import * as logger             from '@nodeswork/logger';
-import { nam }                 from '@nodeswork/nam/dist/def';
+import * as sbase                      from '@nodeswork/sbase';
+import * as logger                     from '@nodeswork/logger';
+import { nam }                         from '@nodeswork/nam/dist/def';
+import { NodesworkError }              from '@nodeswork/utils';
 
-import * as models             from '../../models';
-import { deviceSocketManager } from '../../sockets';
-import { AppletConfig }        from './applets';
-import * as errors             from '../../errors';
+import * as models                     from '../../models';
+import { deviceSocketManager }         from '../../sockets';
+import { AppletConfig }                from './applets';
+import * as errors                     from '../../errors';
 
 const LOG = logger.getLogger();
 
@@ -197,6 +198,7 @@ export class UserApplet extends sbase.mongoose.NModel {
     );
 
     const workOptions: nam.WorkOptions = {
+      userApplet: this._id.toString(),
       route: {
         appletId: applet._id.toString(),
         naType: appletImage.naType,
@@ -213,6 +215,34 @@ export class UserApplet extends sbase.mongoose.NModel {
     );
 
     return await rpcClient.work(workOptions);
+  }
+
+  public async routeGet(path: string): Promise<any> {
+    const applet       =  this.applet as models.Applet;
+    const appletConfig = await this.populateAppletConfig();
+
+    const rpcClient = deviceSocketManager.getNAMSocketRpcClient(
+      this.config.devices[0].device.toString(),
+    );
+
+    if (rpcClient == null) {
+      throw errors.DEVICE_OFFLINE;
+    }
+
+    const headers: any = {};
+
+    const requestOptions: nam.RequestOptions = {
+      packageName:  appletConfig.packageName,
+      version:      appletConfig.version,
+      naType:       appletConfig.naType,
+      naVersion:    appletConfig.naVersion,
+      appletId:     applet._id.toString(),
+      uri:          `/${path}`,
+      method:       'GET',
+      headers,
+    };
+
+    return await rpcClient.request(requestOptions);
   }
 
   /**
