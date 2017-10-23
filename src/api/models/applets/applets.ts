@@ -1,6 +1,7 @@
 import * as _            from 'underscore';
 import * as mongoose     from 'mongoose';
 import * as sbase        from '@nodeswork/sbase';
+import * as namEnv       from '@nodeswork/nam/dist/env';
 
 import { generateToken } from '../../../utils/tokens';
 
@@ -93,8 +94,8 @@ export class AppletImage extends sbase.mongoose.Model {
 
   @sbase.mongoose.Field({
     type:       String,
-    enum:       ['8.3.0'],
-    default:    '8.3.0',
+    enum:       namEnv.SUPPORTED_NA_NPM_VERSIONS,
+    default:    namEnv.DEFAULT_NA_VERSION,
     required:   true,
   })
   public naVersion:    string;
