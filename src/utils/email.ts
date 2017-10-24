@@ -3,7 +3,7 @@ import * as mongoose from 'mongoose';
 function Email(path: string, options: any) {
   mongoose.SchemaTypes.String.call(this, path, options, 'Email');
   function validateEmail(val: string) {
-    return /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/.test(val);
+    return /^[a-zA-Z0-9._+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/.test(val);
   }
   this.validate(validateEmail, 'Invalid email address', 'invalid-email');
 }

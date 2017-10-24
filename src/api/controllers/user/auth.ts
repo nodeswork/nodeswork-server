@@ -89,4 +89,5 @@ async function login(ctx: Router.IRouterContext) {
 async function logout(ctx: Router.IRouterContext) {
   ctx.session.userId  = null;
   ctx.status = 200;
+  ctx.body = { status: 'ok' };
 }
