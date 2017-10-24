@@ -44,7 +44,7 @@ export class Account extends sbase.mongoose.NModel {
 
   @sbase.mongoose.Field({
     type:      String,
-    enum:      ['twitter', 'fifa-fut-18', 'customized'],
+    enum:      ['twitter', 'fifa-fut-18', 'wex', 'customized'],
     required:  true,
   })
   public provider: string;

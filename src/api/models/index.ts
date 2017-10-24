@@ -17,6 +17,7 @@ import * as accounts          from './accounts/accounts';
 import * as cookieAccounts    from './accounts/cookie-accounts';
 import * as oauthAccounts     from './accounts/oauth-accounts';
 import * as fifaFut18Accounts from './accounts/fifa-fut-18-accounts';
+import * as wexAccounts       from './accounts/wex-accounts';
 import * as users             from './users/users';
 import * as tokens            from './tokens';
 import * as devices           from './devices/devices';
@@ -36,6 +37,9 @@ export const CookieAccount     = cookieAccounts.CookieAccount.$register<cookieAc
 
 export type FifaFut18Account   = fifaFut18Accounts.FifaFut18Account;
 export const FifaFut18Account  = fifaFut18Accounts.FifaFut18Account.$register<fifaFut18Accounts.FifaFut18Account, fifaFut18Accounts.FifaFut18AccountType>();
+
+export type WEXAccount         = wexAccounts.WEXAccount;
+export const WEXAccount        = wexAccounts.WEXAccount.$register<wexAccounts.WEXAccount, wexAccounts.WEXAccountType>();
 
 export type User               = users.User;
 export const User              = users.User.$register<users.User, users.UserType>();

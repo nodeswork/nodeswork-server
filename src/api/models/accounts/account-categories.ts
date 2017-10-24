@@ -18,4 +18,10 @@ export const ACCOUNT_CATEGORIES: AccountCategory[] = [
     name:        'Fifa18 Fut',
     imageUrl:    'https://orig00.deviantart.net/6d00/f/2011/231/1/0/ea_games_logo_icon_by_mahesh69a-d473fzx.png',
   },
+  {
+    accountType: 'WEXAccount',
+    provider:    'wex',
+    name:        'WEX',
+    imageUrl:    'https://steemit-production-imageproxy-upload.s3.amazonaws.com/DQmcSbfZqm2FENe5U6oqfTj8miGQw8dG6inVkqvBTnYyAnB',
+  },
 ];
