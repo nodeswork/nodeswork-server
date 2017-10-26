@@ -82,3 +82,14 @@ export const SESSION_REFRESH_FAILED = NodesworkError.internalServerError(
 );
 
 export const NOT_IMPLEMENTED_ERROR = NodesworkError.notImplemented();
+
+export namespace wex {
+
+  export const INVALID_API_KEY = NodesworkError.unauthorized(
+    'invalid api key',
+  );
+
+  export const INVALID_SIGNATURE = NodesworkError.unauthorized(
+    'invalid signature',
+  );
+}

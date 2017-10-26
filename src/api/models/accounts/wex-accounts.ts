@@ -91,10 +91,22 @@ export class WEXAccount extends Account {
         form: body,
         json: true,
       });
-      if (res.success === 0 && (
-        res.error === 'invalid api key' || res.error === 'invalid sign'
-      )) {
-        this.verified = false;
+
+      if (!res.success) {
+        switch (res.error) {
+          case 'invalid api key':
+            this.verified = false;
+            throw errors.wex.INVALID_API_KEY;
+          case 'invalid sign':
+            this.verified = false;
+            throw errors.wex.INVALID_SIGNATURE;
+          default:
+            throw NodesworkError.failedDependency(
+              'unknown WEX remote error', {
+                result: res,
+              },
+            );
+        }
       }
       return res;
     } finally {
