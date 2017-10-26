@@ -41,25 +41,16 @@ export class WEXAccount extends Account {
   public nonce: number;
 
   public async verify() {
+    this.verified = false;
+
     const info = await this.operate({
       method:  'GET',
       ref:     'getInfo',
     }, null);
 
-    if (info.success) {
-      this.verified = true;
-      await this.save();
-      return {
-        status: 'ok',
-      };
-    } else {
-      this.verified = false;
-      await this.save();
-      return {
-        status: 'error',
-        error: info.error,
-      };
-    }
+    this.verified = true;
+    await this.save();
+    return this;
   }
 
   public async operate(
