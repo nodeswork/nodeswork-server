@@ -68,6 +68,10 @@ async function verifyAccountId(ctx: UserAppletContext, next: () => void) {
 }
 
 async function operate(ctx: AccountContext & UserAppletContext) {
+  if (!ctx.account.verified) {
+    throw errors.ACCOUNT_IS_NOT_VERIFIED;
+  }
+
   // TODO: Verify body.
   ctx.body = await ctx.account.operate(ctx.request.body, ctx.userApplet);
 }
