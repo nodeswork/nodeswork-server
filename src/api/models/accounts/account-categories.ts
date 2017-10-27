@@ -1,3 +1,5 @@
+/* tslint:disable:max-line-length */
+
 export interface AccountCategory {
   accountType: string;
   provider:    string;
@@ -23,5 +25,11 @@ export const ACCOUNT_CATEGORIES: AccountCategory[] = [
     provider:    'wex',
     name:        'WEX',
     imageUrl:    'https://steemit-production-imageproxy-upload.s3.amazonaws.com/DQmcSbfZqm2FENe5U6oqfTj8miGQw8dG6inVkqvBTnYyAnB',
+  },
+  {
+    accountType: 'KrakenAccount',
+    provider:    'kraken',
+    name:        'Kraken',
+    imageUrl:    'https://pbs.twimg.com/profile_images/460890160201093121/QRdWxA7C.png',
   },
 ];
